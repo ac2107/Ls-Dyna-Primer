@@ -1,0 +1,20 @@
+MacroName("Area_mesh")
+MacroDescription("Mesh area using nodes")
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Button("Mesh")
+End In
+
+PopupWindow1().Button("Area")
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$PID"
+    .Textbox("N1") = "$N1"
+    .Textbox("N2") = "$N2"
+    .Textbox("N3") = "$N3"
+    .Textbox("N4") = "$N4"
+    .Textbox("Element size/No. of shells between N1 and N2") = "$ELE_T"
+    .Textbox("Element size/No. of shells between N1 and N4") = "$ELE_L"
+    .Button("Apply")
+End In
+

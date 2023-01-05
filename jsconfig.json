@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "checkJs": true,
+        "lib": [
+            "es5"
+        ]
+    },
+    "include": [
+        "C:/Users/Anqi.Chen/Documents/Work/Projects/Oasys_js_api/primer.d.ts",
+        "*.js",
+        "C:/Users/Anqi.Chen/Documents/GitHub/Ls-Dyna-Primer/*.js",       
+    ]
+}

@@ -1,0 +1,10 @@
+MacroName("Field_headers")
+MacroDescription("show field headers for keywords in the key file")
+
+Window("Tools/Keywords").Button("Model Tab")
+Window("Model functions").Button("Write")
+Window("WRITE TO FILE").Button(">>> LS-Dyna output options")
+In Window("PRE-OUTPUT CHECK")
+    .Button("Options tab")
+    .Button("Field header Checkbox") = On
+End In

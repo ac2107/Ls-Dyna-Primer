@@ -1,0 +1,52 @@
+Version("17.0", 26840)
+WindowSize(594, 866)
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Button("Mesh")
+End In
+PopupWindow1().Button("Area")
+Window("SIMPLE MESHING").Popup("Mesh mode")
+PopupWindow1().Button("Ruled")
+In Window("SIMPLE MESHING")
+    .Button("RM Path")
+    .Button("Select start")
+End In
+In GraphicsWindow("GRAPHICS 1")
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(1158, 3017)
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(1012, 2468)
+End In
+Window("SIMPLE MESHING").Button("Select end")
+In GraphicsWindow("GRAPHICS 1")
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(2331, 2724)
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(1948, 1239)
+End In
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$PID"
+    .Textbox("Element size/no. of elements") = "$ELE_L"
+    .Button("Apply")
+    .Button("Select start")
+End In
+In GraphicsWindow("GRAPHICS 1")
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(326, 2388)
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(917, 2388)
+End In
+Window("SIMPLE MESHING").Button("Select end")
+In GraphicsWindow("GRAPHICS 1")
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(326, 1158)
+    .ViewMatrix(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0301387, 0.144417, 0, 1815.8, 5.41924)
+    .Pick1(1849, 1158)
+End In
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$PID"
+    .Textbox("Element size/no. of elements") = "$ELE_L"
+    .Button("Apply")
+End In
+Window("Tools/Keywords").Button("Tools")
+Window("SIMPLE MESHING").Button("Dismiss")
