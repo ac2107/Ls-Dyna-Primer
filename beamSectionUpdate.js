@@ -1,6 +1,6 @@
 function beamSectionUpdate(m, mid, beam_ids, section, type) {
 
-	// [deorecated] to be removed in the near future (5th Jan 2023) 
+	// [deprecated] to be removed in the near future (5th Jan 2023) 
 	//	use the functions in "theBlueBookP363.js" to update beam sections
 
     /*

@@ -11,7 +11,7 @@ using blue book section type , see keys below, as input
 
 */
 
-const theBlueBook = { /*= DO NOT UPDATE THIS, OUTDATED =*/
+const theBlueBook = { /*= DO NOT UPDATE THIS, DEPRECATED, PROVIDED TO KEEP OLD SCRIPTS WORKING =*/
     // UB
 
     UB610x229x140:{h: 0.6172, b: 0.2302, tw: 0.0131, tf: 0.0221},
