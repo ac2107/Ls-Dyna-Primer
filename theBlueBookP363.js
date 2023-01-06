@@ -53,7 +53,7 @@ const theBlueBook = { /*= DO NOT UPDATE THIS, DEPRECATED, PROVIDED TO KEEP OLD S
 
 // xxxxxxxxxxxx: {h: , b: , tw: , tf: },
 
-const theBlueBookNew = { 
+const theBlueBookSectionDimensions = { 
 
     //'':{name: '', type: 'UB', h: , b: , tw: , tf: },
     UB: {
@@ -148,19 +148,24 @@ const theBlueBookNew = {
 
 
     CFCHS: {
-        'CFCHS139.7x10': {name: 'CFCHS139.7x10', type: 'CHS', d: 0.1397, t: 0.01},
+        'CFCHS139.7x10': 	{name: 'CFCHS139.7x10', 	type: 'CHS', d: 0.1397, t: 0.01},
+		'CFCHS168.3x8': 	{name: 'CFCHS168.3x8', 		type: 'CHS', d: 0.1683, t: 0.008},
+		'CFCHS168.3x12.5': 	{name: 'CFCHS168.3x12.5', 	type: 'CHS', d: 0.1683, t: 0.0125},
+		'CFCHS219.1x10': 	{name: 'CFCHS219.1x10', 	type: 'CHS', d: 0.2191, t: 0.01},
     },
 
 
     CFRHS: {
         'CFRHS300x200x10':      {name:'CFRHS300x200x10',    type: 'RHS', h: 0.3, b: 0.2, t: 0.01},
         'CFRHS400x200x12.5':    {name:'CFRHS400x200x12.5',  type: 'RHS', h: 0.4, b: 0.2, t: 0.0125},
+		'CFRHS500x200x16':      {name:'CFRHS500x200x16',    type: 'RHS', h: 0.5, b: 0.2, t: 0.016},
         'CFRHS500x300x16':      {name:'CFRHS500x300x16',    type: 'RHS', h: 0.5, b: 0.3, t: 0.016},
     },
 
     CFSHS: {
-        'CFSHS150x150x10': {name:'CFSHS150x150x10', type: 'SHS', h: 0.15, t: 0.01},
-		'CFSHS200x200x10': {name:'CFSHS200x200x10', type: 'SHS', h: 0.2, t: 0.01},
+        'CFSHS150x150x10': 	{name:'CFSHS150x150x10', type: 'SHS', h: 0.15, t: 0.01},
+		'CFSHS200x200x8':	{name:'CFSHS200x200x8', type: 'SHS', h: 0.2, t: 0.008},
+		'CFSHS200x200x10': 	{name:'CFSHS200x200x10', type: 'SHS', h: 0.2, t: 0.01},
 
     },
 }
@@ -260,7 +265,7 @@ function theBlueBookBeamSectionUpdate(m, mid, n1, n2, section){
         mid: material model id
         n1: start node number of beam element/s
         n2: end node number of beam element/s
-        section: section selected from "theBlueBookNew", see definition above 
+        section: section selected from object "theBlueBookSectionDimensions", see definition above 
     
     Retunr: 
         pid: part id of the updated beams; either new or exisitng    
