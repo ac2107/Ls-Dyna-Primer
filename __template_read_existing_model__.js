@@ -26,14 +26,8 @@ Message("Macro Dir: "+mac_dir);
 // PlayMacro(mac_dir+"headers_001.prm")
 //========================= USE MODULES ========================================
 // all Primer js scripts are in "C:\Users\Anqi.Chen\OneDrive - Arup\Shared with Everyone\Scripts\Primer_js"
-Use("PrimerJS_functions.js");
-Use("Ls_Dyna_functions.js");
-Use("defineBlastLoad.js");
-Use("getNodesBetweenTwoNodes.js");
-Use("getBeamElementsByNodes.js");
-Use("removeDuplicate.js");
-Use("columnBlastFace.js");
-Use("engineeringModule.js");
+Use("_useModules.js");
+
 //========================= COMMENTS ===========================================
 var comment_text = "read model in k file\n";
 comment_text = comment_text + "-" + "\n";
