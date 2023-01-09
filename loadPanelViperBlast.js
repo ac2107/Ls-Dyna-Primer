@@ -24,12 +24,47 @@
   */
 function loadPanelViperBlast(m, pidNullShell){
 
+	// =============== Pressure gauges/stations ================================
 	// >>> get the null shell element part 
-	var nullShellPart = Part.GetFromID(m, pidNullShell);
+	const nullShellPart = Part.GetFromID(m, pidNullShell);
 
-	// select each null shell element
-	
+	// >>> select all  null shell element
+	const flag_nullShellPart = AllocateFlag();
+	nullShellPart.SetFlag(flag_nullShellPart);
+	m.PropagateFlag(flag_nullShellPart);
+	const nullShellElements = Shell.GetFlagged(m, flag_nullShellPart);
 
+	// >>> operate on each null shell element to: (1) create the pressure gauge at centre location, 
+	// >>> then output the gauge coordinates in the format can be loaded into Viper  
+	// >>> (2) extract underlying beam elements for blast load tranfer
+	var panelID = 1; 
+	var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
+	var csv_gauge_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
+	for (var shell of nullShellElements){
+
+
+		var coords = shell.IsoparametricToCoords(0, 0)
+		// Message(coords);
+
+		// viper station txt format
+		// x y z label
+
+		var x = coords[0];
+		var y = coords[1];
+		var z = coords[2];
+
+		csv_viper.Writeln( x + ' ' + y + ' ' + z + ' ' +'load_panel_' + panelID);
+
+		csv_gauge_list.Writeln('load_panel_' + panelID + ',' + shell.eid + ',' + 'beam element list');
+
+		panelID = panelID + 1;
+
+	} 
+	csv_viper.Close();
+	csv_gauge_list.Close();
+
+
+	// =============== Load_beam ===============================================
 
 	return 0
 }
