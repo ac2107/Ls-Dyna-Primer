@@ -17,11 +17,26 @@
  */
 
 
- /**
-  * Apply Viper load to beam elements in Ls-Dyna/Primer
-  * @param {*} m Model id
-  * @param {*} pidNullShell Null shell part id 
-  */
+class LoadPanel {
+	constructor(panel_id, cx, cy, cz, area, null_shell_eid, beam_list){
+
+		this.panel_id = panel_id;				// panel id
+		this.cx = cx;							// coordiante x of panel geometric centre 
+		this.cy = cy;							// coordiante y of panel geometric centre
+		this.cz = cz;							// coordiante z of panel geometric centre
+		this.area = area;						// area of the panel (null shell)
+		this.null_shell_eid = null_shell_eid;	// null shell element eid corresponding to the load panel  
+		this.beam_list = beam_list;				// 
+
+	}
+}
+
+
+/**
+ * Create array of load panels (object LoadPanel) for each nul shell in the null shell part for Viper blast calculation
+ * @param {*} m Model id
+ * @param {*} pidNullShell Null shell part id for blast loading
+ */
 function loadPanelViperBlast(m, pidNullShell){
 
 	// =============== Pressure gauges/stations ================================
@@ -38,33 +53,61 @@ function loadPanelViperBlast(m, pidNullShell){
 	// >>> then output the gauge coordinates in the format can be loaded into Viper  
 	// >>> (2) extract underlying beam elements for blast load tranfer
 	var panelID = 1; 
-	var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
-	var csv_gauge_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
+
 	for (var shell of nullShellElements){
 
-
 		var coords = shell.IsoparametricToCoords(0, 0)
-		// Message(coords);
-
-		// viper station txt format
-		// x y z label
 
 		var x = coords[0];
 		var y = coords[1];
 		var z = coords[2];
 
-		csv_viper.Writeln( x + ' ' + y + ' ' + z + ' ' +'load_panel_' + panelID);
 
-		csv_gauge_list.Writeln('load_panel_' + panelID + ',' + shell.eid + ',' + 'beam element list');
+
+
+		// 
 
 		panelID = panelID + 1;
-
 	} 
-	csv_viper.Close();
-	csv_gauge_list.Close();
+
+
+	const loadPanels = [];
+
+	return loadPanels
+}
+
+
+// var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
+// var csv_gauge_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
+// csv_viper.Writeln( x + ' ' + y + ' ' + z + ' ' +'load_panel_' + panelID);
+// csv_gauge_list.Writeln('load_panel_' + panelID + ',' + shell.eid + ',' + 'beam element list');
+// csv_viper.Close();
+// csv_gauge_list.Close();
+
+function applyLoadBeamViperBlast(m, loadPanels){
 
 
 	// =============== Load_beam ===============================================
 
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
 	return 0
+
 }
+
+
+
+
+
