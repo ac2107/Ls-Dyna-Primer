@@ -39,6 +39,7 @@ class LoadBeamViper {
  * Create array of load panels (object LoadPanel) for each nul shell in the null shell part for Viper blast calculation
  * @param {*} m Model id
  * @param {*} pidNullShell Null shell part id for blast loading
+ * @returns loadPanels : array of object loadPanel 
  */
 function loadPanelViperBlast(m, pidNullShell){
 
@@ -76,14 +77,28 @@ function loadPanelViperBlast(m, pidNullShell){
 		// >>> null shell eid
 		loadPanel.null_shell_eid = shell.eid;
 
-		// >>> list of beam elements for load distribution (surrouding beam elements)
-		loadPanel.beam_list = [1, 2, 3];
+		// >>> 	list of beam elements for load distribution (surrouding beam elements)
+		//		ALWAYS 4 NODED SHELL as Viper does not work well with 3 noded shell
+		//		beams from N1 to N2	
+		// var bg1 = getBeamElementsByNodes(m, shell.n1, shell.n2).beam;
+		// for (var bid of bg1) loadPanel.beam_list.push(bid)
+		//		beams from N2 to N3
+		// var bg2 = getBeamElementsByNodes(m, shell.n2, shell.n3).beam;
+		// // for (var bid of bg1) loadPanel.beam_list.push(bid)
+		// //		beams from N3 to N4
+		// var bg3 = getBeamElementsByNodes(m, shell.n3, shell.n4).beam;
+		// // for (var bid of bg1) loadPanel.beam_list.push(bid)
+		// //		beams from N4 to N5
+		// var bg4 = getBeamElementsByNodes(m, shell.n4, shell.n1).beam;
+		// for (var bid of bg1) loadPanel.beam_list.push(bid)
+
 
 
 		// >>> push loadPanel into array loadPanels
 		loadPanels.push(loadPanel);
 
 		// update load panel counter
+		Message(['... load panel ' ,sco]);
 		sco = sco + 1;
 	} 
 
@@ -110,11 +125,14 @@ function loadPanelViperBlast(m, pidNullShell){
 }
 
 
-
+/**
+ * 
+ * @param {*} m model id
+ * @param {*} loadPanels array of LoadPanel objects 
+ * @param {*} viper3d_th_overpressure text file contains pressure gauge data from Viper 
+ * @returns 
+ */
 function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure){
-
-
-	// =============== Load_beam ===============================================
 
 
 	
