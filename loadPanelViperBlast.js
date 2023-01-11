@@ -27,6 +27,7 @@ class LoadPanel {
 		this.area = 0;					// area of the panel (null shell)
 		this.null_shell_eid = 0;		// null shell element eid corresponding to the load panel  
 		this.beam_list = [];		// list of beam elements which are surrouning the null shell
+		this.pressure_curve = new Object;
 	
 	}
 }
@@ -37,28 +38,31 @@ class LoadBeamViper {
 
 /**
  * Create array of load panels (object LoadPanel) for each nul shell in the null shell part for Viper blast calculation
- * @param {*} m Model id
- * @param {*} pidNullShell Null shell part id for blast loading
+ * @param {Model} m Model id
+ * @param {Number} pid Null shell part id for blast loading (LOAD_PANEL part id)
+ * @param {Number} nsid Node set belongs to the beams to be loaded by the load panel (NODE_LOAD_PANEL node set id)
  * @returns loadPanels : array of object loadPanel 
  */
-function loadPanelViperBlast(m, pidNullShell){
+function loadPanelViperBlast(m, pid, nsid){
+
+	Message('...>>> processing load panels ')
 
 	// >>> object to contain all load panel objects based on null shells
 	const loadPanels = new Array;
 
 	// >>> get the null shell element part 
-	const nullShellPart = Part.GetFromID(m, pidNullShell);
+	const nullShellPart = Part.GetFromID(m, pid);
 
 	// >>> select all  null shell element
-	const flag_nullShellPart = AllocateFlag();
-	nullShellPart.SetFlag(flag_nullShellPart);
-	m.PropagateFlag(flag_nullShellPart);
-	const nullShellElements = Shell.GetFlagged(m, flag_nullShellPart);
-	ReturnFlag(flag_nullShellPart);
+	const flag_loadPanel = AllocateFlag();
+	nullShellPart.SetFlag(flag_loadPanel);
+	m.PropagateFlag(flag_loadPanel);
+	const loadPanelShellElements = Shell.GetFlagged(m, flag_loadPanel);
+	ReturnFlag(flag_loadPanel);
 
 	// >>> create a load panel for each null shell element, and add to the array loadPanels
 	var sco = 1; // numbering starts with 1
-	for (var shell of nullShellElements){
+	for (var shell of loadPanelShellElements){
 
 		var loadPanel = new LoadPanel; // with default properties
 
@@ -79,31 +83,32 @@ function loadPanelViperBlast(m, pidNullShell){
 
 		// >>> 	list of beam elements for load distribution (surrouding beam elements)
 		//		ALWAYS 4 NODED SHELL as Viper does not work well with 3 noded shell
-		//		beams from N1 to N2	
-		// var bg1 = getBeamElementsByNodes(m, shell.n1, shell.n2).beam;
-		// for (var bid of bg1) loadPanel.beam_list.push(bid)
+
+		//		beams from N1 to N2			
+		var bg1 = getBeamByNodes(m, shell.n1, shell.n2, nsid).beam
+	
 		//		beams from N2 to N3
-		// var bg2 = getBeamElementsByNodes(m, shell.n2, shell.n3).beam;
-		// // for (var bid of bg1) loadPanel.beam_list.push(bid)
-		// //		beams from N3 to N4
-		// var bg3 = getBeamElementsByNodes(m, shell.n3, shell.n4).beam;
-		// // for (var bid of bg1) loadPanel.beam_list.push(bid)
-		// //		beams from N4 to N5
-		// var bg4 = getBeamElementsByNodes(m, shell.n4, shell.n1).beam;
-		// for (var bid of bg1) loadPanel.beam_list.push(bid)
+		var bg2 = getBeamByNodes(m, shell.n2, shell.n3, nsid).beam;
+		
+		//		beams from N3 to N4
+		var bg3 = getBeamByNodes(m, shell.n3, shell.n4, nsid).beam;
+		
+		//		beams from N4 to N5
+		var bg4 = getBeamByNodes(m, shell.n4, shell.n1, nsid).beam;
 
-
+		// add 4 list of beams together
+		loadPanel.beam_list = bg1.concat(bg2, bg3, bg4);
 
 		// >>> push loadPanel into array loadPanels
 		loadPanels.push(loadPanel);
 
 		// update load panel counter
-		Message(['... load panel ' ,sco]);
+		// Message(['... load panel ',sco]);
 		sco = sco + 1;
 	} 
 
 	// >>> dump the load panels for Viper pressure gauge import and debugging 
-	Message('... dump load panels')
+	Message('...>>> dumping load panels')
 
 	var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
 	var csv_panel_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
@@ -126,19 +131,21 @@ function loadPanelViperBlast(m, pidNullShell){
 
 
 /**
- * 
- * @param {*} m model id
- * @param {*} loadPanels array of LoadPanel objects 
- * @param {*} viper3d_th_overpressure text file contains pressure gauge data from Viper 
+ * Apply blast load from Viper to beam elements surrounding the load panels
+ * @param {Model} m model id
+ * @param {Object} loadPanels array of LoadPanel object
+ * @param {*} viper3d_th_overpressure text file contains pressure data from Viper (measured by 3D pressure stations)
  * @returns 
  */
 function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure){
 
 
+	// read the txt file "viper3d_th_overpressure"
+		
+	Message(viper3d_th_overpressure)
+
 	
-
-
-
+	
 
 
 
