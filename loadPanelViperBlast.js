@@ -20,15 +20,13 @@
 class LoadPanel {
 	constructor(panel_id, cx, cy, cz, area, null_shell_eid, beam_list){
 
-		this.panel_id = 0;				// panel id
-		this.cx = 0;					// coordiante x of panel geometric centre 
-		this.cy = 0;					// coordiante y of panel geometric centre
-		this.cz = 0;					// coordiante z of panel geometric centre
-		this.area = 0;					// area of the panel (null shell)
-		this.null_shell_eid = 0;		// null shell element eid corresponding to the load panel  
-		this.beam_list = [];		// list of beam elements which are surrouning the null shell
-		this.pressure_curve = new Object;
-	
+		this.panel_id = 0;					// panel id
+		this.cx = 0;						// coordiante x of panel geometric centre 
+		this.cy = 0;						// coordiante y of panel geometric centre
+		this.cz = 0;						// coordiante z of panel geometric centre
+		this.null_shell_eid = 0;			// null shell element eid corresponding to the load panel  
+		this.beam_list = [];				// list of beam elements which are surrouning the null shell
+		// this.pressure_curve = new Object;
 	}
 }
 
@@ -74,9 +72,6 @@ function loadPanelViperBlast(m, pid, nsid){
 		loadPanel.cx = coords[0];
 		loadPanel.cy = coords[1];
 		loadPanel.cz = coords[2];
-
-		// >>> area (for calculating load)
-		loadPanel.area = shell.Area();
 		
 		// >>> null shell eid
 		loadPanel.null_shell_eid = shell.eid;
@@ -134,29 +129,66 @@ function loadPanelViperBlast(m, pid, nsid){
  * Apply blast load from Viper to beam elements surrounding the load panels
  * @param {Model} m model id
  * @param {Object} loadPanels array of LoadPanel object
- * @param {*} viper3d_th_overpressure_full_path full path to the text file contains pressure data from Viper (measured by 3D pressure stations)
+ * @param {*} viper3d_th_overpressure full path to the text file contains pressure data from Viper (measured by 3D pressure stations)
+ * @param {*} gauge_list_3d_actual Text file of pressure gauge/station actual locations (full path)  
  * @returns 
  */
-function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure_full_path){
+function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_list_3d_actual){
 
+	// >>> Read the Viper pressure data, 3d pressure station names and create Curve objects to pressure time history data for each pressure station
+	read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_actual);
 
+	// >>> Loop each loadPanel and distribute pressure load to surrounding beam elements
+	/**
+	 * Pressure load distribution
+	 * 
+	 * For each beam element:
+	 * 		beam load (UDL, N/m) = pressure (N/m2) x unit_loaded_area (m2/m)
+	 * 
+	 * pressure (N/m2) is the calculated by Viper then converted to Curve objects
+	 * 
+	 * unit_loaded_area (m2/m) = total area of the panel / total length of the surrounding load supported beam elements (loaded_edge_length) 
+	 * 
+	 */
+	for (var i = 0; i < loadPanels.length; i++){ //loadPanels.length
 
+		// >>> Loop each panel
+		var loadPanel = loadPanels[i]
+		// >>> get the null shell element
+		var null_shell = Shell.GetFromID(m, loadPanel.null_shell_eid);
 
+		var unit_loaded_area, loaded_edge_length;
 
+		// >>> work out total edge length supporting the panel
+		var Len12 = unitVectorbyTwoNodes(m, null_shell.n1, null_shell.n2).len; 
+		var Len23 = unitVectorbyTwoNodes(m, null_shell.n2, null_shell.n3).len; 
+		var Len34 = unitVectorbyTwoNodes(m, null_shell.n3, null_shell.n4).len; 
+		var Len41 = unitVectorbyTwoNodes(m, null_shell.n4, null_shell.n1).len; 
+		loaded_edge_length = Len12 + Len23 + Len34 + Len41;
 
+		// >>>
+		unit_loaded_area = null_shell.Area()/loaded_edge_length;
 
+		// Message(['panel_id = ' , loadPanel.panel_id, 'null_shell_eid = ', loadPanel.null_shell_eid, 'loaded_edge_length = ', loaded_edge_length, 'unit_loaded_area = ', unit_loaded_area]);
 
+		// >>> Loop beam element in the beam_list and cerate *LOAD_BEAM for each beam element
+		
+		// >>> unit_loaded_area is the scale factor (sf) for all beam elements supporting the panel 
+		var sf = unit_loaded_area;
+
+		for (var bid of loadPanel.beam_list){
+			// Message(bid);
+			// >>> create *LOAD_BEAM
+			var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf);
+		}
+	}
 
 	return 0
-
 }
-
-
 
 function loadBeamViperBlast(){
 
 }
-
 
 
 function applyLoadBeamViperBlast(){
@@ -172,23 +204,52 @@ function applyLoadBeamViperBlast(){
  */
 function read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_actual){
 
-	// !!! Viper pressure station/gauge numbering ALWAYS start from 1  !!!
-	var panelPressureCurves = [];
+	// >>> Viper pressure station/gauge numbering ALWAYS start from 1 
+
+	var panelPressureCurves = [];	// Curve object for each pressure station
+	var numPressureStation = []; 	// number of the pressure station 
+	var namePressureStation = [];	// name/label of the pressure tation
  
-	// read the txt file "viper3d_th_overpressure"
-	Message(viper3d_th_overpressure)
-	var f, line;
-	f = new File(viper3d_th_overpressure, File.READ);
-	while ( (line = f.ReadLongLine()) != undefined)
-	{
-		var arr = line.split(' ')
-		// Message(arr[130]);
+	var fdata, fname, line; 	// fdata: pressure data file, fname: station label and location file
+	var opdata = []; 			// array to contain the overpressure data read from file
+
+	// >>> Read the pressure station label (name)
+	Message(gauge_list_3d_actual)
+	fname = new File(gauge_list_3d_actual, File.READ);
+	while ( (line = fname.ReadLongLine()) != undefined) {
+		var arr = line.split(/(\s+)/).filter( function(e) { return e.trim().length > 0; })
+		numPressureStation.push(arr[1]);
+		namePressureStation.push(arr[arr.length - 1]);
 	}
-	f.Close();
+	fname.Close();
 
+	// >>> Read the pressure data for each station and create Curve object
+	Message(viper3d_th_overpressure)
+	fdata = new File(viper3d_th_overpressure, File.READ);
+	while ( (line = fdata.ReadLongLine()) != undefined)
+	{
+		opdata.push(line.split(' '))
+	}
+	fdata.Close();
 
+	// >>> Loop each pressure station and create Curve object for pressure time history 
+	for (var i = 0; i < namePressureStation.length; i++){ //namePressureStation.length
 
+		// Message([namePressureStation[i], numPressureStation[i]])
+		
+		// >>> Create Curve object
+		var curve = new Curve(Curve.CURVE, m, i+1); // i+1 is the curve lcid
+		curve.heading = namePressureStation[i]
 
+		// >>> Loop each pressure data point (t, p) in "opdata"
+		for (var j = 0; j < opdata.length; j++){
 
-	return panelPressureCurves
+			// Message(['time =', opdata[j][0], 'pressure =', opdata[j][i+1]])
+
+			curve.AddPoint(parseFloat(opdata[j][0]), parseFloat(opdata[j][i+1]));
+
+		}
+	}
+
+	return 0
 }
