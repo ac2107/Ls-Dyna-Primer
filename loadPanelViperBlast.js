@@ -166,18 +166,19 @@ function applyLoadBeamViperBlast(){
 
 /**
  * Read the viper3d_th_overpressure.txt and convert to array of data panelPressureTh[0] = time, panelPressureTh[1, 2, 3 ... ... ] = pressure of gauge 1, 2 and 3 etc... 
- * @param {*} viper3d_th_overpressure_full_path Text file of pressure time histories written by Viper for each pressure gauge/station
+ * @param {*} viper3d_th_overpressure Text file of pressure time histories written by Viper for each pressure gauge/station (full path)
+ * @param {*} gauge_list_3d_actual Text file of pressure gauge/station actual locations (full path) 
  * @returns panelPressureCurves - Array of Curve objects for each pressure gauge/station
  */
-function read_viper3d_th_overpressure(viper3d_th_overpressure_full_path){
+function read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_actual){
 
 	// !!! Viper pressure station/gauge numbering ALWAYS start from 1  !!!
 	var panelPressureCurves = [];
-
+ 
 	// read the txt file "viper3d_th_overpressure"
-	Message(viper3d_th_overpressure_full_path)
+	Message(viper3d_th_overpressure)
 	var f, line;
-	f = new File(viper3d_th_overpressure_full_path, File.READ);
+	f = new File(viper3d_th_overpressure, File.READ);
 	while ( (line = f.ReadLongLine()) != undefined)
 	{
 		var arr = line.split(' ')

@@ -180,7 +180,8 @@ function getBeamElementsByNodes(m, n1, n2,) {
 }
 
 /**
- * Get beam elemens by two nodes and (optional) node set to define the nodes to be operated
+ * Get beam elemens by two nodes and (optional) node set to define the nodes to be operated; 
+ * Same as getBeamElementByNodes, with extra ability to looping a specific node set for faster operation
  * @param {*} m 
  * @param {*} n1 
  * @param {*} n2 
