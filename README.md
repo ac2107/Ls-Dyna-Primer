@@ -8,6 +8,10 @@
 (2) If use Viper::Blast loading, the Curve object lcid starts from 1 so use "large" lcid  for other Curve objects to avoid conflict  
 (3) 
 
+
+## Setting up JavaScript API enviroment in VS Code and Oasys Primer 
+
+
 ## Script desciption
 
 
