@@ -1,5 +1,7 @@
 # Ls-Dyna-Primer
 
+***draft***
+
 ## House rules of using scripts
 
 (1) Viper::Blast pressure station/gauge numbering ALWAYS start from 1  
