@@ -71,7 +71,38 @@ m.comments = comment_text;
 
 
 
+//========================= DATABASE ===========================================
+m.database.binary.d3plot.exists = true;
+m.database.binary.d3plot.dt = 2e-3;
+m.database.binary.d3plot.lcdt = Variable_D3PLOT_Output_Curve.lcid;
 
+m.database.binary.d3thdt.exists = true;
+m.database.binary.d3thdt.dt = 1e-4;
+
+//m.database.binary.blstfor.exists = true;
+//m.database.binary.blstfor.dt = 1e-5;
+
+m.database.glstat.exists = true;
+m.database.glstat.dt = 1e-4;
+m.database.glstat.binary = 3;
+
+// // === beam element integration point output
+// m.database.extent_binary.exists = true;
+// m.database.extent_binary.dt = 1e-3;
+// m.database.extent_binary.beamip = 36;
+
+// // === output nodal dispacement of all roof nodes
+// m.database.nodout.exists = true;
+// m.database.nodout.dt = 5e-3;
+// m.database.nodout.binary = 3;
+// m.database.nodout.lcur = Variable_NODOUT_Output_Curve.lcid;
+// var c = new History(m, History.NODE_SET, sids.NODE_ROOF, "Roof_nodal_displacements");
+
+// >>> suppress cluster dumping files 
+m.control.mpp_io_nod3dump.exists = true;
+m.control.mpp_io_nodump.exists = true;
+m.control.mpp_io_nofull.exists = true;
+m.control.mpp_io_lstc_reduce.exists = true;
 
 
 //========================= WRITE KEY FILE =====================================

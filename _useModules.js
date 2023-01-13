@@ -10,4 +10,4 @@ Use("beamEndRelease.js");
 Use('nodeTieNRBC.js');
 Use('beamSectionUpdate.js');
 Use('loadPanelViperBlast.js');
-
+Use('utility.js');
