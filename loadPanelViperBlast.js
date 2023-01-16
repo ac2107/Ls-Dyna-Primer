@@ -64,6 +64,8 @@ function loadPanelViperBlast(m, pid, nsid){
 
 		var loadPanel = new LoadPanel; // with default properties
 
+		Message(['... load panel ',sco]);
+		
 		// >>> id
 		loadPanel.panel_id = sco;
 
@@ -98,7 +100,6 @@ function loadPanelViperBlast(m, pid, nsid){
 		loadPanels.push(loadPanel);
 
 		// update load panel counter
-		// Message(['... load panel ',sco]);
 		sco = sco + 1;
 	} 
 
@@ -134,7 +135,7 @@ function loadPanelViperBlast(m, pid, nsid){
  * @returns 
  */
 function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_list_3d_actual){
-
+	Message('...>>> applying viper blast load')
 	// >>> Read the Viper pressure data, 3d pressure station names and create Curve objects to pressure time history data for each pressure station
 	read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_actual);
 
@@ -170,16 +171,23 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 		unit_loaded_area = null_shell.Area()/loaded_edge_length;
 
 		// Message(['panel_id = ' , loadPanel.panel_id, 'null_shell_eid = ', loadPanel.null_shell_eid, 'loaded_edge_length = ', loaded_edge_length, 'unit_loaded_area = ', unit_loaded_area]);
-
+	
 		// >>> Loop beam element in the beam_list and cerate *LOAD_BEAM for each beam element
 		
 		// >>> unit_loaded_area is the scale factor (sf) for all beam elements supporting the panel 
 		var sf = unit_loaded_area;
 
 		for (var bid of loadPanel.beam_list){
-			// Message(bid);
+			// Message([bid, typeof bid]);
 			// >>> create *LOAD_BEAM
-			var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf);
+			if (bid == undefined) {
+
+				WarningMessage('... check undefined bid')
+
+			}
+			else {
+				var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf);
+			}
 		}
 	}
 

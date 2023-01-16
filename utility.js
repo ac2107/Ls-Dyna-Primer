@@ -48,7 +48,6 @@ function writeTextFileSolidElement(m, node_list, name){
 
 	}
 
-
-
 	file_node_coords.Close();
 }
+

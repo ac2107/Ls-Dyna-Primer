@@ -718,7 +718,6 @@ function splitBeamElement(m, ele, len){
 	Node.Merge(m, flag_node_merge, 1e-5);
 	ReturnFlag(flag_node_merge)
 
-
 }
 
 function getNodeAt(m, pid, x, y, z){
