@@ -114,7 +114,7 @@ function loadPanelViperBlast(m, pid, nsid){
 		// update load panel counter
 		sco = sco + 1;
 
-		if (sco > 1) break // use this break for debugging/developing the scripts
+		// if (sco > 1) break // use this break for debugging/developing the scripts
 	} 
 
 	WarningMessage('... check orientation of blast load panels are outward-facing')
@@ -174,7 +174,10 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 		// >>> get the null shell element
 		var null_shell = Shell.GetFromID(m, loadPanel.null_shell_eid);
 
-		var unit_loaded_area, loaded_edge_length;
+		var nvector_shell = null_shell.NormalVector();
+		// Message([null_shell.eid, null_shell.NormalVector()]);
+		
+		var unit_loaded_area;
 
 		// >>>
 		unit_loaded_area = null_shell.Area()/loadPanel.load_edge_length;
@@ -185,7 +188,8 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 		
 		// >>> unit_loaded_area is the scale factor (sf) for all beam elements supporting the panel 
 		var sf = unit_loaded_area;
-		var dal = 0; // *LOAD_BEAM variable DAL - Direction of applied load
+		var dir = 1;	// load direction (positive 1 or negative -1)
+		var dal = 0; 	// *LOAD_BEAM variable DAL - Direction of applied load
 		for (var bid of loadPanel.beam_list){
 			// Message([bid, typeof bid]);
 			// >>> create *LOAD_BEAM 
@@ -207,19 +211,34 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 				if (b.orientation == 0){
 					// uses 3rd node (s-axis)
 					// calculate the s-axis and t-axis vectors
-					var sv = unitVectorbyTwoNodes(m, b.n1, b.n3).uv
+					var sv = unitVectorbyTwoNodes(m, b.n1, b.n3).uv;
+					var rv = unitVectorbyTwoNodes(m, b.n1, b.n2).uv;
 					var vec_s = [sv.vx, sv.vy, sv.vz];
-
+					var vec_r = [rv.vx, rv.vy, rv.vz];
+					var vec_t = x_product(vec_r, vec_s);
 
 				} else {
 					// uses orientation vector (s-axis)
-					var vec_s = [b.vx, b.vy, b.vz]
+					var rv = unitVectorbyTwoNodes(m, b.n1, b.n2).uv;
+					var vec_s = [b.vx, b.vy, b.vz];
+					var vec_r = [rv.vx, rv.vy, rv.vz];
+					var vec_t = x_product(vec_r, vec_s);
+
 				}
 				
-				Message([b.eid, b.orientation, 's' ,vec_s, 't', ])
+				var ang_t = dot_product_angle(vec_t, nvector_shell);
+				var ang_s = dot_product_angle(vec_s, nvector_shell);
+
+				// > modify the sf for s and t direction
+				var sf_t = sf*Math.cos(ang_t.rad);
+				var sf_s = sf*Math.cos(ang_s.rad);
 				
-				// > create the *LOAD_BEAM				
-				var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, dal, loadPanel.panel_id, sf);
+				// Message(['bid = ' + b.eid, 'ang_t= ' + ang_t.deg,  'ang_s= ' + ang_s.deg, 'sf_t = ' + Math.cos(ang_t.rad), 'sf_s = ' + Math.cos(ang_s.rad)])
+				// Message([b.eid, b.orientation, 's' ,vec_s, 't', vec_t])
+				
+				// > create the *LOAD_BEAM			
+				var lb_s = new LoadBeam(m, LoadBeam.ELEMENT, bid, 2, loadPanel.panel_id, sf_s);
+				var lb_t = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf_t);
 			}
 		}
 	}

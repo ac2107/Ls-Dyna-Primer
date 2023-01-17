@@ -453,6 +453,8 @@ function CreateShellELement(m, pid, nids) {
         var new_shell_element = new Shell(m, Shell.NextFreeLabel(m), pid,
             nids[0], nids[1], nids[2], nids[2], )
     }
+
+	return new_shell_element
 }
 
 function unitVectorbyTwoNodes(m, nid1, nid2) {

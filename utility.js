@@ -1,6 +1,31 @@
-/**
- * Any scripts do not belong to specific group
- */
+//
+// Any scripts do not belong to specific group
+//
+
+
+function dummyIED(m, pid, charge_mass, loc){
+
+	// parameter "loc" can be defined by below:
+	// const charge_locations = {V5: [-115, -11, 23.5]};
+
+	var charge_rad = Math.pow(3.0 * charge_mass / (4.0 * Math.PI * 1630.0), 1 / 3);
+	mesh_sphere(m, pid, loc[0], loc[1], loc[2], charge_rad, 16);
+
+	function mesh_sphere(m, shell_pid, cx, cy, cz, radius, ele) {
+		Message("Meshing Sphere");
+		PlayMacro(mac_dir + "sphere_001.prm", {
+			variables: {
+				PID: shell_pid,
+				CEN_X: cx,
+				CEN_Y: cy,
+				CEN_Z: cz,
+				RAD: radius,
+				ELE: ele
+			}
+		});
+	}
+
+}
 
 
 
