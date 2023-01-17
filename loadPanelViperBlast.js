@@ -1,23 +1,18 @@
+// Author: Anqi Chen
+// Date: 06 Jan 2023
+// Note:
+// JS script for Oasys Primer
+// [1] Create pressure stations/gauges using Null Shell elements to Viper blast load output
+// [2] Load beam elements using Null Shell panel (elements)
+// [3] Blast load imported from Viper based on the Null shell element 
+// [4] !!! ORIENTATION OF THE LOAD PANEL MUST BE ALWAYS IN THE OPPOSITE DIRECTION OF THE BLAST/PRESSURE LOAD, !!!
+//	   !!! I.E. PANEL FACES OUTWARDS FORM A BUIDING/OBJECT, SIMILAR TO THE ORIENTATION OF BLAST SEGMENTS
+
+
 /**
- * Author: Anqi Chen
- * 
- * Date: 06 Jan 2023
- * 
- * Note:
- * 
- * JS script for Oasys Primer
- * 
- * [1] Create pressure stations/gauges using Null Shell elements to Viper blast load output
- * 
- * [2] Load beam elements using Null Shell panel (elements)
- * 
- * [3] Blast load imported from Viper based on the Null shell element 
- * 
- *	
+ * Load panel object transfers blast pressure load from Viper to Ls-Dyna
  */
-
-
-class LoadPanel {
+class LoadPanelViper {
 	constructor(panel_id, cx, cy, cz, area, null_shell_eid, beam_list){
 
 		this.panel_id = 0;					// panel id
@@ -26,10 +21,14 @@ class LoadPanel {
 		this.cz = 0;						// coordiante z of panel geometric centre
 		this.null_shell_eid = 0;			// null shell element eid corresponding to the load panel  
 		this.beam_list = [];				// list of beam elements which are surrouning the null shell
+		this.load_edge_length = 0;				// load supporting edge total length
 		// this.pressure_curve = new Object;
 	}
 }
 
+/**
+ * Load beam object transfers blast pressure load from Viper to Ls-Dyna
+ */
 class LoadBeamViper {
 	
 }
@@ -44,7 +43,7 @@ class LoadBeamViper {
 function loadPanelViperBlast(m, pid, nsid){
 
 	Message('...>>> processing load panels ')
-
+		
 	// >>> object to contain all load panel objects based on null shells
 	const loadPanels = new Array;
 
@@ -62,7 +61,7 @@ function loadPanelViperBlast(m, pid, nsid){
 	var sco = 1; // numbering starts with 1
 	for (var shell of loadPanelShellElements){
 
-		var loadPanel = new LoadPanel; // with default properties
+		var loadPanel = new LoadPanelViper; // with default properties
 
 		Message(['... load panel ',sco]);
 		
@@ -81,27 +80,44 @@ function loadPanelViperBlast(m, pid, nsid){
 		// >>> 	list of beam elements for load distribution (surrouding beam elements)
 		//		ALWAYS 4 NODED SHELL as Viper does not work well with 3 noded shell
 
+		// >>> 	find the load supporting edge length	
+		var len1 = 0, len2 = len1, len3 = len1, len4 = len1;
+
 		//		beams from N1 to N2			
 		var bg1 = getBeamByNodes(m, shell.n1, shell.n2, nsid).beam
-	
+		if (bg1[0] != undefined) {len1 = unitVectorbyTwoNodes(m, shell.n1, shell.n2).len}
+		
 		//		beams from N2 to N3
 		var bg2 = getBeamByNodes(m, shell.n2, shell.n3, nsid).beam;
+		if (bg2[0] != undefined) {len2 = unitVectorbyTwoNodes(m, shell.n2, shell.n3).len}
 		
 		//		beams from N3 to N4
 		var bg3 = getBeamByNodes(m, shell.n3, shell.n4, nsid).beam;
+		if (bg3[0] != undefined) {len3 = unitVectorbyTwoNodes(m, shell.n3, shell.n4).len}
 		
 		//		beams from N4 to N5
 		var bg4 = getBeamByNodes(m, shell.n4, shell.n1, nsid).beam;
+		if (bg4[0] != undefined) {len4 = unitVectorbyTwoNodes(m, shell.n4, shell.n1).len}
 
 		// add 4 list of beams together
-		loadPanel.beam_list = bg1.concat(bg2, bg3, bg4);
+		var bg_all = bg1.concat(bg2, bg3, bg4);
+
+		// total load supporting edge length
+		loadPanel.load_edge_length = len1 + len2 + len3 + len4;
+
+		// update the 'beam_list' property and filter out "undefined" items in the array, as edge does not always have beam elements
+		loadPanel.beam_list = bg_all.filter( Boolean );
 
 		// >>> push loadPanel into array loadPanels
 		loadPanels.push(loadPanel);
 
 		// update load panel counter
 		sco = sco + 1;
+
+		if (sco > 1) break // use this break for debugging/developing the scripts
 	} 
+
+	WarningMessage('... check orientation of blast load panels are outward-facing')
 
 	// >>> dump the load panels for Viper pressure gauge import and debugging 
 	Message('...>>> dumping load panels')
@@ -160,15 +176,8 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 
 		var unit_loaded_area, loaded_edge_length;
 
-		// >>> work out total edge length supporting the panel
-		var Len12 = unitVectorbyTwoNodes(m, null_shell.n1, null_shell.n2).len; 
-		var Len23 = unitVectorbyTwoNodes(m, null_shell.n2, null_shell.n3).len; 
-		var Len34 = unitVectorbyTwoNodes(m, null_shell.n3, null_shell.n4).len; 
-		var Len41 = unitVectorbyTwoNodes(m, null_shell.n4, null_shell.n1).len; 
-		loaded_edge_length = Len12 + Len23 + Len34 + Len41;
-
 		// >>>
-		unit_loaded_area = null_shell.Area()/loaded_edge_length;
+		unit_loaded_area = null_shell.Area()/loadPanel.load_edge_length;
 
 		// Message(['panel_id = ' , loadPanel.panel_id, 'null_shell_eid = ', loadPanel.null_shell_eid, 'loaded_edge_length = ', loaded_edge_length, 'unit_loaded_area = ', unit_loaded_area]);
 	
@@ -176,21 +185,44 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 		
 		// >>> unit_loaded_area is the scale factor (sf) for all beam elements supporting the panel 
 		var sf = unit_loaded_area;
-
+		var dal = 0; // *LOAD_BEAM variable DAL - Direction of applied load
 		for (var bid of loadPanel.beam_list){
 			// Message([bid, typeof bid]);
-			// >>> create *LOAD_BEAM
+			// >>> create *LOAD_BEAM 
 			if (bid == undefined) {
 
 				WarningMessage('... check undefined bid')
 
 			}
-			else {
-				var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf);
+			else { 
+				// !!! need to consider the load direciton DAL = 2 or 3 based on the orientation of the loading panel
+				// dal = 1: parallel to r-axis of beam
+				// dal = 2: parallel to s-axis of beam
+				// dal = 3: parallel to t-axis of beam			
+				
+				// > get the beam element
+				var b = Beam.GetFromID(m, bid);
+				
+				// > resolve the pressure load into DAL = 2 (s-axis, minor) and 3 (t-axis, major) directions 
+				if (b.orientation == 0){
+					// uses 3rd node (s-axis)
+					// calculate the s-axis and t-axis vectors
+					var sv = unitVectorbyTwoNodes(m, b.n1, b.n3).uv
+					var vec_s = [sv.vx, sv.vy, sv.vz];
+
+
+				} else {
+					// uses orientation vector (s-axis)
+					var vec_s = [b.vx, b.vy, b.vz]
+				}
+				
+				Message([b.eid, b.orientation, 's' ,vec_s, 't', ])
+				
+				// > create the *LOAD_BEAM				
+				var lb = new LoadBeam(m, LoadBeam.ELEMENT, bid, dal, loadPanel.panel_id, sf);
 			}
 		}
 	}
-
 	return 0
 }
 
