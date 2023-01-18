@@ -13,6 +13,7 @@
  * Load panel object transfers blast pressure load from Viper to Ls-Dyna
  */
 class LoadPanelViper {
+	// @ts-ignore
 	constructor(panel_id, cx, cy, cz, area, null_shell_eid, beam_list){
 
 		this.panel_id = 0;					// panel id
@@ -38,9 +39,12 @@ class LoadBeamViper {
  * @param {Model} m Model id
  * @param {Number} pid Null shell part id for blast loading (LOAD_PANEL part id)
  * @param {Number} nsid Node set belongs to the beams to be loaded by the load panel (NODE_LOAD_PANEL node set id)
+ * @param {Number} offset Offset distance of the pressure station from panel centre in the normal vector direction - avoid being buried in the obstacles
  * @returns loadPanels : array of object loadPanel 
  */
-function loadPanelViperBlast(m, pid, nsid){
+function loadPanelViperBlast(m, pid, nsid, offset){
+
+	if (arguments.length == 3) offset = 0;
 
 	Message('...>>> processing load panels ')
 		
@@ -63,16 +67,16 @@ function loadPanelViperBlast(m, pid, nsid){
 
 		var loadPanel = new LoadPanelViper; // with default properties
 
-		Message(['... load panel ',sco]);
+		Message(['... exproting load panel ', sco]);
 		
 		// >>> id
 		loadPanel.panel_id = sco;
 
-		// >>> centre coordinates
+		// >>> pressure station coordinates (at panel centre plus offset in the normal direction)
 		var coords = shell.IsoparametricToCoords(0, 0)
-		loadPanel.cx = coords[0];
-		loadPanel.cy = coords[1];
-		loadPanel.cz = coords[2];
+		loadPanel.cx = coords[0] + offset * shell.NormalVector()[0];
+		loadPanel.cy = coords[1] + offset * shell.NormalVector()[1];
+		loadPanel.cz = coords[2] + offset * shell.NormalVector()[2];
 		
 		// >>> null shell eid
 		loadPanel.null_shell_eid = shell.eid;
@@ -120,7 +124,7 @@ function loadPanelViperBlast(m, pid, nsid){
 	WarningMessage('... check orientation of blast load panels are outward-facing')
 
 	// >>> dump the load panels for Viper pressure gauge import and debugging 
-	Message('...>>> dumping load panels')
+	Message('...>>> exporting load panels and Viper::Blast pressure stations')
 
 	var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
 	var csv_panel_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
@@ -151,7 +155,7 @@ function loadPanelViperBlast(m, pid, nsid){
  * @returns 
  */
 function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_list_3d_actual){
-	Message('...>>> applying viper blast load')
+	Message('...>>> start applying viper blast load')
 	// >>> Read the Viper pressure data, 3d pressure station names and create Curve objects to pressure time history data for each pressure station
 	read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_actual);
 
@@ -183,12 +187,14 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 		unit_loaded_area = null_shell.Area()/loadPanel.load_edge_length;
 
 		// Message(['panel_id = ' , loadPanel.panel_id, 'null_shell_eid = ', loadPanel.null_shell_eid, 'loaded_edge_length = ', loaded_edge_length, 'unit_loaded_area = ', unit_loaded_area]);
-	
+		Message(['... applying viper blast load to panel_id = ' + loadPanel.panel_id,])
 		// >>> Loop beam element in the beam_list and cerate *LOAD_BEAM for each beam element
 		
 		// >>> unit_loaded_area is the scale factor (sf) for all beam elements supporting the panel 
 		var sf = unit_loaded_area;
+		// @ts-ignore
 		var dir = 1;	// load direction (positive 1 or negative -1)
+		// @ts-ignore
 		var dal = 0; 	// *LOAD_BEAM variable DAL - Direction of applied load
 		for (var bid of loadPanel.beam_list){
 			// Message([bid, typeof bid]);
@@ -230,14 +236,18 @@ function applyLoadPanelViperBlast(m, loadPanels, viper3d_th_overpressure, gauge_
 				var ang_s = dot_product_angle(vec_s, nvector_shell);
 
 				// > modify the sf for s and t direction
+				// @ts-ignore
 				var sf_t = sf*Math.cos(ang_t.rad);
+				// @ts-ignore
 				var sf_s = sf*Math.cos(ang_s.rad);
 				
 				// Message(['bid = ' + b.eid, 'ang_t= ' + ang_t.deg,  'ang_s= ' + ang_s.deg, 'sf_t = ' + Math.cos(ang_t.rad), 'sf_s = ' + Math.cos(ang_s.rad)])
 				// Message([b.eid, b.orientation, 's' ,vec_s, 't', vec_t])
 				
 				// > create the *LOAD_BEAM			
+				// @ts-ignore
 				var lb_s = new LoadBeam(m, LoadBeam.ELEMENT, bid, 2, loadPanel.panel_id, sf_s);
+				// @ts-ignore
 				var lb_t = new LoadBeam(m, LoadBeam.ELEMENT, bid, 3, loadPanel.panel_id, sf_t);
 			}
 		}
@@ -265,6 +275,7 @@ function read_viper3d_th_overpressure(viper3d_th_overpressure, gauge_list_3d_act
 
 	// >>> Viper pressure station/gauge numbering ALWAYS start from 1 
 
+	// @ts-ignore
 	var panelPressureCurves = [];	// Curve object for each pressure station
 	var numPressureStation = []; 	// number of the pressure station 
 	var namePressureStation = [];	// name/label of the pressure tation

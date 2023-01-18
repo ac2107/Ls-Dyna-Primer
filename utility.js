@@ -3,7 +3,7 @@
 //
 
 
-function dummyIED(m, pid, charge_mass, loc){
+function Sphere3D(m, pid, charge_mass, loc){
 
 	// parameter "loc" can be defined by below:
 	// const charge_locations = {V5: [-115, -11, 23.5]};
@@ -24,7 +24,6 @@ function dummyIED(m, pid, charge_mass, loc){
 			}
 		});
 	}
-
 }
 
 
