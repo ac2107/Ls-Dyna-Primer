@@ -967,6 +967,74 @@ class MAT024_CS_strain_rate_table {
   }
 
 /**
+* Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload;
+* Step 1 - static preload application - Implicit;
+* Step 2 - blast load application - Explicit;
+* Input parameters:
+* @param m model id
+* @param paraCtrl all control parameters:  const paraCtrl = {imp_tim: 1.0, exp_tim: 3.0} // duration for implicit and explicite stage
+*/
+
+function AnalysisControlImpExp(m, paraCtrl){
+
+  // Base Unity Load Curve
+  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+  Base_Unity_Load_Curve.AddPoint(0, 0);
+  Base_Unity_Load_Curve.AddPoint(1.0, 1.0);			
+  Base_Unity_Load_Curve.AddPoint(10.0, 1.0);
+
+  // Base Unity Gravity Curve
+  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+  Base_Unity_Gravity_Curve.AddPoint(0, 0);
+  Base_Unity_Gravity_Curve.AddPoint(1.0, 1.0);			
+  Base_Unity_Gravity_Curve.AddPoint(10.0, 1.0);
+
+  // Implicit to Explicit Switch Curve
+  var Implicit_to_Explicit_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
+  Implicit_to_Explicit_Switch_Curve.heading = "Implicit to Explicit Switch Curve"
+  Implicit_to_Explicit_Switch_Curve.AddPoint(0, 1.0); 			
+  Implicit_to_Explicit_Switch_Curve.AddPoint(0.99999*paraCtrl.imp_tim, 1.0); // 0 - 1 sec, implicit
+  Implicit_to_Explicit_Switch_Curve.AddPoint(paraCtrl.imp_tim, 0);
+  Implicit_to_Explicit_Switch_Curve.AddPoint(10.0, 0.0);
+
+  // Max Timestep Limit Curve
+  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+
+  // Control settings
+  m.control.hourglass.exists = false;
+  m.control.hourglass.ihq = 6;
+  m.control.hourglass.qh = 0.02;
+  
+  m.control.energy.exists = true;
+  m.control.energy.hgen = 2; 
+  
+  m.control.termination.exists = true;
+  m.control.termination.endtim = paraCtrl.imp_tim+paraCtrl.exp_tim; // 
+
+  m.control.implicit_general.exists = true;
+  m.control.implicit_general.imflag = -Implicit_to_Explicit_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
+  m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
+
+  m.control.implicit_auto.exists = true;
+  m.control.implicit_auto.iauto = 1;
+  m.control.implicit_auto.dtmin = 1e-4;
+  m.control.implicit_auto.dtmax= 0.02;
+  
+  return {Base_Unity_Load_Curve, 
+          Base_Unity_Gravity_Curve, 
+          Implicit_to_Explicit_Switch_Curve
+  }
+
+
+}
+
+
+/**
 * Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload 
 * Step 1 - static preload application - Dynamic relaxation
 * Step 2 - blast load application - Explicit
@@ -992,7 +1060,7 @@ function AnalysisControlDynExp(m, paraCtrl){
   var DR_Ramped_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000002);	
   DR_Ramped_Unity_Load_Curve.heading = "DR Ramped Unity Load Curve"
   DR_Ramped_Unity_Load_Curve.AddPoint(0, 0);			
-  DR_Ramped_Unity_Load_Curve.AddPoint(0.005, 1);
+  DR_Ramped_Unity_Load_Curve.AddPoint(paraCtrl.relaxramptim, 1);
   DR_Ramped_Unity_Load_Curve.AddPoint(100.0, 1);
   DR_Ramped_Unity_Load_Curve.sidr = 1;
 
@@ -1011,10 +1079,10 @@ function AnalysisControlDynExp(m, paraCtrl){
   m.control.energy.hgen = 2; 
   
   m.control.dynamic_relaxation.exists = true;
-  m.control.dynamic_relaxation.drterm = 0.2;
+  m.control.dynamic_relaxation.drterm = paraCtrl.drterm;
   m.control.dynamic_relaxation.idrflg = -1;
   m.control.dynamic_relaxation.nrcyck = 250;
-  m.control.dynamic_relaxation.drtol = 0.001;
+  m.control.dynamic_relaxation.drtol = paraCtrl.drtol;
   m.control.dynamic_relaxation.drfctr = 0.995;
   
   m.control.termination.exists = true;
@@ -1184,6 +1252,7 @@ function AnalysisControlImpExpImpRamp(m, paraCtrl){
  * 
  * 
  * 
+ * 
 */
 function AnalysisControlExpSmoothRamp(m, paraCtrl){
 
@@ -1208,7 +1277,7 @@ function AnalysisControlExpSmoothRamp(m, paraCtrl){
   m.control.energy.hgen = 2; 
   
   m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtimexp; // does not include dynamic relaxation step duration 
+  m.control.termination.endtim = paraCtrl.endtim;  
 
   return {Smooth_Base_Unity_Load_Curve, 
           Smooth_Base_Gravity_Load_Curve, 

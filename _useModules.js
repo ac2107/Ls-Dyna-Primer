@@ -1,5 +1,6 @@
 // include all JavaScript to be used in Primer
 Use("PrimerJS_functions.js");
+Use("Ls_Dyna_functions.js");
 Use("defineBlastLoad.js");
 Use("getNodesBetweenTwoNodes.js");
 Use("getBeamElementsByNodes.js");
