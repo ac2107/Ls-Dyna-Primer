@@ -12,3 +12,4 @@ Use('nodeTieNRBC.js');
 Use('beamSectionUpdate.js');
 Use('loadPanelViperBlast.js');
 Use('utility.js');
+Use('material.js');
