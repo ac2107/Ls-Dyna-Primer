@@ -1,8 +1,14 @@
+/**
+ * 
+ * @param {Model} m Model object 
+ * @param {Number} pid Part id 
+ * @param {Number} n1 Node id 
+ * @param {Number} n2 Node id 
+ */
 function columnBlastFace(m, pid, n1, n2){
 
 	// Create blast faces (Null faces) for beam elements
 	
-
     //
     var w = 0.25; // half column avg width - default width
 

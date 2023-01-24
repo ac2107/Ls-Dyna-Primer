@@ -1,5 +1,5 @@
-// Javascript to read exising model in *.k
-// Date: 15-04-2021
+// Javascript template for Primer
+// Date: 24-01-2023
 // Version: -
 // Author: Anqi Chen (Arup)
 // name: 

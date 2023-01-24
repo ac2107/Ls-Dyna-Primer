@@ -51,8 +51,6 @@ const theBlueBook = { /*= DO NOT UPDATE THIS, DEPRECATED, PROVIDED TO KEEP OLD S
  
 };
 
-// xxxxxxxxxxxx: {h: , b: , tw: , tf: },
-
 const theBlueBookSectionDimensions = { 
 
     //'':{name: '', type: 'UB', h: , b: , tw: , tf: },
@@ -170,7 +168,14 @@ const theBlueBookSectionDimensions = {
     },
 }
 
-function theBlueBookIntegrnBeam(irid, section){
+/**
+ * Create integration beam for beam section using standard sections from the Blue book
+ * @param {Model} m Model
+ * @param {Number} irid 
+ * @param {Object} section 
+ * @returns 
+ */
+function theBlueBookIntegrnBeam(m, irid, section){
     /*
     
     Purpose: 
