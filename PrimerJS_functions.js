@@ -526,6 +526,82 @@ function unitVectorbyTwoNodes(m, nid1, nid2) {
     return vector
 }
 
+/**
+ * 
+ * @param {Model} m Model
+ * @param {Array} arr1 location of point 1 [x, y, z]
+ * @param {Array} arr2 locaiton of point 2 [x, y, z]
+ * @returns 
+ */
+function unitVectorbyTwoPoints(m, arr1, arr2) {
+
+    var n1 = {x: arr1[0], y: arr1[1], z: arr1[2]};
+    var n2 = {x: arr2[0], y: arr2[1], z: arr2[2]};
+
+    var L = Math.sqrt(Math.pow((n1.x - n2.x), 2) + Math.pow((n1.y - n2.y), 2) + Math.pow((n1.z - n2.z), 2));
+
+    var U = {
+        vx: (n2.x - n1.x) / L,
+        vy: (n2.y - n1.y) / L,
+        vz: (n2.z - n1.z) / L
+    };
+
+    // deterimine orientation of the beam unit vector
+    // X - in global x direction
+    // Y - in global y direction
+    // Z - in global z direction
+    // Oblique - not in any of the three global direction
+    
+    var orientation;
+
+    var Ux = {
+        vx: 1.0,
+        vy: 0.0,
+        vz: 0.0
+    };
+    var Uy = {
+        vx: 0.0,
+        vy: 1.0,
+        vz: 0.0
+    };
+    var Uz = {
+        vx: 0.0,
+        vy: 0.0,
+        vz: 1.0
+    };
+
+    const tol = 1e-2;
+
+    if (Math.abs(U.vx) > Ux.vx - tol && Math.abs(U.vx) < Ux.vx + tol &&
+        Math.abs(U.vy) > Ux.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+        Math.abs(U.vz) > Ux.vz - tol && Math.abs(U.vz) < Ux.vz + tol) {
+        orientation = 'X';
+
+    } else if (     Math.abs(U.vx) > Uy.vx - tol && Math.abs(U.vx) < Uy.vx + tol &&
+                    Math.abs(U.vy) > Uy.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+                    Math.abs(U.vz) > Uy.vz - tol && Math.abs(U.vz) < Uy.vz + tol) {
+        orientation = 'Y';
+
+    } else if ( Math.abs(U.vx) > Uz.vx - tol && Math.abs(U.vx) < Uz.vx + tol &&
+                Math.abs(U.vy) > Uz.vy - tol && Math.abs(U.vy) < Uz.vy + tol &&
+                Math.abs(U.vz) > Uz.vz - tol && Math.abs(U.vz) < Uz.vz + tol) {
+        orientation = 'Z';
+
+    } else {
+        orientation = 'Oblique';
+    }
+
+    var vector = {
+        uv: U,
+        len: L,
+        ori: orientation,
+    }; // uv - unit vector, L - distance between nodes
+
+    // Message(orientation);
+
+    return vector
+}
+
 function ShellPartTotalArea(m, pid) {
 
     var flag = AllocateFlag();
