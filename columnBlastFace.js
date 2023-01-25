@@ -159,7 +159,19 @@ function columnBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 
 	// >>> Create blast faces (Null faces) for beam elements
 
-	// >>> Create flag to deleting objects
+	// >>> Pop up message if the beam elements are NOT vertical and in global Z-direction
+	var node1 = Node.GetFromID(m, n1);
+	var node2 = Node.GetFromID(m, n2);
+	var tol = 1e-4;
+	if (node1.x < node2.x + tol && node1.x > node2.x - tol && node1.y < node2.y + tol && node1.y > node2.y - tol) {
+	} else {
+		var answer = Window.Message("Beam Orientation Check", "Orientation of the beam elements must be vertical (Global Z-axis)");
+		if (answer == Window.OK){
+		ErrorMessage('Check blast null faces created for beams between node' + n1 + ' and node ' + n2 );
+		} 
+	}
+
+	// >>> Create flag to delete objects
 	var flag_del = AllocateFlag();
 
 	
@@ -242,40 +254,27 @@ function columnBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 		s4.SetFlag(flag_c);
 
 		// >>> change shell orientation or delete shell based on incidence angle
+		var arr_null_shell = [s1, s2, s3, s4];
 
 		// >> s1
 		// > unit vector from shell centre to explosion point 
-		var s1_centre = s1.IsoparametricToCoords(0.0, 0.0)
-		var vec_s1 = unitVectorbyTwoPoints(m, [s1_centre[0], s1_centre[1], 0], [xbo, ybo, 0]).uv; // z component = 0, projected on XY plane
-		// > incidence angle to the shell element
-		var ang_s1 = dot_product_angle([vec_s1.vx, vec_s1.vy, 0], [s1.NormalVector()[0], s1.NormalVector()[1], 0]) // z component = 0, projected on XY plane
-		Message([s1.eid, ang_s1.deg, s1.NormalVector()]);
-		// > conditional operation
-		// 0-67.5; 67.5-112.5, 112.5-180
+
+		for (var sh of arr_null_shell){
+			
+			// > shell centre point
+			var cp = sh.IsoparametricToCoords(0.0, 0.0) 
+			// > unit vector from cp to explosion point, z component = 0, projected on XY plane
+			var vec_cp_to_blast = unitVectorbyTwoPoints(m, [cp[0], cp[1], 0], [xbo, ybo, 0]).uv; 
+			// > incidence angle to the shell element
+			var ang = dot_product_angle([vec_cp_to_blast.vx, vec_cp_to_blast.vy, 0], [sh.NormalVector()[0], sh.NormalVector()[1], 0])
+			Message([sh.eid, ang.deg, sh.NormalVector()]);
+
+			// > conditional operation
+			// 0-67.5; 67.5-112.5, 112.5-180
 
 
-
-		// >> s2
-		var s2_centre = s2.IsoparametricToCoords(0.0, 0.0)
-		var vec_s2 = unitVectorbyTwoPoints(m, [s2_centre[0], s2_centre[1], 0], [xbo, ybo, 0]).uv; // z component = 0, projected on XY plane
-		// > incidence angle to the shell element
-		var ang_s2 = dot_product_angle([vec_s2.vx, vec_s2.vy, 0], [s2.NormalVector()[0], s2.NormalVector()[1], 0]) // z component = 0, projected on XY plane
-		Message([s2.eid, ang_s2.deg, s2.NormalVector()]);
-
-		// >> s3
-		var s3_centre = s3.IsoparametricToCoords(0.0, 0.0)
-		var vec_s3 = unitVectorbyTwoPoints(m, [s3_centre[0], s3_centre[1], 0], [xbo, ybo, 0]).uv; // z component = 0, projected on XY plane
-		// > incidence angle to the shell element
-		var ang_s3 = dot_product_angle([vec_s3.vx, vec_s3.vy, 0], [s3.NormalVector()[0], s3.NormalVector()[1], 0]) // z component = 0, projected on XY plane
-		Message([s3.eid, ang_s3.deg, s3.NormalVector()]);
-
-		// >> s4
-		var s4_centre = s4.IsoparametricToCoords(0.0, 0.0)
-		var vec_s4 = unitVectorbyTwoPoints(m, [s4_centre[0], s4_centre[1], 0], [xbo, ybo, 0]).uv; // z component = 0, projected on XY plane
-		// > incidence angle to the shell element
-		var ang_s4 = dot_product_angle([vec_s4.vx, vec_s4.vy, 0], [s4.NormalVector()[0], s4.NormalVector()[1], 0]) // z component = 0, projected on XY plane
-		Message([s4.eid, ang_s4.deg, s4.NormalVector()]);
-
+			
+		}
 
 	}
 
