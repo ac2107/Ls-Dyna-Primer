@@ -267,17 +267,29 @@ function columnBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 			var vec_cp_to_blast = unitVectorbyTwoPoints(m, [cp[0], cp[1], 0], [xbo, ybo, 0]).uv; 
 			// > incidence angle to the shell element
 			var ang = dot_product_angle([vec_cp_to_blast.vx, vec_cp_to_blast.vy, 0], [sh.NormalVector()[0], sh.NormalVector()[1], 0])
-			Message([sh.eid, ang.deg, sh.NormalVector()]);
+			// Message([sh.eid, ang.deg, sh.NormalVector()]);
 
 			// > conditional operation
-			// 0-67.5; 67.5-112.5, 112.5-180
-
-
-			
+			// 0-67.5;67.5-112.5, 112.5-180
+			var tol_ang = 0.1;
+			if (ang.deg >= 0 && ang.deg <= 67.5){
+				// do nothing
+			} else if (ang.deg >= 67.5 && ang.deg <= 112.5){
+				// delete the null shell element, assumes no blast load will be applied in this direction
+				sh.SetFlag(flag_del);
+			} else if (ang.deg >= 112.5 && ang.deg <= 180.0){
+				// flip the direction of the shell, so it is facing the blast/explosion point
+				// swapping node 2 and 4 to slip side of shell elements
+				var nd2 = sh.n2;
+				var nd4 = sh.n4;
+				sh.n2 = nd4;
+				sh.n4 = nd2;
+			} else {
+				WarningMessage('... check the column null blast faces created')
+			}
 		}
-
 	}
-
+	// delete flagged nodes and shell elements
 	m.PropagateFlag(flag_del);
 	m.DeleteFlagged(flag_del);
 	ReturnFlag(flag_del);
