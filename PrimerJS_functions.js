@@ -440,10 +440,18 @@ function DeleteShellElement(m, sh) {
 
 }
 
+
+/**
+ * 
+ * @param {Model} m Model 
+ * @param {Number} pid Part id
+ * @param {Array} nids Array of node ids for creating shell element
+ * @returns 
+ */
 function CreateShellELement(m, pid, nids) {
     /*
     create individual shell element
-    nids = list of three or four nodes defining the shell element
+    nids = array of three or four nodes defining the shell element
     */
 
     if (nids.length === 4) {

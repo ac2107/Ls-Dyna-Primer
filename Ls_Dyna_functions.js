@@ -966,6 +966,23 @@ class MAT024_CS_strain_rate_table {
     }
   }
 
+
+
+
+
+
+/**
+ * Create a single explicit dynamic analysis step
+ * @param {Model} m Model 
+ * @param {Number} endtim End time of explicit analysis 
+ */
+function AnalysisControlExp(m, endtim){
+
+	m.control.termination.exists = true;
+	m.control.termination.endtim = endtim;		// explicit termination time
+}
+
+
 /**
 * Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload;
 * Step 1 - static preload application - Implicit;

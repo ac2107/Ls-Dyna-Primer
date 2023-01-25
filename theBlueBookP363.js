@@ -319,7 +319,7 @@ function theBlueBookBeamSectionUpdate(m, mid, n1, n2, section){
         // create new beam part, section and beam integration
         Message(["... New beam section, pid = " + pid]);
 
-        var ib = theBlueBookIntegrnBeam(IntegrationBeam.NextFreeLabel(m), section)								
+        var ib = theBlueBookIntegrnBeam(m, IntegrationBeam.NextFreeLabel(m), section)								
         var bsec = new Section(m, ib.irid, Section.BEAM);
         bsec.elform = 1;
         bsec.qr = -ib.irid;

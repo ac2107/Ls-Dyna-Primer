@@ -1,23 +1,19 @@
 /**
-define *load_blast_enhanced card and create a rigid sphere or hemi-sphere
-to show the size and location of the charge
-
-create a temp key file and read back
-
-visualise the charge using rigid shell elements
-
-Input parameters:
-	@param bid blast ID
-	@param sids segment set ID 
-	@param pre_blast_load define blast arrival time, 0 or 1
-	@param charge_type 1 = hemi-sphere; 2 = sphere
-	@param charge_mass charge weight [kg]
-	@param charge_x x coordinate of charge [m]
-	@param charge_y y coordinate of charge [m]
-	@param charge_z z coordinate of charge [m]
-	@param title part name for the charge (rigid shell part)
-	@param boo true = use *load_blast_enhanced card; false = Viper load, no *load_blast_enhanced card defined
-*/
+ * Define *load_blast_enhanced card and create a rigid sphere or hemi-sphere
+ * to show the size and location of the charge; create a temp key file and read back
+ * visualise the charge using rigid shell elements
+ * 
+ * @param bid blast ID
+ * @param sids segment set ID 
+ * @param pre_blast_load define blast arrival time, 0 or 1
+ * @param charge_type 1 = hemi-sphere; 2 = sphere
+ * @param charge_mass charge weight [kg]
+ * @param charge_x x coordinate of charge [m]
+ * @param charge_y y coordinate of charge [m]
+ * @param charge_z z coordinate of charge [m]
+ * @param title part name for the charge (rigid shell part)
+ * @param boo true = use *load_blast_enhanced card; false = Viper load, no *load_blast_enhanced card defined
+ */
 function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass, charge_x, charge_y, charge_z, title, boo, js_dir) {
 
 	Message("... defining blast load ...")
