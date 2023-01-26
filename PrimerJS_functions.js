@@ -1132,3 +1132,51 @@ function facing_seg_gen(m, seg_id, cx,cy,cz, angle_in)
 }
 
 //======================================================================================================================
+
+/**
+ * Duplicate 8 noded solid element
+ * @param {Model} m Model 
+ * @param {Number} eid  Solid element id
+ */
+function DuplicateSolidElement(m, eid){
+
+	// >> get the solid element and associated nodes
+	var s = Solid.GetFromID(m, eid);
+	var n1 = Node.GetFromID(m, s.n1);
+	var n2 = Node.GetFromID(m, s.n2);
+	var n3 = Node.GetFromID(m, s.n3);
+	var n4 = Node.GetFromID(m, s.n4);
+	var n5 = Node.GetFromID(m, s.n5);
+	var n6 = Node.GetFromID(m, s.n6);
+	var n7 = Node.GetFromID(m, s.n7);
+	var n8 = Node.GetFromID(m, s.n8);
+
+	// >> copy solid elements and nodes 
+
+	var ns = s.Copy();
+	var nn1 = n1.Copy();
+	var nn2 = n2.Copy();
+	var nn3 = n3.Copy();
+	var nn4 = n4.Copy();
+	var nn5 = n5.Copy();
+	var nn6 = n6.Copy();
+	var nn7 = n7.Copy();
+	var nn8 = n8.Copy();
+
+	// >> update node for new solid element
+	ns.n1 = nn1.nid;
+	ns.n2 = nn2.nid;
+	ns.n3 = nn3.nid;
+	ns.n4 = nn4.nid;
+	ns.n5 = nn5.nid;
+	ns.n6 = nn6.nid;
+	ns.n7 = nn7.nid;
+	ns.n8 = nn8.nid;
+
+	return {solid: ns, 	node1: nn1, node2: nn2, node3: nn3, node4: nn4, 
+						node5: nn5, node6: nn6, node7: nn7, node8: nn8, }
+
+}
+
+
+
