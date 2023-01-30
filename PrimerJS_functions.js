@@ -390,16 +390,15 @@ function reflectPoint(p, p0, p1, pid) {
     return p_reflected;
 }
 
+/**
+ * 
+ * @param {Model} m Model 
+ * @param {Number} pid Part id 
+ * @returns 
+ */
 function DeletePart(m, pid) {
-    /*
-    delete part by pid
-
-    m       model id
-    pid     part id
-    */
 
     // Message('...delete part pid = ' + pid);
-
     const flag_delete = AllocateFlag();
     const part_delete= Part.GetFromID(m, pid);
     part_delete.SetFlag(flag_delete);
@@ -410,6 +409,11 @@ function DeletePart(m, pid) {
     return 0
 }
 
+/**
+ * 
+ * @param {Model} m Model 
+ * @param {*} sh  number (eid) or an array of numbers (eid)
+ */
 function DeleteShellElement(m, sh) {
     /*
     sh = shell element id, can be single number or a list of ids [] 

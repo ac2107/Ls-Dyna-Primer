@@ -279,24 +279,24 @@ function columnBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 				sh.SetFlag(flag_del);
 			} else if (ang.deg >= 112.5 && ang.deg <= 180.0){
 				// flip the direction of the shell, so it is facing the blast/explosion point
-				// swapping node 2 and 4 to slip side of shell elements
-				var nd2 = sh.n2;
-				var nd4 = sh.n4;
-				sh.n2 = nd4;
-				sh.n4 = nd2;
+				sh.ReverseNormal();
 			} else {
 				WarningMessage('... check the column null blast faces created')
 			}
 		}
 	}
+
 	// delete flagged nodes and shell elements
 	m.PropagateFlag(flag_del);
-	m.DeleteFlagged(flag_del);
+	m.DeleteFlagged(flag_del, false);
 	ReturnFlag(flag_del);
 
-	// for each column - create constraints for blast segments
-	m.MergeNodes(flag_c, 1e-5);
+	// merge nodes
+	m.MergeNodes(flag_c, 1e-4);
 	var nflagged = Node.GetFlagged(m, flag_c);
+	ReturnFlag(flag_c)
+
+	// for each column - create constraints for blast segments
 
 	for (var k = 0; k < list.node.length; k++) { // for each centre node of the column
 
@@ -332,8 +332,6 @@ function columnBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 	// Message('>>> ' + list.beam.length);
 	// Message('>>> ' + list.node.length);
 	// Message('>>> ' + nflagged.length);
-
-	ReturnFlag(flag_c);
 
 	// remove rotaitonal release condition for nodes used in column bast segments
 
