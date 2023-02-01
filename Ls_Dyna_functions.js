@@ -446,6 +446,52 @@ function DiscreteBeam_MAT066(m, uid, n1, n2, variables, cid, title)
 	return discrete_beam;
 }
 
+
+/**
+ * Create a set of flagged nodes by a enclosing box 
+ * @param {Model} m Model 
+ * @param {Number} sid Node set id 
+ * @param {Number} xmin Box cornder coordinate
+ * @param {Number} ymin Box cornder coordinate
+ * @param {Number} zmin Box cornder coordinate
+ * @param {Number} xmax Box cornder coordinate
+ * @param {Number} ymax Box cornder coordinate
+ * @param {Number} zmax Box cornder coordinate
+ * @param {Number} flag Only consider flagged nodes, if flag = 0, consider all nodes
+ */
+function createSetNodeByBoxCorner(m, sid, xmin, ymin, zmin, xmax, ymax, zmax, flag){
+
+	var flag_box = AllocateFlag();
+	var vtol = 1e-3;
+	var nset = new Set(m, sid, Set.NODE);
+
+	if (flag == 0){var nodes_sel = Node.GetAll(m);
+	} else {var nodes_sel = Node.GetFlagged(m, flag)};
+
+	// Node.SketchFlagged(m, flag);
+	// Sleep(5);
+
+	for (var node of nodes_sel) {
+
+		if (node.x < xmax && node.x > xmin && 
+			node.y < ymax && node.y > ymin && 
+			node.z < zmax && node.z > zmin) { 			
+				// excluding 3rd non-structural node
+				if (node.NodalMass()!=0) node.SetFlag(flag_box)
+			}
+			
+		// Message(node.nid);
+	} 
+
+	nset.AddFlagged(flag_box);
+
+	ReturnFlag(flag_box);
+
+	return nset
+}
+
+
+
 /**
 Create nodal rigid body using box and a centre point (a centre node will be created by this function)
 

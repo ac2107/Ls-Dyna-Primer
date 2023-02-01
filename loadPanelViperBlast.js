@@ -67,7 +67,7 @@ function loadPanelViperBlast(m, pid, nsid, offset){
 
 		var loadPanel = new LoadPanelViper; // with default properties
 
-		Message(['... exproting load panel ', sco]);
+		Message(['... exporting load panel ', sco]);
 		
 		// >>> id
 		loadPanel.panel_id = sco;

@@ -104,6 +104,10 @@ m.control.mpp_io_nodump.exists = true;
 m.control.mpp_io_nofull.exists = true;
 m.control.mpp_io_lstc_reduce.exists = true;
 
+// >>> update beam 3rd (reference) node for correct visualisation in d3plot
+m.control.output.exists = true;
+m.control.output.nrefup = 1;
+
 
 //========================= WRITE KEY FILE =====================================
 // var output_obj = new Object();
