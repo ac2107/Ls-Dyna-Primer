@@ -146,7 +146,8 @@ function columnBlastFace(m, pid, n1, n2){
 
 /**
  * Create blast faces for COLUMN beam elements (NEW), orientation and creation of the blast faces are based on the point of explosion,
- * column member is vertical only, in global Z-direction
+ * column member is vertical only, in global Z-direction; check coincident nodes at the location of n1 and n2 as duplicate NRBC will
+ * be created for coincident nodes even they are not attached to the selected beam elements between n1 and n2
  * @param {Model} m Model object 
  * @param {Number} pid Part id 
  * @param {Number} n1 Node id 
@@ -376,3 +377,6 @@ function beamBlastFaces(m, pid, n1, n2, xbo, ybo, zbo){
 
 
 }
+
+
+
