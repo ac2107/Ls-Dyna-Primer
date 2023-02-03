@@ -126,20 +126,20 @@ function loadPanelViperBlast(m, pid, nsid, offset){
 	// >>> dump the load panels for Viper pressure gauge import and debugging 
 	Message('...>>> exporting load panels and Viper::Blast pressure stations')
 
-	var csv_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
+	var txt_viper = new File(js_dir + "viper_gauge_import.txt", File.WRITE);
 	var csv_panel_list = new File(js_dir + "viper_load_panel.csv", File.WRITE);
 	
 	for (var item of loadPanels){
 
 
-		csv_viper.Writeln( item.cx + ' ' + item.cy + ' ' + item.cz + ' ' +'load_panel_' + item.panel_id);
+		txt_viper.Writeln( item.cx + ' ' + item.cy + ' ' + item.cz + ' ' + 'LoadPanel_' + item.panel_id + '_S' + item.null_shell_eid);
 
 		csv_panel_list.Writeln('load_panel_' + item.panel_id + ',' + item.null_shell_eid + ',' + item.beam_list.toString());
 
 		// Message([item.panel_id, item.cx, item.cy, item.cz, item.area, item.null_shell_eid, item.beam_list])
 
 	}
-	csv_viper.Close();
+	txt_viper.Close();
 	csv_panel_list.Close();
 
 	return loadPanels

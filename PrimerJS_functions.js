@@ -394,16 +394,21 @@ function reflectPoint(p, p0, p1, pid) {
  * 
  * @param {Model} m Model 
  * @param {Number} pid Part id 
+ * @param {Boolean} bool True or false for recursive deletion  
  * @returns 
  */
-function DeletePart(m, pid) {
+function DeletePart(m, pid, bool) {
 
     // Message('...delete part pid = ' + pid);
     const flag_delete = AllocateFlag();
     const part_delete= Part.GetFromID(m, pid);
     part_delete.SetFlag(flag_delete);
     m.PropagateFlag(flag_delete);
-    m.DeleteFlagged(flag_delete);
+
+	if (bool == true){m.DeleteFlagged(flag_delete, true);}
+	else if (bool == false){m.DeleteFlagged(flag_delete, false);}
+
+    // m.DeleteFlagged(flag_delete, bool);
     ReturnFlag(flag_delete);
 
     return 0
