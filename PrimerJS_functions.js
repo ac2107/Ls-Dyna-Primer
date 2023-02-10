@@ -274,6 +274,7 @@ function createSetBeamID(m, beams, sid, title) {
 
 	return bs
 }
+
 /**
  * 
  * @param {*} m model (object)

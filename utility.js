@@ -27,7 +27,6 @@ function Sphere3D(m, pid, charge_mass, loc){
 }
 
 
-
 /**
  * Write coordinates for creating signle solid element from four nodes
  * @param {Model} m Model
@@ -75,3 +74,31 @@ function writeTextFileSolidElement(m, node_list, name){
 	file_node_coords.Close();
 }
 
+/**
+ * Test if a node is a 3rd node of beam element
+ * @param {Model} m Model 
+ * @param {*} nd Node (Object) or Node id (Number)
+ */
+function isThirdNode(m, nd){
+	// >>> boolean flag for 3rd node
+	// >>> default is false, i.e. not 3rd node
+	var bool = false;
+	if (typeof nd == 'number') {
+			var node = Node.GetFromID(m, nd)
+	} else {var node = nd;}
+	// Message(['3rd Node -> ' , node.nid, num]);
+	// >>> get all xrefs of the node 
+	var xrefs = node.Xrefs();
+	
+	// >>> get total number of beam elements connected to the node
+	var num = xrefs.GetTotal('BEAM');
+
+	// >>> loop through the beam elements to check if the node is a 3rd node, if true break the loop
+	for (var i=0; i<num; i++){
+		var bid = xrefs.GetItemID('BEAM', i);
+		var beam = Beam.GetFromID(m, bid);
+		if (beam.n3 == node.nid) {bool = true}
+		// Message(['beam ->', bid, '3rd = ', beam.n3]);
+	}
+	return bool	
+}

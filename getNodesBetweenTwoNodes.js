@@ -3,19 +3,20 @@ function getNodesBetweenTwoNodes(m, n1, n2) {
 	// https://stackoverflow.com/questions/7050186/find-if-point-lays-on-line-segment
 	// parpameter are node number of two nodes
 
-	var node_list = [] 			// contain the node list within the line segment
-	var node_list_sorted = [] 	// order the node from start node n1 to end node n2
+	var node_list = [] 			// list of nodes between n1 and n2
+	var node_list_sorted = [] 	// sorted list of node nids
+	var node_obj = [];			// list of node objects to be sorted
 	
 	var node1 = Node.GetFromID(m, n1);
 	var node2 = Node.GetFromID(m, n2);
 
-	// collect nodes
+	// >>> collect nodes
 	Node.ForEach(m, find_nodes);
 	function find_nodes(n)
 	{
-		// n is Node object (NOT nid)
-		// Find distance of point P from both line ends points A, B. 
-		// If AB = AP+ PB, then P lies on the line segment AB.
+		// >>> n is Node object (NOT nid)
+		// >>> Find distance of point P from both line ends points A, B. 
+		// >>> If AB = AP+ PB, then P lies on the line segment AB.
 		var x = n.x, y = n.y, z = n.z;
 		var x1 = node1.x, y1 = node1.y, z1 = node1.z;
 		var x2 = node2.x, y2 = node2.y, z2 = node2.z;
@@ -32,31 +33,30 @@ function getNodesBetweenTwoNodes(m, n1, n2) {
 		}
 	}
 
-	// sorting nodes list by distance from the first node n1
-	var node_obj = [];
+	// >>> create a list of node objects for sorting
 	for (var nid of node_list){
-		// get node
+		// >> get node
 		var node = Node.GetFromID(m, nid);
-		// work out distance to the first node n1
+		// >> work out distance to the first node n1
 		var dist = unitVectorbyTwoNodes(m, n1, nid).len;
-		// add the distance as property
+		// >> add the distance as property to a NODE object
 		node.dist = dist;
-		// push the node obj to the list
-		node_list_sorted.push(node);
-
-	}
-	
-	node_list_sorted.sort((a, b) => (a.dist > b.dist) ? 1 : -1)
-	
-	for (var node of node_list_sorted){
-
-		Message([node.nid, node.dist]);
+		// >> push the node obj to the list
+		node_obj.push(node);
 
 	}
 
-	
+	// 	>>> sorting the node list by property "dist"
+	node_obj.sort((a, b) => (a.dist > b.dist) ? 1 : -1)
 
-	return node_list
+	for (var node of node_obj){
+		// Message([node.nid, node.dist]);
+		if (isThirdNode(m, node)){}
+		else {
+			node_list_sorted.push(node.nid)
+		}
+	}
+	return node_list_sorted
 }
 
 function getNodesBetweenTwoNodesPart(m, n1, n2, pid) {
