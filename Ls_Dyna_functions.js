@@ -1413,6 +1413,26 @@ function PointByOffset(m, pt, uv, dist){
   return {x: x1, y: y1, z:z1}
 }
 
+/**
+ * Create a new node by offset from existing node
+ * @param {Model} m Model
+ * @param {Number} nid node id 
+ * @param {Array} uv directional unit vector [vx, vy, vz] 
+ * @param {Number} dist offset distance 
+ * @returns 
+ */
+function NodeByOffset(m, nid, uv, dist){
+
+	var node = Node.GetFromID(m, nid);
+	
+	var x = node.x + dist*uv[0];
+	var y = node.y + dist*uv[1];
+	var z = node.z + dist*uv[2];
+	
+	var node_offset = new Node(m, Node.NextFreeLabel(m), x, y, z);
+
+	return node_offset
+  }
 
 
 /**

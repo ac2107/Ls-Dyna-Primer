@@ -126,11 +126,20 @@ const theBlueBookSectionDimensions = {
         'UB457x191x89': {name: 'UB457x191x89',  type: 'UB', h: 0.4634, b: 0.1919, tw: 0.0105, tf: 0.0177},
         'UB457x191x67': {name: 'UB457x191x67',  type: 'UB', h: 0.4534, b: 0.1899, tw: 0.0085, tf: 0.0127},  
         'UB457x152x74': {name: 'UB457x152x74',  type: 'UB', h: 0.462, b: 0.1544, tw: 0.0096, tf: 0.017},
+		'UB457x152x60': {name: 'UB457x152x60',  type: 'UB', h: 0.4546, b: 0.1529, tw: 0.0081, tf: 0.0133},
         'UB457x152x52': {name: 'UB457x152x52',  type: 'UB', h: 0.4498, b: 0.1524, tw: 0.0076, tf: 0.0109},
-        'UB406x178x54': {name: 'UB406x178x54',  type: 'UB', h: 0.4026, b: 0.1777, tw: 0.0077, tf: 0.0109},
+        
+		'UB406x178x54': {name: 'UB406x178x54',  type: 'UB', h: 0.4026, b: 0.1777, tw: 0.0077, tf: 0.0109},
         'UB406x140x39': {name: 'UB406x140x39',  type: 'UB', h: 0.398, b: 0.1418, tw: 0.0064, tf: 0.0086},
-        'UB356x171x67': {name: 'UB356x171x67',  type: 'UB', h: 0.3634, b: 0.1732, tw: 0.0091, tf: 0.0157},
+        
+		'UB356x171x67': {name: 'UB356x171x67',  type: 'UB', h: 0.3634, b: 0.1732, tw: 0.0091, tf: 0.0157},
+
+		'UB305x165x40': {name: 'UB305x165x40',  type: 'UB', h: 0.3034, b: 0.165, tw: 0.006, tf: 0.0102},
+
+		'UB254x146x37': {name: 'UB254x146x37',  type: 'UB', h: 0.256, b: 0.1464, tw: 0.0063, tf: 0.0109},
         'UB254x146x31': {name: 'UB254x146x31',  type: 'UB', h: 0.2514, b: 0.1461, tw: 0.006, tf: 0.0086},
+
+		'UB203x133x25': {name: 'UB203x133x25',  type: 'UB', h: 0.2032, b: 0.1332, tw: 0.0057, tf: 0.0078},
     },
 
     // xxxxxxxxxxxx: {h: , b: , tw: , tf: },

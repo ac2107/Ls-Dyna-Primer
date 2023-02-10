@@ -449,6 +449,41 @@ function DeleteShellElement(m, sh) {
 
 }
 
+/**
+ * 
+ * @param {Model} m Model 
+ * @param {*} bid  number (bid) or an array of numbers (bid)
+ */
+function DeleteBeamElement(m, bid) {
+    /*
+    bid = beam element id, can be single number or a list of ids [] 
+    */
+
+    var flag = AllocateFlag();
+
+    if (typeof bid === "number") {
+        // Message("...number");
+        var beam_ele = Beam.GetFromID(m, bid);
+        beam_ele.SetFlag(flag);beam_ele
+
+    } else if (typeof bid === "object") {
+        // Message("...object list")
+        for (var eid in bid) {
+            // Message(sh[eid]);
+            var beam_ele = Beam.GetFromID(m, bid[eid]);
+            beam_ele.SetFlag(flag);
+        }
+
+    } else {
+        ErrorMessage("argement type error - must be a number or object (list of number)")
+    }
+
+    // delete all flagged shell elements
+    m.DeleteFlagged(flag);
+    ReturnFlag(flag);
+
+}
+
 
 /**
  * 

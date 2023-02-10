@@ -1,9 +1,10 @@
-function getNodesBetweenTwoNodes(n1, n2) {
+function getNodesBetweenTwoNodes(m, n1, n2) {
 	// get all nodes on the linear line defined by Node n1 and n2
 	// https://stackoverflow.com/questions/7050186/find-if-point-lays-on-line-segment
 	// parpameter are node number of two nodes
 
-	var node_list = [] // contain the node list within the line segment
+	var node_list = [] 			// contain the node list within the line segment
+	var node_list_sorted = [] 	// order the node from start node n1 to end node n2
 	
 	var node1 = Node.GetFromID(m, n1);
 	var node2 = Node.GetFromID(m, n2);
@@ -30,10 +31,35 @@ function getNodesBetweenTwoNodes(n1, n2) {
 
 		}
 	}
+
+	// sorting nodes list by distance from the first node n1
+	var node_obj = [];
+	for (var nid of node_list){
+		// get node
+		var node = Node.GetFromID(m, nid);
+		// work out distance to the first node n1
+		var dist = unitVectorbyTwoNodes(m, n1, nid).len;
+		// add the distance as property
+		node.dist = dist;
+		// push the node obj to the list
+		node_list_sorted.push(node);
+
+	}
+	
+	node_list_sorted.sort((a, b) => (a.dist > b.dist) ? 1 : -1)
+	
+	for (var node of node_list_sorted){
+
+		Message([node.nid, node.dist]);
+
+	}
+
+	
+
 	return node_list
 }
 
-function getNodesBetweenTwoNodesPart(n1, n2, pid) {
+function getNodesBetweenTwoNodesPart(m, n1, n2, pid) {
 	// get all nodes, belongs to part pid, on the linear line defined by Node n1 and n2, 
 	
 	// https://stackoverflow.com/questions/7050186/find-if-point-lays-on-line-segment
