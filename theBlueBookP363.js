@@ -123,17 +123,22 @@ const theBlueBookSectionDimensions = {
         'UB533x210x82':{name: 'UB533x210x82', type: 'UB', h: 0.5283, b: 0.2088, tw: 0.0096, tf: 0.0132},
 
         'UB457x191x161':{name: 'UB457x191x161', type: 'UB',h: 0.492, b: 0.1994, tw: 0.018, tf: 0.032},
+		'UB457x191x98': {name: 'UB457x191x98',  type: 'UB', h: 0.4672, b: 0.1928, tw: 0.0114, tf: 0.0196},
         'UB457x191x89': {name: 'UB457x191x89',  type: 'UB', h: 0.4634, b: 0.1919, tw: 0.0105, tf: 0.0177},
+		'UB457x191x82': {name: 'UB457x191x82',  type: 'UB', h: 0.46, b: 0.1913, tw: 0.0099, tf: 0.016},
         'UB457x191x67': {name: 'UB457x191x67',  type: 'UB', h: 0.4534, b: 0.1899, tw: 0.0085, tf: 0.0127},  
         'UB457x152x74': {name: 'UB457x152x74',  type: 'UB', h: 0.462, b: 0.1544, tw: 0.0096, tf: 0.017},
 		'UB457x152x60': {name: 'UB457x152x60',  type: 'UB', h: 0.4546, b: 0.1529, tw: 0.0081, tf: 0.0133},
         'UB457x152x52': {name: 'UB457x152x52',  type: 'UB', h: 0.4498, b: 0.1524, tw: 0.0076, tf: 0.0109},
         
+		'UB406x178x74': {name: 'UB406x178x74',  type: 'UB', h: 0.4128, b: 0.1795, tw: 0.0095, tf: 0.016},
 		'UB406x178x54': {name: 'UB406x178x54',  type: 'UB', h: 0.4026, b: 0.1777, tw: 0.0077, tf: 0.0109},
+		'UB406x178x60': {name: 'UB406x178x60',  type: 'UB', h: 0.4064, b: 0.1779, tw: 0.0079, tf: 0.0128},
         'UB406x140x39': {name: 'UB406x140x39',  type: 'UB', h: 0.398, b: 0.1418, tw: 0.0064, tf: 0.0086},
         
 		'UB356x171x67': {name: 'UB356x171x67',  type: 'UB', h: 0.3634, b: 0.1732, tw: 0.0091, tf: 0.0157},
 
+		'UB305x165x54': {name: 'UB305x165x54',  type: 'UB', h: 0.3104, b: 0.1669, tw: 0.0079, tf: 0.0137},
 		'UB305x165x40': {name: 'UB305x165x40',  type: 'UB', h: 0.3034, b: 0.165, tw: 0.006, tf: 0.0102},
 
 		'UB254x146x37': {name: 'UB254x146x37',  type: 'UB', h: 0.256, b: 0.1464, tw: 0.0063, tf: 0.0109},
@@ -163,7 +168,8 @@ const theBlueBookSectionDimensions = {
 
 
     CFRHS: {
-        'CFRHS300x200x10':      {name:'CFRHS300x200x10',    type: 'RHS', h: 0.3, b: 0.2, t: 0.01},
+        'CFRHS200x100x10':      {name:'CFRHS200x100x10',    type: 'RHS', h: 0.2, b: 0.1, t: 0.01},
+		'CFRHS300x200x10':      {name:'CFRHS300x200x10',    type: 'RHS', h: 0.3, b: 0.2, t: 0.01},
         'CFRHS400x200x12.5':    {name:'CFRHS400x200x12.5',  type: 'RHS', h: 0.4, b: 0.2, t: 0.0125},
 		'CFRHS500x200x16':      {name:'CFRHS500x200x16',    type: 'RHS', h: 0.5, b: 0.2, t: 0.016},
         'CFRHS500x300x16':      {name:'CFRHS500x300x16',    type: 'RHS', h: 0.5, b: 0.3, t: 0.016},
