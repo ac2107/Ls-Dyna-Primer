@@ -929,7 +929,7 @@ function showOnlyBeamOnPlane(m, plane, coordinate) {
     var coordiante;
 
     const flag = AllocateFlag();
-    const tol = 1e-3;
+    const tol = 5e-3;
 
     Message('... show only beams on plane ' + plane);
 
@@ -980,7 +980,7 @@ function showOnlyBeamOnPlane(m, plane, coordinate) {
             var N1 = Node.GetFromID(m, beam.n1);
             var N2 = Node.GetFromID(m, beam.n2);
 
-            if ((N1.z > Z - tol && N1.z < Z + tol) && (N2.z > Z - tol && N2.z < Z + tol)) {
+            if ((N1.z > Z - tol && N1.z < Z + tol) || (N2.z > Z - tol && N2.z < Z + tol)) {
 
                 beam.SetFlag(flag);
 
@@ -995,6 +995,31 @@ function showOnlyBeamOnPlane(m, plane, coordinate) {
     Beam.UnblankFlagged(m, flag);
 
     ReturnFlag(flag);
+}
+
+/**
+ * Create mass for static loading on beam elements
+ * @param {Model} m Model
+ * @param {Number} n1 Starting node of beam
+ * @param {Number} n2 Ending node of beam
+ * @param {Number} load floor load, kN/m2
+ * @param {Number} width loaded with for the beam, m
+ */
+function beamLoadStatic(m, n1, n2, load, width){
+
+	// >>> find the nodes for applying nodal mass
+	var node_list = getNodesBetweenTwoNodes(m, n1, n2);
+
+	// >>> create node set
+	var node_set = createSetNodeID(m, node_list, Set.NextFreeLabel(m, Set.NODE), 'node set mass');
+
+	// >>> create mass 
+	var mass = unitVectorbyTwoNodes(m, n1, n2).len * width * load * 1000.0 / 9.81; // kg
+	var node_mass = new Mass(m, Mass.NextFreeLabel(m), node_set.sid, mass, Mass.NODE_SET);
+}
+
+function areaLoadStatic(){
+
 }
 
 //======================================================================================================================
@@ -1018,6 +1043,8 @@ function x_product(vcross1, vcross2)
 	vc.mag = Math.sqrt(Math.pow(vc[0],2) + Math.pow(vc[1],2) + Math.pow(vc[2],2));
 	return vc;
 }
+
+//======================================================================================================================
 
 function dot_product_angle(vdot1, vdot2)
 {
