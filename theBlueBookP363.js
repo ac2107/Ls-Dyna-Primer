@@ -145,6 +145,7 @@ const theBlueBookSectionDimensions = {
 		'UB356x171x45': {name: 'UB356x171x45',  type: 'UB', h: 0.3514, b: 0.1711, tw: 0.0070, tf: 0.0097},
 
 		'UB305x165x54': {name: 'UB305x165x54',  type: 'UB', h: 0.3104, b: 0.1669, tw: 0.0079, tf: 0.0137},
+		'UB305x165x46': {name: 'UB305x165x46',  type: 'UB', h: 0.3066, b: 0.1657, tw: 0.0067, tf: 0.0118},
 		'UB305x165x40': {name: 'UB305x165x40',  type: 'UB', h: 0.3034, b: 0.165, tw: 0.006, tf: 0.0102},
 
 		'UB254x146x37': {name: 'UB254x146x37',  type: 'UB', h: 0.256, b: 0.1464, tw: 0.0063, tf: 0.0109},
