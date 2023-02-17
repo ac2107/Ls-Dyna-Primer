@@ -24,10 +24,10 @@ In Window("SIMPLE MESHING").Menu("SELECT SHELLS")
 End In
 
 Window("SIMPLE MESHING").Popup("Entity to be created")
-PopupWindow1().Button("Solids")
+PopupWindow1().Button("Thick shells")
 
 In Window("SIMPLE MESHING")
-    .Textbox("PID") = "$SOLID_PID"
+    .Textbox("PID") = "$TSHELL_PID"
 End In
 
 Window("SIMPLE MESHING").Popup("Element size or no. of elements?")
@@ -36,7 +36,7 @@ Window("SIMPLE MESHING").Textbox("Element size/no. of elements") = "$ELE"
 
 Window("SIMPLE MESHING").Popup("Direction")
 PopupWindow1().Button("$DIR")
-Window("SIMPLE MESHING").Textbox("distance") = "$HEIGHT"
+Window("SIMPLE MESHING").Textbox("distance") = "$DIST"
 
 Window("SIMPLE MESHING").Button("Apply")
 Window("SIMPLE MESHING").Button("Dismiss")
