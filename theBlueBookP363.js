@@ -183,6 +183,7 @@ const theBlueBookSectionDimensions = {
     },
 
     CFSHS: {
+		'CFSHS150x150x8': 	{name:'CFSHS150x150x8', type: 'SHS', h: 0.15, t: 0.008},
         'CFSHS150x150x10': 	{name:'CFSHS150x150x10', type: 'SHS', h: 0.15, t: 0.01},
 		'CFSHS200x200x8':	{name:'CFSHS200x200x8', type: 'SHS', h: 0.2, t: 0.008},
 		'CFSHS200x200x10': 	{name:'CFSHS200x200x10', type: 'SHS', h: 0.2, t: 0.01},

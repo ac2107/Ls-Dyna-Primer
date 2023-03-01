@@ -20,9 +20,11 @@ import matplotlib.pyplot as plt
 
 from qd.cae.dyna import Binout
 
+#>>> 
 # find current path
 dir_path = os.path.dirname(os.path.realpath(__file__)) + "\\"
 print(dir_path)
+print('... reading binout file')
 
 # define file path
 path_r1 = dir_path+"/run17_c07_updated"
@@ -30,21 +32,33 @@ path_r1 = dir_path+"/run17_c07_updated"
 # read "binout" file using qd
 binout_1 = Binout(path_r1+"/binout")
 
+# select ploting the enveloping time histories for grouped beam elements; true = plot, false = do not plot
+plot = False
 
+# >>> 
 # read beam element results
+print('... reading beam element ids and time')
 time = binout_1.read("elout", "beam", "time")                       # time
 ids = binout_1.read("elout", "beam", "ids")[0]                      # beam element ids
 
+print('... reading beam element vertical shear forces')
 vrtShear = binout_1.read("elout", "beam", "shear_t")/1000.0        	# major axis shear force - BFZ [kN]
+print('... reading beam element horizontal shear forces')
 hrzShear = binout_1.read("elout", "beam", "shear_s")/1000.0        	# minor axis shear force - BFY [kN]
+print('... reading beam element axial forces')
 Axial = binout_1.read("elout", "beam", "axial")/1000.0              # axial force            - BFX [kN]
- 
+
+print('... reading beam element vertical moments') 
 vrtMoment = binout_1.read("elout", "beam", "moment_s")/1000.0      	# major axis moment - BMYY [kNm]
+print('... reading beam element horizontal moments')
 hrzMoment = binout_1.read("elout", "beam", "moment_t")/1000.0      	# minor axis moment - BMZZ [kNm]
+print('... reading beam element torsion')
 Torsion = binout_1.read("elout", "beam", "torsion")/1000.0          # torsion           - BMXX [kNm]
 
+print('... reading beam element mat/part ids')
 mat = binout_1.read("elout", "beam", "mat")[0]                      # part ids for each beam element
 
+print('... creating dictionary to store all results')
 # create force dictionary for easy access time history results 
 force_dic = {
     "vrt_shear": vrtShear,
@@ -57,7 +71,9 @@ force_dic = {
 
 # enveloping beam connection force 
 # read "beam_sets.csv"
-file = open('beam_sets.csv', 'r')
+print('... loading beam_sets csv file')
+
+file = open('beam_sets_connections_test.csv', 'r')
 lines = file.readlines()
 
 beam_ref = []
@@ -76,21 +92,27 @@ file.close()
 # create dataframe to contain all data including force results
 size = len(beam_ref)
 zeros = [0.0]*size
-forcedf = pd.DataFrame(list(zip(beam_ref, section, bids, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros)), 
+forcedf = pd.DataFrame(list(zip(beam_ref, section, bids, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros, zeros)), 
                         columns = [ 'beam reference', 'section', 
                                     'beam ids',
                                     'max vrt_shear', 'max hrz_shear', 
                                     'max axial +ve', 'min axial -ve', 
                                     'max vrt_moment', 'max hrz_moment',
                                     'max torsion',
+                                    
                                     'max vrt_shear bid', 'max hrz_shear bid', 
                                     'max axial +ve bid', 'min axial -ve bid', 
                                     'max vrt_moment bid', 'max hrz_moment bid',
                                     'max torsion bid',
-                                    ])
+                                    
+                                    'hrz_shear_at_max_vrt',
+                                    'vrt_shear_at_max_hrz',                                  
+])
 
 for index, row in forcedf.iterrows():
     # loop beam elements for each beam reference/section
+
+    print('... processing ', row['beam reference'])
 
     max_vrt_shear = 0.0
     max_hrz_shear = 0.0
@@ -101,6 +123,12 @@ for index, row in forcedf.iterrows():
     max_vrt_moment = 0.0
     max_hrz_moment = 0.0
     max_torsion = 0.0
+    
+    max_vrt_shear_bid = 0
+    max_hrz_shear_bid = 0
+    
+    vrt_shear_at_max_hrz = 0.0
+    hrz_shear_at_max_vrt = 0.0
 
     for bid in row['beam ids']:
     	
@@ -120,10 +148,16 @@ for index, row in forcedf.iterrows():
         if max(vrt_shear) > max_vrt_shear:
             max_vrt_shear = max(vrt_shear)
             max_vrt_shear_bid = bid
+            # find the hrz_shear_at_max_vrt
+            hrz_index = vrt_shear.tolist().index(max(vrt_shear))
+            hrz_shear_at_max_vrt = hrz_shear[hrz_index]
 
         if max(hrz_shear) > max_hrz_shear:
             max_hrz_shear = max(hrz_shear)
             max_hrz_shear_bid = bid
+            # find the vrt_shear_at_max_hrz
+            vrt_index = hrz_shear.tolist().index(max(hrz_shear))
+            vrt_shear_at_max_hrz = vrt_shear[vrt_index]
 
 
         if max(axial) > max_axial_pos:
@@ -159,6 +193,11 @@ for index, row in forcedf.iterrows():
     forcedf.at[index, 'max hrz_moment'] = round(max_hrz_moment, 0)
     forcedf.at[index, 'max torsion'] = round(max_torsion, 0)
     
+    
+    # update vrt and hrz shorces at max of hrz and vrt forces
+    forcedf.at[index, 'hrz_shear_at_max_vrt'] = round(hrz_shear_at_max_vrt, 0)
+    forcedf.at[index, 'vrt_shear_at_max_hrz'] = round(vrt_shear_at_max_hrz, 0)
+    
     # update the envelope beam element 
     forcedf.at[index, 'max vrt_shear bid'] = int(max_vrt_shear_bid)
     forcedf.at[index, 'max hrz_shear bid'] = int(max_hrz_shear_bid)
@@ -182,56 +221,61 @@ forcedf = forcedf.astype({"max vrt_shear bid": int,
 )
 
 # write out force results
+print('... saving to csv file')
 forcedf.to_csv('beam connection envelope forces.csv')
 
-# use "forcedf" dataframe to plot out time histories of the beam connections
-for index, row in forcedf.iterrows():
-	
-	#get beam element id
-	max_vrt_shear_bid = row['max vrt_shear bid']
-	max_hrz_shear_bid = row['max hrz_shear bid']
-	max_axial_pos_bid = row['max axial +ve bid']
-	min_axial_neg_bid = row['min axial -ve bid']
-	max_vrt_moment_bid = row['max vrt_moment bid']
-	max_hrz_moment_bid = row['max hrz_moment bid']
-	max_torsion_bid = row['max torsion bid']
- 
-    # index of bid in the ids list
-	max_vrt_shear_bindex = ids.tolist().index(max_vrt_shear_bid)
-	max_hrz_shear_bindex = ids.tolist().index(max_hrz_shear_bid) 
-	max_axial_pos_bindex = ids.tolist().index(max_axial_pos_bid) 
-	min_axial_neg_bindex = ids.tolist().index(min_axial_neg_bid) 
-	max_vrt_moment_bindex = ids.tolist().index(max_vrt_moment_bid) 
-	max_hrz_moment_bindex = ids.tolist().index(max_hrz_moment_bid) 
-	max_torsion_bindex = ids.tolist().index(max_torsion_bid) 
+# plot enveloping force time histories 
+if plot == True:
+    # use "forcedf" dataframe to plot out time histories of the beam connections
+    for index, row in forcedf.iterrows():
+        
+        print('... plotting beam reference = ', row['beam reference'])
+        #get beam element id
+        max_vrt_shear_bid = row['max vrt_shear bid']
+        max_hrz_shear_bid = row['max hrz_shear bid']
+        max_axial_pos_bid = row['max axial +ve bid']
+        min_axial_neg_bid = row['min axial -ve bid']
+        max_vrt_moment_bid = row['max vrt_moment bid']
+        max_hrz_moment_bid = row['max hrz_moment bid']
+        max_torsion_bid = row['max torsion bid']
     
-	# plot - checking beam force time history 
-	t = time
- 
-	max_vrt_shear_y = 	force_dic['vrt_shear'][:, int(max_vrt_shear_bindex)]
-	max_hrz_shear_y = 	force_dic['hrz_shear'][:, max_hrz_shear_bindex] 
-	max_axial_pos_y = 	force_dic['axial'][:, max_axial_pos_bindex] 
-	min_axial_neg_y = 	force_dic['axial'][:, min_axial_neg_bindex] 
-	max_vrt_moment_y = 	force_dic['vrt_moment'][:, max_vrt_moment_bindex]
-	max_hrz_moment_y = 	force_dic['hrz_moment'][:, max_hrz_moment_bindex] 
-	max_torsion_y = 	force_dic['torsion'][:, max_torsion_bindex]
+        # index of bid in the ids list
+        max_vrt_shear_bindex = ids.tolist().index(max_vrt_shear_bid)
+        max_hrz_shear_bindex = ids.tolist().index(max_hrz_shear_bid) 
+        max_axial_pos_bindex = ids.tolist().index(max_axial_pos_bid) 
+        min_axial_neg_bindex = ids.tolist().index(min_axial_neg_bid) 
+        max_vrt_moment_bindex = ids.tolist().index(max_vrt_moment_bid) 
+        max_hrz_moment_bindex = ids.tolist().index(max_hrz_moment_bid) 
+        max_torsion_bindex = ids.tolist().index(max_torsion_bid) 
+        
+        # plot - checking beam force time history 
+        t = time
+    
+        max_vrt_shear_y = 	force_dic['vrt_shear'][:, int(max_vrt_shear_bindex)]
+        max_hrz_shear_y = 	force_dic['hrz_shear'][:, max_hrz_shear_bindex] 
+        max_axial_pos_y = 	force_dic['axial'][:, max_axial_pos_bindex] 
+        min_axial_neg_y = 	force_dic['axial'][:, min_axial_neg_bindex] 
+        max_vrt_moment_y = 	force_dic['vrt_moment'][:, max_vrt_moment_bindex]
+        max_hrz_moment_y = 	force_dic['hrz_moment'][:, max_hrz_moment_bindex] 
+        max_torsion_y = 	force_dic['torsion'][:, max_torsion_bindex]
 
-	fig, ax = plt.subplots()
-	ax.plot(t, max_vrt_shear_y, label = 'max_vrt_shear eid=' + str(max_vrt_shear_bid))
-	ax.plot(t, max_hrz_shear_y, label = 'max_hrz_shear eid=' + str(max_hrz_shear_bid))
-	ax.plot(t, max_axial_pos_y, label = 'max_axial_pos eid=' + str(max_axial_pos_bid))
-	ax.plot(t, min_axial_neg_y, label = 'min_axial_neg eid=' + str(min_axial_neg_bid))
-	ax.plot(t, max_vrt_moment_y, label = 'max_vrt_moment eid=' + str(max_vrt_moment_bid))
-	ax.plot(t, max_hrz_moment_y, label = 'max_hrz_moment eid=' + str(max_hrz_moment_bid))
-	ax.plot(t, max_torsion_y, label = 'max_torsion eid=' + str(max_torsion_bid))
+        fig, ax = plt.subplots()
+        ax.plot(t, max_vrt_shear_y, label = 'max_vrt_shear eid=' + str(max_vrt_shear_bid))
+        ax.plot(t, max_hrz_shear_y, label = 'max_hrz_shear eid=' + str(max_hrz_shear_bid))
+        ax.plot(t, max_axial_pos_y, label = 'max_axial_pos eid=' + str(max_axial_pos_bid))
+        ax.plot(t, min_axial_neg_y, label = 'min_axial_neg eid=' + str(min_axial_neg_bid))
+        ax.plot(t, max_vrt_moment_y, label = 'max_vrt_moment eid=' + str(max_vrt_moment_bid))
+        ax.plot(t, max_hrz_moment_y, label = 'max_hrz_moment eid=' + str(max_hrz_moment_bid))
+        ax.plot(t, max_torsion_y, label = 'max_torsion eid=' + str(max_torsion_bid))
 
-	ax.set_xlim(0.99, 2.0)
-	ax.set_title(row['beam reference'])	
+        ax.set_xlim(0.99, 2.0)
+        ax.set_title(row['beam reference'])	
 
-	ax.grid()
-	ax.legend()
-	
-	figname = row['beam reference']
-	fig.savefig(figname, bbox_inches='tight')
-	plt.close(fig)
-
+        ax.grid()
+        ax.legend()
+        
+        figname = row['beam reference']
+        fig.savefig(figname, bbox_inches='tight')
+        plt.close(fig)
+else:
+    print('... no plotting')
