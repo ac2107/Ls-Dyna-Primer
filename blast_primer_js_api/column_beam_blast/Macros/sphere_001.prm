@@ -1,0 +1,36 @@
+MacroName("Sphere")
+MacroDescription("Mesh Sphere")
+
+MacroVariable("PID", "Shell Part ID", "1")
+
+MacroVariable("CEN_X", "Block Center X", "0.0")
+MacroVariable("CEN_Y", "Block Center Y", "0.0")
+MacroVariable("CEN_Z", "Block Center Z", "0.0")
+
+MacroVariable("RAD", "Radius", "0.1")
+MacroVariable("ELE", "No. Elements", "16")
+
+#############################################################
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Popup("Shapes")
+End In
+PopupWindow1().Button("Sphere")
+
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$PID"
+    .Popup("Centre definition method")
+End In
+PopupWindow1().Button("coord")
+
+In Window("SIMPLE MESHING")
+    .Textbox("X") = "$CEN_X"
+    .Textbox("Y") = "$CEN_Y"
+    .Textbox("Z") = "$CEN_Z"
+    .Textbox("Radius") = "$RAD"
+    .Textbox("Element size/no. of elements along Circumference") = "$ELE"
+    .Button("Apply")
+    .Button("Dismiss")
+End In
+

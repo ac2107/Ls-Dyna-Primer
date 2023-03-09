@@ -1,0 +1,18 @@
+MacroName("Segment Coat")
+MacroDescription("Segment Coat")
+
+
+#########################################################
+
+Window("Tools/Keywords").Button("SET")
+PopupWindow1().Button("SEGMENT")
+Window("SET_SEGMENT").Button("Create")
+
+In Window("CREATE SET_SEGMENT in model 1")
+    .Textbox("Label:") = "$SID"
+    .Textbox("Title:") = "$TITLE"
+    .Button("Coat elements")
+End In
+Window("Coat entity").Menu("SELECT PARTS").Select1("$PID")
+Window("Coat entity").Button("Apply")
+Window("CREATE SET_SEGMENT in model 1").Button("Update SET")

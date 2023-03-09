@@ -1,0 +1,12 @@
+Window("Tools/Keywords").Button("Coat")
+In Window("Coat entity")
+    .Button("Segment option")
+    .Textbox("Part/segment Input") = "$SEGID"
+    .Radio("Coat entity radio") = "Entire Part"
+End In
+Window("Coat entity").Menu("SELECT PARTS").Button("Key_In")
+Window("Coat entity").Window("KEY IN").Textbox("Keyin input") = "$PID"
+Window("Coat entity").Button("Apply")
+In Window("Tools/Keywords")
+    .Button("Model Tab")
+End In

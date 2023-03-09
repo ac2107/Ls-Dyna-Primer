@@ -1,0 +1,14 @@
+
+Window("Tools/Keywords").Button("Model Tab")
+Window("Tools/Keywords").Button("ELEMENT")
+PopupWindow1().Button("BEAM")
+Window("BEAM").Button("Delete")
+Window("BEAM").Menu("ELEMENT").Button("Key_In")
+Window("BEAM").Window("KEY IN").Textbox("Keyin input") = "$BID"
+Window("BEAM").Button("Apply")
+In Window("BEAM").Window("DELETE ELEMENT")
+    .Button("Delete sel")
+    .Button("Continue")
+End In
+Window("Tools/Keywords").Button("Model Tab")
+
