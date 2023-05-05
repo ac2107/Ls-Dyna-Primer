@@ -571,14 +571,14 @@ Create nodal rigid body using box on a LOCAL coordinate and a centre point (the 
 
 Input:
 
-    @param m model id
+    @param {Model} m model id
     @param pid part id, whose nodes are to be included in the nodal rigid body constraitns
     @param pid_nrb part id of the nodal rigid body and corresponding node set; must be >= 1
 
     use DEFINE_BOX to select nodes 
-    @param n central node of the selecting box (Node object)
+    @param {Node} n central node of the selecting box (Node object)
 
-    @param uv unit vector to define the z-direction of the box local triad (vector array {x, y, z})
+    @param uv unit vector to define the z-direction of the box local triad (vector array [x, y, z])
 
     @param dx box dimension in x-axis LOCAL
     @param dy box dimension in y-axis LOCAL
@@ -598,7 +598,7 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
 
   // get all flagged nodes & return the flag
   var nodes = Node.GetFlagged(m, pflag);
-  ReturnFlag(pflag);
+ 
 
   var tol = 1e-4; // tolerance
 
@@ -609,7 +609,7 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   
   //    - calculate unit local vector_y_axis
   var unit_gloabl_vector_z = [0, 0, -1]; // negative z axis
-  var unit_local_vector_x = [uv.vx, uv.vy, uv.vz];
+  var unit_local_vector_x = uv;
   var local_vector_y = x_product(unit_local_vector_x, unit_gloabl_vector_z);
   if(local_vector_y[0] === 0.0 && local_vector_y[1] === 0.0 && local_vector_y[2] === 0.0){
     var unit_local_vector_y = [0, 1, 0]
@@ -620,7 +620,7 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   // Message(unit_local_vector_y)
   
   //    - set centre and orientation of the box
-  box.xx = uv.vx, box.yx = uv.vy, box.zx = uv.vz; // unit vector of local x-axis
+  box.xx = uv[0], box.yx = uv[1], box.zx = uv[2]; // unit vector of local x-axis
   box.xv = unit_local_vector_y[0], box.yv = unit_local_vector_y[1], box.zv = unit_local_vector_y[2];  // unit vector of local y-axis
   box.cx = n.x, box.cy = n.y, box.cz = n.z;       // box centre point coordinate
   // box.Edit();
@@ -638,9 +638,15 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   box_nset.StartSpool();
   while((id = box_nset.Spool())) {
 
-    if(!nset.Contains(id)){
-      nset.Add(id);
+    var node = Node.GetFromID(m, id);
+
+    if(node.Flagged(pflag)){
+      
+      if(!nset.Contains(id)){nset.Add(id)}
+    
     }
+
+    
   }  
 
   // create nodal rigid body
@@ -651,7 +657,7 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   box_nset.SetFlag(delflag);
   m.DeleteFlagged(delflag, false);
   ReturnFlag(delflag);
-
+  ReturnFlag(pflag);
   var cnode = n; // centre node, equal to the input node object "n"
   return {cnode, nrb}; // return the central node and the nodal rigid body objects
 
@@ -1476,3 +1482,48 @@ function smooth_step_curve(m, t1, A1, nmax, lcid, heading){
   return smooth_step_curve;
 }
 
+/**
+Create a smooth step curve- start from time zero to t1
+
+Input:
+  @param m  model ID
+  @param t1 end time
+  @param A1 amplitude of the smooth step function
+  @param nmax number of points in the smooth curve
+  @param heading curve title/heading, type: string
+*/
+function smooth_step_curve2(m, t1, A1, nmax, lcid, heading){
+
+
+  Message('... create a smooth step function curve');
+
+  var smooth_step_curve = new Curve(Curve.CURVE, m, lcid);
+  smooth_step_curve.heading = heading;
+
+  t1 = 2*t1;
+  A1 = 2*A1;
+  
+  var dt = t1/nmax;
+  var t0 = 0.0;
+  var A0 = 0.0;
+  var t = 0.0;
+  var a = 0.0;
+
+  while(t < t1){
+
+    var Xi = (t-t0)/(t1-t0);
+    
+    a = A0 + (A1-A0)*Xi*Xi*Xi*(10-15*Xi+6*Xi*Xi);
+    
+    smooth_step_curve.AddPoint(t, a);
+
+    t = t + dt;
+
+    if (t>0.5*t1) break
+  
+  }
+  
+  smooth_step_curve.AddPoint(0.5*t1, 0.5*A1);
+  
+  return smooth_step_curve;
+}
