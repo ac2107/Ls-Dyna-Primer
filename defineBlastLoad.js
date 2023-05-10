@@ -57,6 +57,7 @@ function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass,
 
 	if (pre_blast_load == 0) var tbo = 0; // blast start time
 	else if (pre_blast_load == 1) var tbo = 1; // blast start time
+	else var tbo = pre_blast_load;
 
 	var units = 2; // units (SI)
 	if (charge_type == 1) var blast = 1; // Hemispherical blast
