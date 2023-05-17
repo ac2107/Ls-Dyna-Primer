@@ -1023,378 +1023,378 @@ class MAT024_CS_strain_rate_table {
 
 
 
-/**
- * Create a single explicit dynamic analysis step
- * @param {Model} m Model 
- * @param {Number} endtim End time of explicit analysis 
- */
-function AnalysisControlExp(m, endtim){
+// /**
+//  * Create a single explicit dynamic analysis step
+//  * @param {Model} m Model 
+//  * @param {Number} endtim End time of explicit analysis 
+//  */
+// function AnalysisControlExp(m, endtim){
 
-	m.control.termination.exists = true;
-	m.control.termination.endtim = endtim;		// explicit termination time
-}
+// 	m.control.termination.exists = true;
+// 	m.control.termination.endtim = endtim;		// explicit termination time
+// }
 
 
-/**
-* Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload;
-* Step 1 - static preload application - Implicit;
-* Step 2 - blast load application - Explicit;
-* Input parameters:
-* @param m model id
-* @param paraCtrl all control parameters:  const paraCtrl = {imp_tim: 1.0, exp_tim: 3.0} // duration for implicit and explicite stage
-*/
+// /**
+// * Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload;
+// * Step 1 - static preload application - Implicit;
+// * Step 2 - blast load application - Explicit;
+// * Input parameters:
+// * @param m model id
+// * @param paraCtrl all control parameters:  const paraCtrl = {imp_tim: 1.0, exp_tim: 3.0} // duration for implicit and explicite stage
+// */
 
-function AnalysisControlImpExp(m, paraCtrl){
+// function AnalysisControlImpExp(m, paraCtrl){
 
-  // Base Unity Load Curve
-  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
-  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
-  Base_Unity_Load_Curve.AddPoint(0, 0);
-  Base_Unity_Load_Curve.AddPoint(1.0, 1.0);			
-  Base_Unity_Load_Curve.AddPoint(10.0, 1.0);
+//   // Base Unity Load Curve
+//   var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+//   Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+//   Base_Unity_Load_Curve.AddPoint(0, 0);
+//   Base_Unity_Load_Curve.AddPoint(1.0, 1.0);			
+//   Base_Unity_Load_Curve.AddPoint(10.0, 1.0);
 
-  // Base Unity Gravity Curve
-  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
-  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
-  Base_Unity_Gravity_Curve.AddPoint(0, 0);
-  Base_Unity_Gravity_Curve.AddPoint(1.0, 1.0);			
-  Base_Unity_Gravity_Curve.AddPoint(10.0, 1.0);
+//   // Base Unity Gravity Curve
+//   var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+//   Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+//   Base_Unity_Gravity_Curve.AddPoint(0, 0);
+//   Base_Unity_Gravity_Curve.AddPoint(1.0, 1.0);			
+//   Base_Unity_Gravity_Curve.AddPoint(10.0, 1.0);
 
-  // Implicit to Explicit Switch Curve
-  var Implicit_to_Explicit_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
-  Implicit_to_Explicit_Switch_Curve.heading = "Implicit to Explicit Switch Curve"
-  Implicit_to_Explicit_Switch_Curve.AddPoint(0, 1.0); 			
-  Implicit_to_Explicit_Switch_Curve.AddPoint(0.99999*paraCtrl.imp_tim, 1.0); // 0 - 1 sec, implicit
-  Implicit_to_Explicit_Switch_Curve.AddPoint(paraCtrl.imp_tim, 0);
-  Implicit_to_Explicit_Switch_Curve.AddPoint(10.0, 0.0);
+//   // Implicit to Explicit Switch Curve
+//   var Implicit_to_Explicit_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
+//   Implicit_to_Explicit_Switch_Curve.heading = "Implicit to Explicit Switch Curve"
+//   Implicit_to_Explicit_Switch_Curve.AddPoint(0, 1.0); 			
+//   Implicit_to_Explicit_Switch_Curve.AddPoint(0.99999*paraCtrl.imp_tim, 1.0); // 0 - 1 sec, implicit
+//   Implicit_to_Explicit_Switch_Curve.AddPoint(paraCtrl.imp_tim, 0);
+//   Implicit_to_Explicit_Switch_Curve.AddPoint(10.0, 0.0);
 
-  // Max Timestep Limit Curve
-  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
-  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
-  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
-  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+//   // Max Timestep Limit Curve
+//   var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+//   Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+//   Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+//   Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
 
-  // Control settings
-  m.control.hourglass.exists = false;
-  m.control.hourglass.ihq = 6;
-  m.control.hourglass.qh = 0.02;
+//   // Control settings
+//   m.control.hourglass.exists = false;
+//   m.control.hourglass.ihq = 6;
+//   m.control.hourglass.qh = 0.02;
   
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.imp_tim+paraCtrl.exp_tim; // 
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.imp_tim+paraCtrl.exp_tim; // 
 
-  m.control.implicit_general.exists = true;
-  m.control.implicit_general.imflag = -Implicit_to_Explicit_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
-  m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
+//   m.control.implicit_general.exists = true;
+//   m.control.implicit_general.imflag = -Implicit_to_Explicit_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
+//   m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
 
-  m.control.implicit_auto.exists = true;
-  m.control.implicit_auto.iauto = 1;
-  m.control.implicit_auto.dtmin = 1e-4;
-  m.control.implicit_auto.dtmax= 0.02;
+//   m.control.implicit_auto.exists = true;
+//   m.control.implicit_auto.iauto = 1;
+//   m.control.implicit_auto.dtmin = 1e-4;
+//   m.control.implicit_auto.dtmax= 0.02;
   
-  return {Base_Unity_Load_Curve, 
-          Base_Unity_Gravity_Curve, 
-          Implicit_to_Explicit_Switch_Curve
-  }
+//   return {Base_Unity_Load_Curve, 
+//           Base_Unity_Gravity_Curve, 
+//           Implicit_to_Explicit_Switch_Curve
+//   }
 
 
-}
+// }
 
 
-/**
-* Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload 
-* Step 1 - static preload application - Dynamic relaxation
-* Step 2 - blast load application - Explicit
-* Input parameters:
-* @param m model id
-* @param paraCtrl all control parameters;  paraCtrl = {endtim: 0.2}
-*/
-function AnalysisControlDynExp(m, paraCtrl){
+// /**
+// * Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload 
+// * Step 1 - static preload application - Dynamic relaxation
+// * Step 2 - blast load application - Explicit
+// * Input parameters:
+// * @param m model id
+// * @param paraCtrl all control parameters;  paraCtrl = {endtim: 0.2}
+// */
+// function AnalysisControlDynExp(m, paraCtrl){
 
-  // Base Unity Load Curve
-  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
-  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
-  Base_Unity_Load_Curve.AddPoint(0, 1);			
-  Base_Unity_Load_Curve.AddPoint(100.0, 1);
+//   // Base Unity Load Curve
+//   var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+//   Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+//   Base_Unity_Load_Curve.AddPoint(0, 1);			
+//   Base_Unity_Load_Curve.AddPoint(100.0, 1);
 
-  // Base Unity Gravity Curve
-  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
-  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
-  Base_Unity_Gravity_Curve.AddPoint(0, 1);			
-  Base_Unity_Gravity_Curve.AddPoint(100.0, 1);
+//   // Base Unity Gravity Curve
+//   var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+//   Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+//   Base_Unity_Gravity_Curve.AddPoint(0, 1);			
+//   Base_Unity_Gravity_Curve.AddPoint(100.0, 1);
 
-  // DR Ramped Unity Load Curve
-  var DR_Ramped_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000002);	
-  DR_Ramped_Unity_Load_Curve.heading = "DR Ramped Unity Load Curve"
-  DR_Ramped_Unity_Load_Curve.AddPoint(0, 0);			
-  DR_Ramped_Unity_Load_Curve.AddPoint(paraCtrl.relaxramptim, 1);
-  DR_Ramped_Unity_Load_Curve.AddPoint(100.0, 1);
-  DR_Ramped_Unity_Load_Curve.sidr = 1;
+//   // DR Ramped Unity Load Curve
+//   var DR_Ramped_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000002);	
+//   DR_Ramped_Unity_Load_Curve.heading = "DR Ramped Unity Load Curve"
+//   DR_Ramped_Unity_Load_Curve.AddPoint(0, 0);			
+//   DR_Ramped_Unity_Load_Curve.AddPoint(paraCtrl.relaxramptim, 1);
+//   DR_Ramped_Unity_Load_Curve.AddPoint(100.0, 1);
+//   DR_Ramped_Unity_Load_Curve.sidr = 1;
 
-  // Max Timestep Limit Curve
-  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
-  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
-  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
-  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+//   // Max Timestep Limit Curve
+//   var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+//   Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+//   Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+//   Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
 
-  // Control settings
-  m.control.hourglass.exists = false;
-  m.control.hourglass.ihq = 6;
-  m.control.hourglass.qh = 0.02;
+//   // Control settings
+//   m.control.hourglass.exists = false;
+//   m.control.hourglass.ihq = 6;
+//   m.control.hourglass.qh = 0.02;
   
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.dynamic_relaxation.exists = true;
-  m.control.dynamic_relaxation.drterm = paraCtrl.drterm;
-  m.control.dynamic_relaxation.idrflg = -1;
-  m.control.dynamic_relaxation.nrcyck = 250;
-  m.control.dynamic_relaxation.drtol = paraCtrl.drtol;
-  m.control.dynamic_relaxation.drfctr = 0.995;
+//   m.control.dynamic_relaxation.exists = true;
+//   m.control.dynamic_relaxation.drterm = paraCtrl.drterm;
+//   m.control.dynamic_relaxation.idrflg = -1;
+//   m.control.dynamic_relaxation.nrcyck = 250;
+//   m.control.dynamic_relaxation.drtol = paraCtrl.drtol;
+//   m.control.dynamic_relaxation.drfctr = 0.995;
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtim; // does not include dynamic relaxation step duration 
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.endtim; // does not include dynamic relaxation step duration 
   
-  return {Base_Unity_Load_Curve, 
-          Base_Unity_Gravity_Curve, 
-          DR_Ramped_Unity_Load_Curve,
-  }
+//   return {Base_Unity_Load_Curve, 
+//           Base_Unity_Gravity_Curve, 
+//           DR_Ramped_Unity_Load_Curve,
+//   }
 
-}
+// }
 
-/**
-* Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload 
-* Step 1 - static preload application - Dynamic relaxation
-* Step 2 - blast load application - Explicit
-* Step 3 - ramp up static preload - Implicit
-* Input parameters:
-* @param m model id
-* @param paraCtrl all control parameters;  paraCtrl = {endtimexp: 0.1, endtimtotal: 1.1, framp: 1.5};
-*                                                      endtimexp - explicit blast stage end time
-*                                                      endtimtotal - total end time, including the implcit preload ramping up stage
-*                                                      framp - load factor for preload ramp up
-*/
-function AnalysisControlDynExpImpRamp(m, paraCtrl){
+// /**
+// * Define load and control curves, and analysis control cards for blast (explicit) analysis using dynamic relaxation for preload 
+// * Step 1 - static preload application - Dynamic relaxation
+// * Step 2 - blast load application - Explicit
+// * Step 3 - ramp up static preload - Implicit
+// * Input parameters:
+// * @param m model id
+// * @param paraCtrl all control parameters;  paraCtrl = {endtimexp: 0.1, endtimtotal: 1.1, framp: 1.5};
+// *                                                      endtimexp - explicit blast stage end time
+// *                                                      endtimtotal - total end time, including the implcit preload ramping up stage
+// *                                                      framp - load factor for preload ramp up
+// */
+// function AnalysisControlDynExpImpRamp(m, paraCtrl){
 
-  // Base Unity Load Curve
-  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
-  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
-  Base_Unity_Load_Curve.AddPoint(0, 1);
-  Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimexp, 1);
-  Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimtotal, paraCtrl.framp);			
-  Base_Unity_Load_Curve.AddPoint(10.0, paraCtrl.framp);
+//   // Base Unity Load Curve
+//   var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+//   Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+//   Base_Unity_Load_Curve.AddPoint(0, 1);
+//   Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimexp, 1);
+//   Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimtotal, paraCtrl.framp);			
+//   Base_Unity_Load_Curve.AddPoint(10.0, paraCtrl.framp);
 
-  // Base Unity Gravity Curve
-  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
-  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
-  Base_Unity_Gravity_Curve.AddPoint(0, 1);			
-  Base_Unity_Gravity_Curve.AddPoint(10.0, 1);
+//   // Base Unity Gravity Curve
+//   var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+//   Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+//   Base_Unity_Gravity_Curve.AddPoint(0, 1);			
+//   Base_Unity_Gravity_Curve.AddPoint(10.0, 1);
 
-  // DR Ramped Unity Load Curve
-  var DR_Ramped_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000002);	
-  DR_Ramped_Unity_Load_Curve.heading = "DR Ramped Unity Load Curve"
-  DR_Ramped_Unity_Load_Curve.AddPoint(0, 0);			
-  DR_Ramped_Unity_Load_Curve.AddPoint(0.005, 1);
-  DR_Ramped_Unity_Load_Curve.AddPoint(10.0, 1);
-  DR_Ramped_Unity_Load_Curve.sidr = 1;
+//   // DR Ramped Unity Load Curve
+//   var DR_Ramped_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000002);	
+//   DR_Ramped_Unity_Load_Curve.heading = "DR Ramped Unity Load Curve"
+//   DR_Ramped_Unity_Load_Curve.AddPoint(0, 0);			
+//   DR_Ramped_Unity_Load_Curve.AddPoint(0.005, 1);
+//   DR_Ramped_Unity_Load_Curve.AddPoint(10.0, 1);
+//   DR_Ramped_Unity_Load_Curve.sidr = 1;
 
-  // Explicit to Implict Switch Curve
-  var Explicit_to_Implict_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
-  Explicit_to_Implict_Switch_Curve.heading = "Explicit to Implict Switch Curve"
-  Explicit_to_Implict_Switch_Curve.AddPoint(0, 0);			
-  Explicit_to_Implict_Switch_Curve.AddPoint(paraCtrl.endtimexp*0.999, 0);
-  Explicit_to_Implict_Switch_Curve.AddPoint(paraCtrl.endtimexp, 1);
-  Explicit_to_Implict_Switch_Curve.AddPoint(10.0, 1);
+//   // Explicit to Implict Switch Curve
+//   var Explicit_to_Implict_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
+//   Explicit_to_Implict_Switch_Curve.heading = "Explicit to Implict Switch Curve"
+//   Explicit_to_Implict_Switch_Curve.AddPoint(0, 0);			
+//   Explicit_to_Implict_Switch_Curve.AddPoint(paraCtrl.endtimexp*0.999, 0);
+//   Explicit_to_Implict_Switch_Curve.AddPoint(paraCtrl.endtimexp, 1);
+//   Explicit_to_Implict_Switch_Curve.AddPoint(10.0, 1);
 
-  // Max Timestep Limit Curve
-  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
-  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
-  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
-  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+//   // Max Timestep Limit Curve
+//   var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+//   Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+//   Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+//   Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
 
-  // Control settings
-  m.control.hourglass.exists = false;
-  m.control.hourglass.ihq = 6;
-  m.control.hourglass.qh = 0.02;
+//   // Control settings
+//   m.control.hourglass.exists = false;
+//   m.control.hourglass.ihq = 6;
+//   m.control.hourglass.qh = 0.02;
   
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.dynamic_relaxation.exists = true;
-  m.control.dynamic_relaxation.drterm = 0.2;
-  m.control.dynamic_relaxation.idrflg = -1;
-  m.control.dynamic_relaxation.nrcyck = 250;
-  m.control.dynamic_relaxation.drtol = 0.001;
-  m.control.dynamic_relaxation.drfctr = 0.995;
+//   m.control.dynamic_relaxation.exists = true;
+//   m.control.dynamic_relaxation.drterm = 0.2;
+//   m.control.dynamic_relaxation.idrflg = -1;
+//   m.control.dynamic_relaxation.nrcyck = 250;
+//   m.control.dynamic_relaxation.drtol = 0.001;
+//   m.control.dynamic_relaxation.drfctr = 0.995;
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtimtotal; // does not include dynamic relaxation step duration 
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.endtimtotal; // does not include dynamic relaxation step duration 
 
-  m.control.implicit_general.exists = true;
-  m.control.implicit_general.imflag = -Explicit_to_Implict_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
-  m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
+//   m.control.implicit_general.exists = true;
+//   m.control.implicit_general.imflag = -Explicit_to_Implict_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
+//   m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
 
-  m.control.implicit_auto.exists = true;
-  m.control.implicit_auto.iauto = 1;
-  m.control.implicit_auto.dtmin = 1e-4;
-  m.control.implicit_auto.dtmax= 0.02;
+//   m.control.implicit_auto.exists = true;
+//   m.control.implicit_auto.iauto = 1;
+//   m.control.implicit_auto.dtmin = 1e-4;
+//   m.control.implicit_auto.dtmax= 0.02;
   
-  return {Base_Unity_Load_Curve, 
-          Base_Unity_Gravity_Curve, 
-          DR_Ramped_Unity_Load_Curve,
-          Explicit_to_Implict_Switch_Curve
-  }
+//   return {Base_Unity_Load_Curve, 
+//           Base_Unity_Gravity_Curve, 
+//           DR_Ramped_Unity_Load_Curve,
+//           Explicit_to_Implict_Switch_Curve
+//   }
 
-}
+// }
 
-/**
- * 
- * 
- * 
-*/
-function AnalysisControlImpExpImpRamp(m, paraCtrl){
+// /**
+//  * 
+//  * 
+//  * 
+// */
+// function AnalysisControlImpExpImpRamp(m, paraCtrl){
 
-  // Base Unity Load Curve
-  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
-  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
-  Base_Unity_Load_Curve.AddPoint(0, 0);
-  Base_Unity_Load_Curve.AddPoint(1.0, 1.0);
-  Base_Unity_Load_Curve.AddPoint(1.0+paraCtrl.endtimexp, 1);
-  Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimtotal, paraCtrl.framp);			
-  Base_Unity_Load_Curve.AddPoint(10.0, paraCtrl.framp);
+//   // Base Unity Load Curve
+//   var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+//   Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+//   Base_Unity_Load_Curve.AddPoint(0, 0);
+//   Base_Unity_Load_Curve.AddPoint(1.0, 1.0);
+//   Base_Unity_Load_Curve.AddPoint(1.0+paraCtrl.endtimexp, 1);
+//   Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimtotal, paraCtrl.framp);			
+//   Base_Unity_Load_Curve.AddPoint(10.0, paraCtrl.framp);
 
-  // Base Unity Gravity Curve
-  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
-  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
-  Base_Unity_Gravity_Curve.AddPoint(0, 0);
-  Base_Unity_Gravity_Curve.AddPoint(1.0, 1.0);			
-  Base_Unity_Gravity_Curve.AddPoint(10.0, 1.0);
+//   // Base Unity Gravity Curve
+//   var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+//   Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+//   Base_Unity_Gravity_Curve.AddPoint(0, 0);
+//   Base_Unity_Gravity_Curve.AddPoint(1.0, 1.0);			
+//   Base_Unity_Gravity_Curve.AddPoint(10.0, 1.0);
 
-  // Implicit to Explicit to Implict Switch Curve
-  var Implicit_to_Explicit_to_Implict_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
-  Implicit_to_Explicit_to_Implict_Switch_Curve.heading = "Implicit to Explicit to Implict Switch Curve"
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(0, 1.0); 			
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(0.99999, 1.0); // 0 - 1 sec, implicit
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.0, 0);
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.0+paraCtrl.endtimexp, 0);
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.00001+paraCtrl.endtimexp, 1);
-  Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(10.0, 1.0);
+//   // Implicit to Explicit to Implict Switch Curve
+//   var Implicit_to_Explicit_to_Implict_Switch_Curve = new Curve(Curve.CURVE, m, 1000003);	
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.heading = "Implicit to Explicit to Implict Switch Curve"
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(0, 1.0); 			
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(0.99999, 1.0); // 0 - 1 sec, implicit
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.0, 0);
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.0+paraCtrl.endtimexp, 0);
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(1.00001+paraCtrl.endtimexp, 1);
+//   Implicit_to_Explicit_to_Implict_Switch_Curve.AddPoint(10.0, 1.0);
 
-  // Max Timestep Limit Curve
-  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
-  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
-  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
-  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+//   // Max Timestep Limit Curve
+//   var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+//   Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+//   Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+//   Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
 
-  // Control settings
-  m.control.hourglass.exists = false;
-  m.control.hourglass.ihq = 6;
-  m.control.hourglass.qh = 0.02;
+//   // Control settings
+//   m.control.hourglass.exists = false;
+//   m.control.hourglass.ihq = 6;
+//   m.control.hourglass.qh = 0.02;
   
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtimtotal; // does not include dynamic relaxation step duration 
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.endtimtotal; // does not include dynamic relaxation step duration 
 
-  m.control.implicit_general.exists = true;
-  m.control.implicit_general.imflag = -Implicit_to_Explicit_to_Implict_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
-  m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
-  m.control.implicit_general.zero_v = 1;      // zero out the velocity before swicthing from explicit to implicit
+//   m.control.implicit_general.exists = true;
+//   m.control.implicit_general.imflag = -Implicit_to_Explicit_to_Implict_Switch_Curve.lcid;	// Implict-Explicit switching curve ID
+//   m.control.implicit_general.dt0 = 0.01;  		// initial time step size for implicit
+//   m.control.implicit_general.zero_v = 1;      // zero out the velocity before swicthing from explicit to implicit
 
-  m.control.implicit_auto.exists = true;
-  m.control.implicit_auto.iauto = 1;
-  m.control.implicit_auto.dtmin = 1e-4;
-  m.control.implicit_auto.dtmax= 0.02;
+//   m.control.implicit_auto.exists = true;
+//   m.control.implicit_auto.iauto = 1;
+//   m.control.implicit_auto.dtmin = 1e-4;
+//   m.control.implicit_auto.dtmax= 0.02;
   
-  return {Base_Unity_Load_Curve, 
-          Base_Unity_Gravity_Curve, 
-          Implicit_to_Explicit_to_Implict_Switch_Curve
-  }
+//   return {Base_Unity_Load_Curve, 
+//           Base_Unity_Gravity_Curve, 
+//           Implicit_to_Explicit_to_Implict_Switch_Curve
+//   }
 
-}
+// }
 
 
-/**
- * 
- * 
- * 
- * 
-*/
-function AnalysisControlExpSmoothRamp(m, paraCtrl){
+// /**
+//  * 
+//  * 
+//  * 
+//  * 
+// */
+// function AnalysisControlExpSmoothRamp(m, paraCtrl){
 
-  // Smooth Base Unity Load Curve - can be defined by "framp"
-  var Smooth_Base_Unity_Load_Curve = smooth_step_curve(m, paraCtrl.endtimexp, paraCtrl.framp, 1000, 1000000,'Smooth_Base_Unity_Load_Curve');
+//   // Smooth Base Unity Load Curve - can be defined by "framp"
+//   var Smooth_Base_Unity_Load_Curve = smooth_step_curve(m, paraCtrl.endtimexp, paraCtrl.framp, 1000, 1000000,'Smooth_Base_Unity_Load_Curve');
 
-  // Smooth Base Unity Gravity Curve - always ramp to 1.0
-  var Smooth_Base_Gravity_Load_Curve = smooth_step_curve(m, paraCtrl.endtimexp, 1.0, 1000, 1000001,'Smooth_Base_Gravity_Load_Curve');
+//   // Smooth Base Unity Gravity Curve - always ramp to 1.0
+//   var Smooth_Base_Gravity_Load_Curve = smooth_step_curve(m, paraCtrl.endtimexp, 1.0, 1000, 1000001,'Smooth_Base_Gravity_Load_Curve');
 
-  // Max Timestep Limit Curve
-  var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
-  Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
-  Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
-  Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
+//   // Max Timestep Limit Curve
+//   var Max_Timestep_Limit_Curve = new Curve(Curve.CURVE, m, 2000000);	
+//   Max_Timestep_Limit_Curve.heading = "Max Timestep Limit Curve"
+//   Max_Timestep_Limit_Curve.AddPoint(0, 1.0E-6);			
+//   Max_Timestep_Limit_Curve.AddPoint(100.0, 1.0E-6);
 
-  // Control settings
-  m.control.hourglass.exists = false;
-  m.control.hourglass.ihq = 6;
-  m.control.hourglass.qh = 0.02;
+//   // Control settings
+//   m.control.hourglass.exists = false;
+//   m.control.hourglass.ihq = 6;
+//   m.control.hourglass.qh = 0.02;
   
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtim;  
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.endtim;  
 
-  return {Smooth_Base_Unity_Load_Curve, 
-          Smooth_Base_Gravity_Load_Curve, 
-  }
+//   return {Smooth_Base_Unity_Load_Curve, 
+//           Smooth_Base_Gravity_Load_Curve, 
+//   }
 
-}
+// }
 
-/**
- * 
- * 
- * 
-*/
-function AnalysisControlImplicit(m, paraCtrl){
+// /**
+//  * 
+//  * 
+//  * 
+// */
+// function AnalysisControlImplicit(m, paraCtrl){
 
 
-  // Base Unity Load Curve
-  var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
-  Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
-  Base_Unity_Load_Curve.AddPoint(0, 0);
-  Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimimp, paraCtrl.framp);
+//   // Base Unity Load Curve
+//   var Base_Unity_Load_Curve = new Curve(Curve.CURVE, m, 1000000);	
+//   Base_Unity_Load_Curve.heading = "Base Unity Load Curve"
+//   Base_Unity_Load_Curve.AddPoint(0, 0);
+//   Base_Unity_Load_Curve.AddPoint(paraCtrl.endtimimp, paraCtrl.framp);
 
-  // Base Unity Gravity Curve
-  var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
-  Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
-  Base_Unity_Gravity_Curve.AddPoint(0, 0);
-  Base_Unity_Gravity_Curve.AddPoint(paraCtrl.endtimimp, 1.0);			
+//   // Base Unity Gravity Curve
+//   var Base_Unity_Gravity_Curve = new Curve(Curve.CURVE, m, 1000001);	
+//   Base_Unity_Gravity_Curve.heading = "Base Unity Gravity Curve"
+//   Base_Unity_Gravity_Curve.AddPoint(0, 0);
+//   Base_Unity_Gravity_Curve.AddPoint(paraCtrl.endtimimp, 1.0);			
 
-  // Control settings
-  m.control.energy.exists = true;
-  m.control.energy.hgen = 2; 
+//   // Control settings
+//   m.control.energy.exists = true;
+//   m.control.energy.hgen = 2; 
   
-  m.control.termination.exists = true;
-  m.control.termination.endtim = paraCtrl.endtimimp; // does not include dynamic relaxation step duration 
+//   m.control.termination.exists = true;
+//   m.control.termination.endtim = paraCtrl.endtimimp; // does not include dynamic relaxation step duration 
 
-  m.control.implicit_general.exists = true;
-  m.control.implicit_general.imflag = 1;
-  m.control.implicit_general.dt0 = paraCtrl.dt0;  		// initial time step size for implicit
+//   m.control.implicit_general.exists = true;
+//   m.control.implicit_general.imflag = 1;
+//   m.control.implicit_general.dt0 = paraCtrl.dt0;  		// initial time step size for implicit
 
-  m.control.implicit_auto.exists = true;
-  m.control.implicit_auto.iauto = 1;
-  m.control.implicit_auto.dtmin = 1e-4;
-  m.control.implicit_auto.dtmax= paraCtrl.dtmax;        // max time step for implicit
+//   m.control.implicit_auto.exists = true;
+//   m.control.implicit_auto.iauto = 1;
+//   m.control.implicit_auto.dtmin = 1e-4;
+//   m.control.implicit_auto.dtmax= paraCtrl.dtmax;        // max time step for implicit
 
-  return {Base_Unity_Load_Curve, 
-          Base_Unity_Gravity_Curve, 
-  }
+//   return {Base_Unity_Load_Curve, 
+//           Base_Unity_Gravity_Curve, 
+//   }
 
-}
+// }
 
 
 /**

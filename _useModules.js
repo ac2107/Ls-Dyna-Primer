@@ -19,3 +19,5 @@ Use('material.js');
 Use("beamEndRelease.js");
 Use('nodeTieNRBC.js');
 Use('beamSectionUpdate.js');
+
+Use('analysisControl.js');
