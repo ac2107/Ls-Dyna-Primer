@@ -1,0 +1,15 @@
+In Window("Tools/Keywords")
+    .Button("Model Tab")
+    .Button("LOAD")
+End In
+PopupWindow1().Button("BLAST_ENHANCED")
+Window("LOAD_BLAST_ENHANCED").Button("Delete")
+Window("LOAD_BLAST_ENHANCED").Menu("LOAD").Button("All")
+Window("LOAD_BLAST_ENHANCED").Button("Apply")
+In Window("LOAD_BLAST_ENHANCED").Window("DELETE LOAD")
+    .Button("Delete sel")
+    .Button("Continue")
+End In
+In Window("Tools/Keywords")
+    .Button("Model Tab")
+End In
