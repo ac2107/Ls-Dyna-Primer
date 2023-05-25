@@ -22,14 +22,14 @@ PlayMacro(mac_dir+"extrude_001.prm", { variables: { SHELL_PID:pids.SHELL_BEAM_EN
 PlayMacro(mac_dir+"part_rotate_001.prm", { variables: { PID:pids.solid_wall,
 	CoR:"0.0 0.0 0.0",
 	RA:"90.0 0.0 0.0",
-	DIR:dir } } 
+	DIR:"Z"  } } 
 );
 
 
 // Translate part
 PlayMacro(mac_dir+"part_translate_001.prm", { variables: { PID:pids.solid_wall,
 	TD:"0.0 " + wall_l + " 0.0",
-	DIR:dir } } 
+	DIR:"Z"  } } 
 );
 
 
