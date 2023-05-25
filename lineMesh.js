@@ -738,6 +738,17 @@ function lineMesh(m, pid, len, x1, y1, z1, x2, y2, z2) {
     return blabel_collector
 }
 
+/**
+ * Creates a series of equally spaced lines within a rectangle in the X direction.
+ *
+ * @param {number} x1 - The x-coordinate of the first point defining the rectangle.
+ * @param {number} y1 - The y-coordinate of the first point defining the rectangle.
+ * @param {number} x2 - The x-coordinate of the second point defining the rectangle.
+ * @param {number} y2 - The y-coordinate of the second point defining the rectangle.
+ * @param {number} z - The z-coordinate of the rectangle.
+ * @param {number} numLines - The number of lines to create within the rectangle.
+ * @returns {Array} - An array of arrays representing the start and end points of each line.
+ */
 function createLinesInRectangleX(x1, y1, x2, y2, z, numLines) {
 	var width = Math.abs(x2 - x1);
 	var height = Math.abs(y2 - y1);
@@ -755,19 +766,30 @@ function createLinesInRectangleX(x1, y1, x2, y2, z, numLines) {
 	return lines;
 }
 
-  function createLinesInRectangleY(x1, y1, x2, y2, z, numLines) {
-	var width = Math.abs(x2 - x1);
-	var height = Math.abs(y2 - y1);
-	var lineSpacing = height / (numLines - 1);
-  
-	var lines = [];
-  
-	for (var i = 0; i < numLines; i++) {
-	  var lineY = y1 + i * lineSpacing;
-	  var lineStart = [x1, lineY, z];
-	  var lineEnd = [x2, lineY, z];
-	  lines.push([lineStart, lineEnd]);
-	}
-  
-	return lines;
+/**
+ * Creates a series of equally spaced lines within a rectangle in the Y direction.
+ *
+ * @param {number} x1 - The x-coordinate of the first point defining the rectangle.
+ * @param {number} y1 - The y-coordinate of the first point defining the rectangle.
+ * @param {number} x2 - The x-coordinate of the second point defining the rectangle.
+ * @param {number} y2 - The y-coordinate of the second point defining the rectangle.
+ * @param {number} z - The z-coordinate of the rectangle.
+ * @param {number} numLines - The number of lines to create within the rectangle.
+ * @returns {Array} - An array of arrays representing the start and end points of each line.
+ */
+function createLinesInRectangleY(x1, y1, x2, y2, z, numLines) {
+var width = Math.abs(x2 - x1);
+var height = Math.abs(y2 - y1);
+var lineSpacing = height / (numLines - 1);
+
+var lines = [];
+
+for (var i = 0; i < numLines; i++) {
+    var lineY = y1 + i * lineSpacing;
+    var lineStart = [x1, lineY, z];
+    var lineEnd = [x2, lineY, z];
+    lines.push([lineStart, lineEnd]);
+}
+
+return lines;
 }
