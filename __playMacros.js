@@ -18,6 +18,21 @@ PlayMacro(mac_dir+"extrude_001.prm", { variables: { SHELL_PID:pids.SHELL_BEAM_EN
 );
 
 
+// Rotate part
+PlayMacro(mac_dir+"part_rotate_001.prm", { variables: { PID:pids.solid_wall,
+	CoR:"0.0 0.0 0.0",
+	RA:"90.0 0.0 0.0",
+	DIR:dir } } 
+);
+
+
+// Translate part
+PlayMacro(mac_dir+"part_translate_001.prm", { variables: { PID:pids.solid_wall,
+	TD:"0.0 " + wall_l + " 0.0",
+	DIR:dir } } 
+);
+
+
 // Extrude shell elements to create TShell elements
 PlayMacro(mac_dir+"extrude_002_TShell.prm", { variables: { SHELL_PID:pids.SHELL_BEAM_END,
 	TSHELL_PID:pids.TSHELL_BEAM_END,
