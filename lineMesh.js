@@ -737,3 +737,37 @@ function lineMesh(m, pid, len, x1, y1, z1, x2, y2, z2) {
 
     return blabel_collector
 }
+
+function createLinesInRectangleX(x1, y1, x2, y2, z, numLines) {
+	var width = Math.abs(x2 - x1);
+	var height = Math.abs(y2 - y1);
+	var lineSpacing = width / (numLines - 1);
+  
+	var lines = [];
+  
+	for (var i = 0; i < numLines; i++) {
+	  var lineX = x1 + i * lineSpacing;
+	  var lineStart = [lineX, y1, z];
+	  var lineEnd = [lineX, y2, z];
+	  lines.push([lineStart, lineEnd]);
+	}
+  
+	return lines;
+}
+
+  function createLinesInRectangleY(x1, y1, x2, y2, z, numLines) {
+	var width = Math.abs(x2 - x1);
+	var height = Math.abs(y2 - y1);
+	var lineSpacing = height / (numLines - 1);
+  
+	var lines = [];
+  
+	for (var i = 0; i < numLines; i++) {
+	  var lineY = y1 + i * lineSpacing;
+	  var lineStart = [x1, lineY, z];
+	  var lineEnd = [x2, lineY, z];
+	  lines.push([lineStart, lineEnd]);
+	}
+  
+	return lines;
+}
