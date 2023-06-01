@@ -102,3 +102,122 @@ function isThirdNode(m, nd){
 	}
 	return bool	
 }
+
+/**
+ * Generates an array of nodes between two given nodes.
+ *
+ * @param {Model} m - Model 
+ * @param {Number} startNodeID - The coordinates of the starting node [x, y, z].
+ * @param {Number} endNodeID - The coordinates of the ending node [x, y, z].
+ * @param {number} num - The number of nodes to generate in between the start and end nodes.
+ * @returns {Array} - An array of node ids, starting with the startNode, followed by the in-between nodes sorted by distance, and ending with the endNode.
+ */
+function createNodesBetween(m, startNodeID, endNodeID, num) {
+	
+	var startNode = Node.GetFromID(m, startNodeID);
+	var endNode = Node.GetFromID(m, endNodeID);
+
+	// Calculate the distance between startNode and endNode
+	const distance = Math.sqrt(
+	  Math.pow(endNode.x - startNode.x, 2) +
+	  Math.pow(endNode.y - startNode.y, 2) +
+	  Math.pow(endNode.z - startNode.z, 2)
+	);
+  
+	// Calculate the increment for each coordinate
+	const incrementX = (endNode.x - startNode.x) / (num + 1);
+	const incrementY = (endNode.y - startNode.y) / (num + 1);
+	const incrementZ = (endNode.z - startNode.z) / (num + 1);
+  
+	const nodes = [startNode]; // Start with the first input node
+  
+	// Generate nodes in between
+	for (let i = 1; i <= num; i++) {
+	  const x = startNode.x + incrementX * i;
+	  const y = startNode.y + incrementY * i;
+	  const z = startNode.z + incrementZ * i;
+	  var newNode = new Node(m, Node.NextFreeLabel(m), x, y, z);
+	  nodes.push(newNode);
+	}
+  
+	nodes.push(endNode); // Finish with the second input node
+  
+	// Sort nodes by distance from the first node
+	nodes.sort((a, b) => {
+	  const distanceA = Math.sqrt(
+		Math.pow(a.x - startNode.x, 2) +
+		Math.pow(a.y - startNode.y, 2) +
+		Math.pow(a.z - startNode.z, 2)
+	  );
+  
+	  const distanceB = Math.sqrt(
+		Math.pow(b.x - startNode.x, 2) +
+		Math.pow(b.y - startNode.y, 2) +
+		Math.pow(b.z - startNode.z, 2)
+	  );
+  
+	  return distanceA - distanceB;
+	});
+  
+	var nids = [];
+	for (n of nodes){nids.push(n.nid)}
+
+	return nids;
+}
+
+
+/**
+ * Generates an array of points between two given points.
+ *
+ * @param {Array} startPoint - The coordinates of the starting point [x, y, z].
+ * @param {Array} endPoint - The coordinates of the ending point [x, y, z].
+ * @param {number} num - The number of nodes to generate in between the start and end points.
+ * @returns {Array} - An array of points, starting with the startPoint, followed by the in-between points sorted by distance, and ending with the endPoint.
+ */
+function createPointsBetween(startPoint, endPoint, num) {
+	// Calculate the distance between startNode and endNode
+	const distance = Math.sqrt(
+	  Math.pow(endPoint[0] - startPoint[0], 2) +
+	  Math.pow(endPoint[1] - startPoint[1], 2) +
+	  Math.pow(endPoint[2] - startPoint[2], 2)
+	);
+  
+	// Calculate the increment for each coordinate
+	const incrementX = (endPoint[0] - startPoint[0]) / (num + 1);
+	const incrementY = (endPoint[1] - startPoint[1]) / (num + 1);
+	const incrementZ = (endPoint[2] - startPoint[2]) / (num + 1);
+  
+	const points = [startPoint]; // Start with the first input node
+  
+	// Generate nodes in between
+	for (let i = 1; i <= num; i++) {
+	  const x = startPoint[0] + incrementX * i;
+	  const y = startPoint[1] + incrementY * i;
+	  const z = startPoint[2] + incrementZ * i;
+	  points.push([x, y, z]);
+	}
+  
+	points.push(endPoint); // Finish with the second input node
+  
+	// Sort nodes by distance from the first node
+	points.sort((a, b) => {
+	  const distanceA = Math.sqrt(
+		Math.pow(a[0] - startPoint[0], 2) +
+		Math.pow(a[1] - startPoint[1], 2) +
+		Math.pow(a[2] - startPoint[2], 2)
+	  );
+  
+	  const distanceB = Math.sqrt(
+		Math.pow(b[0] - startPoint[0], 2) +
+		Math.pow(b[1] - startPoint[1], 2) +
+		Math.pow(b[2] - startPoint[2], 2)
+	  );
+  
+	  return distanceA - distanceB;
+	});
+  
+	return points;
+}
+
+
+
