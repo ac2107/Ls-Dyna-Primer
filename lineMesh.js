@@ -26,8 +26,6 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
     // Create in-between nodes
     var newNodes = createNodesBetween(m, n1, n2, nnum);
 
-    Message(newNodes);
-
     // Create beam elements
     var newBeams = [];
     var vec_r = [];

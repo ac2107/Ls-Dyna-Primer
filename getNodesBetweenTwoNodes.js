@@ -38,7 +38,7 @@ function getNodesBetweenTwoNodes(m, n1, n2) {
 		// >> get node
 		var node = Node.GetFromID(m, nid);
 		// >> work out distance to the first node n1
-		var dist = unitVectorbyTwoNodes(m, n1, nid).len;
+		var dist = unitVectorByTwoNodes(m, n1, nid).distance;
 		// >> add the distance as property to a NODE object
 		node.dist = dist;
 		// >> push the node obj to the list
@@ -100,7 +100,7 @@ function getNodesBetweenTwoNodesFlagged(m, n1, n2, flag) {
 		// >> get node
 		var node = Node.GetFromID(m, nid);
 		// >> work out distance to the first node n1
-		var dist = unitVectorbyTwoNodes(m, n1, nid).len;
+		var dist = unitVectorByTwoNodes(m, n1, nid).distance;
 		// >> add the distance as property to a NODE object
 		node.dist = dist;
 		// >> push the node obj to the list

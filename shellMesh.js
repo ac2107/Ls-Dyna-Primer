@@ -43,7 +43,7 @@ function oneWayBlastFace(m, pid, narray1, narray2, reverse){
  * @param {Number} n2 end node of  line 1
  * @param {Number} n3 start node of line 2
  * @param {Number} n4 end node of line 2
- * @param {Number} num number equally spaced shells between line 1 and 2
+ * @param {Number} num number of equally spaced shells between line 1 and 2; if = -1, use the existing nodes between n1-n3 and n2-n4
  * @param {Boolean} reverse boolean to control if the shell normal should be reversed or not
  * @param {Flag} flag only use flagged nodes, flag = 0 if use all nodes
  */

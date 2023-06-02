@@ -799,7 +799,7 @@ function resetBeamOrientation(eid){
 }
 
 /**
- * Split beam element, node merge needed after this function call
+ * Split beam element
  * Delete the beam element and then create new beam elements with given element size
  * @param {Model} m Model, object
  * @param {Number} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
