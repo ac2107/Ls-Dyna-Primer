@@ -22,7 +22,7 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
     if (lennum < 0){nnum = Math.max(1, Math.abs(lennum) - 1)}
     // element length is provided
     else if (lennum > 0) { nnum = Math.max(1, Math.floor(unitVector.distance/lennum))}
-    
+    else {nnum = 0}
     // Create in-between nodes
     var newNodes = createNodesBetween(m, n1, n2, nnum);
 
@@ -166,4 +166,54 @@ function splitBeamElement(m, ele, len){
 	// Node.Merge(m, flag_node_merge, 1e-5);
 	// ReturnFlag(flag_node_merge)
 
+}
+
+/**
+ * Combine multiple beam elements into one element
+ * 
+ * @param {Model} m - Model 
+ * @param {Array} blist - list of beam ids 
+ */
+function combineBeamElement(m, blist){
+
+    // Create flag to deleting beam elements
+    var flag_del = AllocateFlag();
+
+    // 
+    var nidList = [];
+    var nidListUnique = []; 
+
+    // Get all the node ids belong to the beam elements to be merged
+    // Get beam part id
+    var pid = 0;
+    for (var b of blist){
+        
+        var beam = Beam.GetFromID(m, b);
+
+        nidList.push(beam.n1);
+        nidList.push(beam.n2);
+
+        beam.SetFlag(flag_del);
+
+        pid = beam.pid;
+    }
+
+    // Find the starting and ending node of the new beam element 
+    nidListUnique = findUniqueNumbers(nidList);
+
+    // Delete beams to be merged
+    m.DeleteFlagged(flag_del);
+
+    // Create new beam element
+    if (nidListUnique.length === 2){
+        var newBeam = lineMeshByNodes(m, pid, 0, nidListUnique[0], nidListUnique[1]);
+    }
+
+    Message(blist);
+    Message(nidList);
+    Message(nidListUnique);
+
+    ReturnFlag(flag_del);
+
+    // return newBeam
 }

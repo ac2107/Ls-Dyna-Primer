@@ -321,3 +321,32 @@ function unitVectorByTwoNodes(m, nid1, nid2) {
 	  unitVector: unitVector
 	};
   }
+
+/**
+ * Finds the numbers in a given list that do not have duplicates.
+ *
+ * @param {number[]} list - The list of numbers.
+ * @returns {number[]} An array containing the numbers that do not have duplicates.
+ */
+function findUniqueNumbers(list) {
+const frequency = {};
+const uniqueNumbers = [];
+
+// Count the frequency of each number
+for (const num of list) {
+	if (frequency[num]) {
+	frequency[num]++;
+	} else {
+	frequency[num] = 1;
+	}
+}
+
+// Check for numbers with frequency = 1
+for (const num of list) {
+	if (frequency[num] === 1) {
+	uniqueNumbers.push(num);
+	}
+}
+
+return uniqueNumbers;
+}
