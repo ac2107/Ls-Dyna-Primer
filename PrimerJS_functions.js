@@ -511,150 +511,150 @@ function createShellELement(m, pid, nids) {
 }
 
 
-function unitVectorbyTwoNodes(m, nid1, nid2) {
+// function unitVectorbyTwoNodes(m, nid1, nid2) {
 
-    var n1 = Node.GetFromID(m, nid1);
-    var n2 = Node.GetFromID(m, nid2);
+//     var n1 = Node.GetFromID(m, nid1);
+//     var n2 = Node.GetFromID(m, nid2);
 
-    var L = Math.sqrt(Math.pow((n1.x - n2.x), 2) + Math.pow((n1.y - n2.y), 2) + Math.pow((n1.z - n2.z), 2));
+//     var L = Math.sqrt(Math.pow((n1.x - n2.x), 2) + Math.pow((n1.y - n2.y), 2) + Math.pow((n1.z - n2.z), 2));
 
-    var U = {
-        vx: (n2.x - n1.x) / L,
-        vy: (n2.y - n1.y) / L,
-        vz: (n2.z - n1.z) / L
-    };
+//     var U = {
+//         vx: (n2.x - n1.x) / L,
+//         vy: (n2.y - n1.y) / L,
+//         vz: (n2.z - n1.z) / L
+//     };
 
-    // deterimine orientation of the beam unit vector
-    // X - in global x direction
-    // Y - in global y direction
-    // Z - in global z direction
-    // Oblique - not in any of the three global direction
+//     // deterimine orientation of the beam unit vector
+//     // X - in global x direction
+//     // Y - in global y direction
+//     // Z - in global z direction
+//     // Oblique - not in any of the three global direction
     
-    var orientation;
+//     var orientation;
 
-    var Ux = {
-        vx: 1.0,
-        vy: 0.0,
-        vz: 0.0
-    };
-    var Uy = {
-        vx: 0.0,
-        vy: 1.0,
-        vz: 0.0
-    };
-    var Uz = {
-        vx: 0.0,
-        vy: 0.0,
-        vz: 1.0
-    };
+//     var Ux = {
+//         vx: 1.0,
+//         vy: 0.0,
+//         vz: 0.0
+//     };
+//     var Uy = {
+//         vx: 0.0,
+//         vy: 1.0,
+//         vz: 0.0
+//     };
+//     var Uz = {
+//         vx: 0.0,
+//         vy: 0.0,
+//         vz: 1.0
+//     };
 
-    const tol = 1e-2;
+//     const tol = 1e-2;
 
-    if (Math.abs(U.vx) > Ux.vx - tol && Math.abs(U.vx) < Ux.vx + tol &&
-        Math.abs(U.vy) > Ux.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
-        Math.abs(U.vz) > Ux.vz - tol && Math.abs(U.vz) < Ux.vz + tol) {
-        orientation = 'X';
+//     if (Math.abs(U.vx) > Ux.vx - tol && Math.abs(U.vx) < Ux.vx + tol &&
+//         Math.abs(U.vy) > Ux.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+//         Math.abs(U.vz) > Ux.vz - tol && Math.abs(U.vz) < Ux.vz + tol) {
+//         orientation = 'X';
 
-    } else if (     Math.abs(U.vx) > Uy.vx - tol && Math.abs(U.vx) < Uy.vx + tol &&
-                    Math.abs(U.vy) > Uy.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
-                    Math.abs(U.vz) > Uy.vz - tol && Math.abs(U.vz) < Uy.vz + tol) {
-        orientation = 'Y';
+//     } else if (     Math.abs(U.vx) > Uy.vx - tol && Math.abs(U.vx) < Uy.vx + tol &&
+//                     Math.abs(U.vy) > Uy.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+//                     Math.abs(U.vz) > Uy.vz - tol && Math.abs(U.vz) < Uy.vz + tol) {
+//         orientation = 'Y';
 
-    } else if ( Math.abs(U.vx) > Uz.vx - tol && Math.abs(U.vx) < Uz.vx + tol &&
-                Math.abs(U.vy) > Uz.vy - tol && Math.abs(U.vy) < Uz.vy + tol &&
-                Math.abs(U.vz) > Uz.vz - tol && Math.abs(U.vz) < Uz.vz + tol) {
-        orientation = 'Z';
+//     } else if ( Math.abs(U.vx) > Uz.vx - tol && Math.abs(U.vx) < Uz.vx + tol &&
+//                 Math.abs(U.vy) > Uz.vy - tol && Math.abs(U.vy) < Uz.vy + tol &&
+//                 Math.abs(U.vz) > Uz.vz - tol && Math.abs(U.vz) < Uz.vz + tol) {
+//         orientation = 'Z';
 
-    } else {
-        orientation = 'Oblique';
-    }
+//     } else {
+//         orientation = 'Oblique';
+//     }
 
-    var vector = {
-        uv: U,
-        len: L,
-        ori: orientation,
-    }; // uv - unit vector, L - distance between nodes
+//     var vector = {
+//         uv: U,
+//         len: L,
+//         ori: orientation,
+//     }; // uv - unit vector, L - distance between nodes
 
-    // Message(orientation);
+//     // Message(orientation);
 
-    return vector
-}
+//     return vector
+// }
 
-/**
- * 
- * @param {Model} m Model
- * @param {Array} arr1 location of point 1 [x, y, z]
- * @param {Array} arr2 locaiton of point 2 [x, y, z]
- * @returns 
- */
-function unitVectorbyTwoPoints(m, arr1, arr2) {
+// /**
+//  * 
+//  * @param {Model} m Model
+//  * @param {Array} arr1 location of point 1 [x, y, z]
+//  * @param {Array} arr2 locaiton of point 2 [x, y, z]
+//  * @returns 
+//  */
+// function unitVectorbyTwoPoints(m, arr1, arr2) {
 
-    var n1 = {x: arr1[0], y: arr1[1], z: arr1[2]};
-    var n2 = {x: arr2[0], y: arr2[1], z: arr2[2]};
+//     var n1 = {x: arr1[0], y: arr1[1], z: arr1[2]};
+//     var n2 = {x: arr2[0], y: arr2[1], z: arr2[2]};
 
-    var L = Math.sqrt(Math.pow((n1.x - n2.x), 2) + Math.pow((n1.y - n2.y), 2) + Math.pow((n1.z - n2.z), 2));
+//     var L = Math.sqrt(Math.pow((n1.x - n2.x), 2) + Math.pow((n1.y - n2.y), 2) + Math.pow((n1.z - n2.z), 2));
 
-    var U = {
-        vx: (n2.x - n1.x) / L,
-        vy: (n2.y - n1.y) / L,
-        vz: (n2.z - n1.z) / L
-    };
+//     var U = {
+//         vx: (n2.x - n1.x) / L,
+//         vy: (n2.y - n1.y) / L,
+//         vz: (n2.z - n1.z) / L
+//     };
 
-    // deterimine orientation of the beam unit vector
-    // X - in global x direction
-    // Y - in global y direction
-    // Z - in global z direction
-    // Oblique - not in any of the three global direction
+//     // deterimine orientation of the beam unit vector
+//     // X - in global x direction
+//     // Y - in global y direction
+//     // Z - in global z direction
+//     // Oblique - not in any of the three global direction
     
-    var orientation;
+//     var orientation;
 
-    var Ux = {
-        vx: 1.0,
-        vy: 0.0,
-        vz: 0.0
-    };
-    var Uy = {
-        vx: 0.0,
-        vy: 1.0,
-        vz: 0.0
-    };
-    var Uz = {
-        vx: 0.0,
-        vy: 0.0,
-        vz: 1.0
-    };
+//     var Ux = {
+//         vx: 1.0,
+//         vy: 0.0,
+//         vz: 0.0
+//     };
+//     var Uy = {
+//         vx: 0.0,
+//         vy: 1.0,
+//         vz: 0.0
+//     };
+//     var Uz = {
+//         vx: 0.0,
+//         vy: 0.0,
+//         vz: 1.0
+//     };
 
-    const tol = 1e-2;
+//     const tol = 1e-2;
 
-    if (Math.abs(U.vx) > Ux.vx - tol && Math.abs(U.vx) < Ux.vx + tol &&
-        Math.abs(U.vy) > Ux.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
-        Math.abs(U.vz) > Ux.vz - tol && Math.abs(U.vz) < Ux.vz + tol) {
-        orientation = 'X';
+//     if (Math.abs(U.vx) > Ux.vx - tol && Math.abs(U.vx) < Ux.vx + tol &&
+//         Math.abs(U.vy) > Ux.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+//         Math.abs(U.vz) > Ux.vz - tol && Math.abs(U.vz) < Ux.vz + tol) {
+//         orientation = 'X';
 
-    } else if (     Math.abs(U.vx) > Uy.vx - tol && Math.abs(U.vx) < Uy.vx + tol &&
-                    Math.abs(U.vy) > Uy.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
-                    Math.abs(U.vz) > Uy.vz - tol && Math.abs(U.vz) < Uy.vz + tol) {
-        orientation = 'Y';
+//     } else if (     Math.abs(U.vx) > Uy.vx - tol && Math.abs(U.vx) < Uy.vx + tol &&
+//                     Math.abs(U.vy) > Uy.vy - tol && Math.abs(U.vy) < Uy.vy + tol &&
+//                     Math.abs(U.vz) > Uy.vz - tol && Math.abs(U.vz) < Uy.vz + tol) {
+//         orientation = 'Y';
 
-    } else if ( Math.abs(U.vx) > Uz.vx - tol && Math.abs(U.vx) < Uz.vx + tol &&
-                Math.abs(U.vy) > Uz.vy - tol && Math.abs(U.vy) < Uz.vy + tol &&
-                Math.abs(U.vz) > Uz.vz - tol && Math.abs(U.vz) < Uz.vz + tol) {
-        orientation = 'Z';
+//     } else if ( Math.abs(U.vx) > Uz.vx - tol && Math.abs(U.vx) < Uz.vx + tol &&
+//                 Math.abs(U.vy) > Uz.vy - tol && Math.abs(U.vy) < Uz.vy + tol &&
+//                 Math.abs(U.vz) > Uz.vz - tol && Math.abs(U.vz) < Uz.vz + tol) {
+//         orientation = 'Z';
 
-    } else {
-        orientation = 'Oblique';
-    }
+//     } else {
+//         orientation = 'Oblique';
+//     }
 
-    var vector = {
-        uv: U,
-        len: L,
-        ori: orientation,
-    }; // uv - unit vector, L - distance between nodes
+//     var vector = {
+//         uv: U,
+//         len: L,
+//         ori: orientation,
+//     }; // uv - unit vector, L - distance between nodes
 
-    // Message(orientation);
+//     // Message(orientation);
 
-    return vector
-}
+//     return vector
+// }
 
 function ShellPartTotalArea(m, pid) {
 
@@ -801,9 +801,9 @@ function resetBeamOrientation(eid){
 /**
  * Split beam element, node merge needed after this function call
  * Delete the beam element and then create new beam elements with given element size
- * @param {*} m Model, object
- * @param {*} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
- * @param {*} len Element length, nunber
+ * @param {Model} m Model, object
+ * @param {Number} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
+ * @param {Number} len Element length or number of elements; element length if > 0 and number of elements if < 0
  */
 function splitBeamElement(m, ele, len){
 	var flag_bdel = AllocateFlag();

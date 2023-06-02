@@ -220,4 +220,104 @@ function createPointsBetween(startPoint, endPoint, num) {
 }
 
 
+/**
+ * 
+ * @param {Model} m - Model
+ * @param {Number} nid1 - Node id of node 1
+ * @param {Number} nid2 - Node id of node 2
+ * @returns 		 An object containing the unit vector, distance, and orientation.
+ *                   - unitVector: The unit vector representing the direction between the nodes.
+ *                   - distance: The Euclidean distance between the nodes.
+ *                   - orientation: The orientation of the unit vector (x-axis, y-axis, z-axis, or oblique).
+ */
+function unitVectorByTwoNodes(m, nid1, nid2) {
 
+	// Define a tolerance for testing orientation
+	var tolerance = 1e-4;
+
+
+	// Get the node coordinates
+	var n1 = Node.GetFromID(m, nid1);
+    var n2 = Node.GetFromID(m, nid2);
+
+	var node1 = [n1.x, n1.y, n1.z];
+	var node2 = [n2.x, n2.y, n2.z];
+
+	// Calculate the vector between node 1 and node 2
+	const vector = [
+	  node2[0] - node1[0],
+	  node2[1] - node1[1],
+	  node2[2] - node1[2]
+	];
+  
+	// Calculate the distance between node 1 and node 2 using the Euclidean formula
+	const distance = Math.sqrt(
+	  Math.pow(vector[0], 2) + Math.pow(vector[1], 2) + Math.pow(vector[2], 2)
+	);
+  
+	// Calculate the unit vector by dividing the vector by its magnitude
+	const unitVector = [
+	  vector[0] / distance,
+	  vector[1] / distance,
+	  vector[2] / distance
+	];
+  
+	// Determine the orientation based on the unit vector
+	let orientation;
+	if (
+	  Math.abs(unitVector[0] - 1) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(unitVector[2]) <= tolerance
+	) {
+	  orientation = "x-axis";
+	} else if (
+	  Math.abs(unitVector[0]) <= tolerance && Math.abs(unitVector[1] - 1) <= tolerance && Math.abs(unitVector[2]) <= tolerance
+	) {
+	  orientation = "y-axis";
+	} else if (
+	  Math.abs(unitVector[0]) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(unitVector[2] - 1) <= tolerance
+	) {
+	  orientation = "z-axis";
+	} else {
+	  orientation = "oblique";
+	}
+  
+	return {
+	  unitVector: unitVector,
+	  distance: distance,
+	  orientation: orientation
+	};
+  }
+
+ /**
+ * Calculates the cross product of two vectors and returns the cross product vector and its unit vector.
+ *
+ * @param {number[]} v1 - The coordinates of the first vector as an array [x1, y1, z1].
+ * @param {number[]} v2 - The coordinates of the second vector as an array [x2, y2, z2].
+ * @returns			 An object containing the cross product vector and its unit vector.
+ *                   - crossProduct: The cross product vector of v1 and v2.
+ *                   - unitVector: The unit vector representing the direction of the cross product.
+ */
+  function calculateCrossProduct(v1, v2) {
+	// Calculate the cross product of v1 and v2
+	const crossProduct = [
+	  v1[1] * v2[2] - v1[2] * v2[1],
+	  v1[2] * v2[0] - v1[0] * v2[2],
+	  v1[0] * v2[1] - v1[1] * v2[0]
+	];
+  
+	// Calculate the magnitude of the cross product
+	const magnitude = Math.sqrt(
+	  Math.pow(crossProduct[0], 2) + Math.pow(crossProduct[1], 2) + Math.pow(crossProduct[2], 2)
+	);
+  
+	// Calculate the unit vector by dividing the cross product by its magnitude
+	const unitVector = [
+	  crossProduct[0] / magnitude,
+	  crossProduct[1] / magnitude,
+	  crossProduct[2] / magnitude
+	];
+  
+	return {
+	  crossProduct: crossProduct,
+	  unitVector: unitVector
+	};
+  }
