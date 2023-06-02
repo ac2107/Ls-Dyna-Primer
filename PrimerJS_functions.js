@@ -398,7 +398,7 @@ function reflectPoint(p, p0, p1, pid) {
  * @param {Boolean} bool True or false for recursive deletion  
  * @returns 
  */
-function DeletePart(m, pid, bool) {
+function deletePart(m, pid, bool) {
 
     // Message('...delete part pid = ' + pid);
     const flag_delete = AllocateFlag();
@@ -420,7 +420,7 @@ function DeletePart(m, pid, bool) {
  * @param {Model} m Model 
  * @param {*} sh  number (eid) or an array of numbers (eid)
  */
-function DeleteShellElement(m, sh) {
+function deleteShellElement(m, sh) {
     /*
     sh = shell element id, can be single number or a list of ids [] 
     */
@@ -455,7 +455,7 @@ function DeleteShellElement(m, sh) {
  * @param {Model} m Model 
  * @param {*} bid  number (bid) or an array of numbers (bid)
  */
-function DeleteBeamElement(m, bid) {
+function deleteBeamElement(m, bid) {
     /*
     bid = beam element id, can be single number or a list of ids [] 
     */
@@ -493,7 +493,7 @@ function DeleteBeamElement(m, bid) {
  * @param {Array} nids Array of node ids for creating shell element
  * @returns 
  */
-function CreateShellELement(m, pid, nids) {
+function createShellELement(m, pid, nids) {
     /*
     create individual shell element
     nids = array of three or four nodes defining the shell element
@@ -509,6 +509,7 @@ function CreateShellELement(m, pid, nids) {
 
 	return new_shell_element
 }
+
 
 function unitVectorbyTwoNodes(m, nid1, nid2) {
 
@@ -811,10 +812,8 @@ function splitBeamElement(m, ele, len){
 
 		// Message('...spliting beam element ' + ele);
 		var beam = Beam.GetFromID(m, ele);
-		var N1 = Node.GetFromID(m, beam.n1);
-		var N2 = Node.GetFromID(m, beam.n2);
 		beam.SetFlag(flag_bdel)
-		lineMesh(m, beam.pid, len, N1.x, N1.y, N1.z, N2.x, N2.y, N2.z);
+		lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
 
 	// case 2 - input "ele" is an array of numbers (a list of beam element ids)
 	} else if (typeof ele == 'object' && typeof ele[0] == 'number'){
@@ -822,20 +821,16 @@ function splitBeamElement(m, ele, len){
 		for (var bid of ele) {
 			// Message('...spliting beam element ' + bid);
 			var beam = Beam.GetFromID(m, bid);
-			var N1 = Node.GetFromID(m, beam.n1);
-			var N2 = Node.GetFromID(m, beam.n2);
 			beam.SetFlag(flag_bdel)
-			lineMesh(m, beam.pid, len, N1.x, N1.y, N1.z, N2.x, N2.y, N2.z);
+			lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
 		}
 
 	// case 3 - input "ele" is an array of beam element objects
 	} else if (typeof ele == 'object' && typeof ele[0] == 'object') {
 		for (var bm of ele) {
 			// Message('...spliting beam element ' + bm.eid);
-			var N1 = Node.GetFromID(m, bm.n1);
-			var N2 = Node.GetFromID(m, bm.n2);
 			bm.SetFlag(flag_bdel)
-			lineMesh(m, bm.pid, len, N1.x, N1.y, N1.z, N2.x, N2.y, N2.z);
+			lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
 		}
 
 	}
@@ -844,10 +839,10 @@ function splitBeamElement(m, ele, len){
 	ReturnFlag(flag_bdel);
 
 	// merge nodes as lineMesh() create new nodes
-	var flag_node_merge = AllocateFlag();
-	Node.FlagAll(m, flag_node_merge);
-	Node.Merge(m, flag_node_merge, 1e-5);
-	ReturnFlag(flag_node_merge)
+	// var flag_node_merge = AllocateFlag();
+	// Node.FlagAll(m, flag_node_merge);
+	// Node.Merge(m, flag_node_merge, 1e-5);
+	// ReturnFlag(flag_node_merge)
 
 }
 
@@ -1210,7 +1205,7 @@ function facing_seg_gen(m, seg_id, cx,cy,cz, angle_in)
  * @param {Model} m Model 
  * @param {Number} eid  Solid element id
  */
-function DuplicateSolidElement(m, eid){
+function duplicateSolidElement(m, eid){
 
 	// >> get the solid element and associated nodes
 	var s = Solid.GetFromID(m, eid);

@@ -1,5 +1,3 @@
-
-
 /**
  * Create one way null shell elements spanning two rows (lists) of nodes
  * @param {Model} m Model
@@ -37,7 +35,6 @@ function oneWayBlastFace(m, pid, narray1, narray2, reverse){
 		}
 }
 
-
 /**
  * Create a mesh of shells between 2 lines of nodes
  * @param {Model} m Model
@@ -56,17 +53,25 @@ function meshRuledFlagged(m, pid, n1, n2, n3, n4, num, reverse, flag){
 	if (flag == 0){
 		var nlist1 = getNodesBetweenTwoNodes(m, n1, n2);
 		var nlist2 = getNodesBetweenTwoNodes(m, n3, n4);
+		var nlist3 = getNodesBetweenTwoNodes(m, n1, n3);
+		var nlist4 = getNodesBetweenTwoNodes(m, n2, n4);
 	} else {
 		var nlist1 = getNodesBetweenTwoNodesFlagged(m, n1, n2, flag);
 		var nlist2 = getNodesBetweenTwoNodesFlagged(m, n3, n4, flag);
+		var nlist3 = getNodesBetweenTwoNodesFlagged(m, n1, n3, flag);
+		var nlist4 = getNodesBetweenTwoNodesFlagged(m, n2, n4, flag);
 	}
 	
 	var len1 = nlist1.length;
-	var len2 = nlist1.length;
+	var len2 = nlist2.length;
+	var len3 = nlist3.length;
+	var len4 = nlist4.length
 
 	// >>> create shell elements
 	if (nlist1.length == nlist2.length && num > 0){
-	
+		
+		// Create equally spaced shell elements between line1(n1-n2) and line2(n3-n4
+
 		// Message(nlist1);
 		// Message(nlist2);
 
@@ -97,7 +102,42 @@ function meshRuledFlagged(m, pid, n1, n2, n3, n4, num, reverse, flag){
 			}
 		}
 
-	} else { ErrorMessage('... list length not equal OR num <= 0')
+	} else if(nlist1.length == nlist2.length && num == -1) {
+
+		// Search for nodes between n1-n3 and n2-n4 and create shell elements using the nodes between n1-n3 and n2-n4
+
+		// Create 2d array of nodes for shell mesh
+		var nodeArray = []
+
+		// Create in-between nodes between each pair of nodes in line1(n1-n2) and line2(n3-n4), exlcuing the starting and ending pair
+		for (var i=1; i<len1-1; i++){
+
+			var newNodes = createNodesBetween(m, nlist1[i], nlist2[i], len3-2);
+
+			nodeArray.push(newNodes)
+		}
+		
+		// Update nodeArray for nodes between n1-n3 and n2-n4
+		nodeArray.unshift(nlist3);
+		nodeArray.push(nlist4);
+
+		// Create shell mesh from nodeArray
+		for (var i=0; i<nodeArray.length-1; i++){
+			
+			// Message(nodeArray[i])
+
+			for (var j=0; j<len3-1; j++){
+
+				// Message(' ');
+				// Message([nodeArray[i+1][j]])
+
+				var sh = new Shell(m, Shell.NextFreeLabel(m), pid, 
+								   nodeArray[i][j], nodeArray[i][j+1], nodeArray[i+1][j+1], nodeArray[i+1][j]
+				);
+			}
+		}
+
+	} else { ErrorMessage('... list length not equal OR num < -1')
 			// Message(nlist1);
 			// Message(nlist2);
 		}
