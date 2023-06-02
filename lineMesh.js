@@ -202,16 +202,16 @@ function combineBeamElement(m, blist){
     nidListUnique = findUniqueNumbers(nidList);
 
     // Delete beams to be merged
-    m.DeleteFlagged(flag_del);
+    m.DeleteFlagged(flag_del, true);
 
     // Create new beam element
     if (nidListUnique.length === 2){
         var newBeam = lineMeshByNodes(m, pid, 0, nidListUnique[0], nidListUnique[1]);
     }
 
-    Message(blist);
-    Message(nidList);
-    Message(nidListUnique);
+    // Message(blist);
+    // Message(nidList);
+    // Message(nidListUnique);
 
     ReturnFlag(flag_del);
 

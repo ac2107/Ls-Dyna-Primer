@@ -138,8 +138,8 @@ function meshRuledFlagged(m, pid, n1, n2, n3, n4, num, reverse, flag){
 		}
 
 	} else { ErrorMessage('... list length not equal OR num < -1')
-			// Message(nlist1);
-			// Message(nlist2);
+			Message(nlist1);
+			Message(nlist2);
 		}
 
 	// Message(nlist1);

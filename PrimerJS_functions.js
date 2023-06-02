@@ -959,7 +959,7 @@ function blankShellOnPlane(m, plane, coordinate){
     const flag = AllocateFlag();
     const tol = 1e-3;
 
-	Message('... show only beams on plane ' + plane);
+	Message('... blank shell elements on plane ' + plane);
 
 	if (plane == 'XY') {
 
