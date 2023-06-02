@@ -798,53 +798,6 @@ function resetBeamOrientation(eid){
     return beam
 }
 
-/**
- * Split beam element
- * Delete the beam element and then create new beam elements with given element size
- * @param {Model} m Model, object
- * @param {Number} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
- * @param {Number} len Element length or number of elements; element length if > 0 and number of elements if < 0
- */
-function splitBeamElement(m, ele, len){
-	var flag_bdel = AllocateFlag();
-	// case 1 - input "ele" is a number (signle beam element id)
-	if (typeof ele == 'number'){
-
-		// Message('...spliting beam element ' + ele);
-		var beam = Beam.GetFromID(m, ele);
-		beam.SetFlag(flag_bdel)
-		lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
-
-	// case 2 - input "ele" is an array of numbers (a list of beam element ids)
-	} else if (typeof ele == 'object' && typeof ele[0] == 'number'){
-
-		for (var bid of ele) {
-			// Message('...spliting beam element ' + bid);
-			var beam = Beam.GetFromID(m, bid);
-			beam.SetFlag(flag_bdel)
-			lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
-		}
-
-	// case 3 - input "ele" is an array of beam element objects
-	} else if (typeof ele == 'object' && typeof ele[0] == 'object') {
-		for (var bm of ele) {
-			// Message('...spliting beam element ' + bm.eid);
-			bm.SetFlag(flag_bdel)
-			lineMeshByNodes(m, beam.pid, len, beam.n1, beam.n2);
-		}
-
-	}
-	// delete all original beam elements using flag
-	m.DeleteFlagged(flag_bdel, false);
-	ReturnFlag(flag_bdel);
-
-	// merge nodes as lineMesh() create new nodes
-	// var flag_node_merge = AllocateFlag();
-	// Node.FlagAll(m, flag_node_merge);
-	// Node.Merge(m, flag_node_merge, 1e-5);
-	// ReturnFlag(flag_node_merge)
-
-}
 
 function getNodeAt(m, pid, x, y, z){
 	/*
@@ -992,6 +945,47 @@ function showOnlyBeamOnPlane(m, plane, coordinate) {
     ReturnFlag(flag);
 }
 
+function blankShellOnPlane(m, plane, coordinate){
+    
+    // plane == 'XY', 'XZ', 'YZ'
+    // coodinate == plane coordiante on global axis normal to the plane
+    //                  'XY' -> z
+    //                  'XZ' -> y
+    //                  'YZ' -> x
+
+	var plane;
+    var coordiante;
+
+    const flag = AllocateFlag();
+    const tol = 1e-3;
+
+	Message('... show only beams on plane ' + plane);
+
+	if (plane == 'XY') {
+
+		var shells = Shell.GetAll(m);
+		
+		for (var sh of shells){
+
+			if (sh.IsoparametricToCoords(0,0)[2] > coordinate - tol && sh.IsoparametricToCoords(0,0)[2] < coordinate + tol)
+
+			sh.SetFlag(flag);
+
+		}
+
+	}
+
+	Shell.BlankFlagged(m, flag);
+
+	ReturnFlag(flag);
+
+}
+
+
+
+
+
+//==============================================================================
 /**
  * Create mass for static loading on beam elements
  * @param {Model} m Model
@@ -1009,7 +1003,7 @@ function beamLoadStatic(m, n1, n2, load, width){
 	var node_set = createSetNodeID(m, node_list, Set.NextFreeLabel(m, Set.NODE), 'node set mass');
 
 	// >>> create mass 
-	var mass = unitVectorbyTwoNodes(m, n1, n2).len * width * load * 1000.0 / 9.81; // kg
+	var mass = unitVectorByTwoNodes(m, n1, n2).len * width * load * 1000.0 / 9.81; // kg
 	var node_mass = new Mass(m, Mass.NextFreeLabel(m), node_set.sid, mass, Mass.NODE_SET);
 }
 
