@@ -231,16 +231,17 @@ function CrossSectionZ(){
 
 
 /**
- * Create DATABASE_CROSS_SECTION based on centre point and normal vector
  * 
- * @param m model id
- * @param pt centre point (or a node object) of the circular cross section {x, y, z}
- * @param radius cross section dimension 
- * @param id coordinate system id (cid) if itype = 2
- * @param itype type flag, itype = 2 for output using specified coodinate system by "id" 
- * @param vnorm unit normal ve ctor of the cross section for orientation; array [v1, v2, v3]
+ * @param {Model} m Model
+ * @param {Array} centre Circular cross-section centre [x, y, z]
+ * @param {Number} radius Circular cross-section raids 
+ * @param {Array} vnorm Cross-section normal unit vector [x, y, z] 
+ * @param {Number} id  Rigid part or accelerometer or coordinate system number
+ * @param {*} itype Flag for local system type
+ * @param {*} title Cross-section title
+ * @returns 
  */
-function CrossSectionRadius(m, pt, radius, vnorm, id, itype, title){
+function CrossSectionRadius(m, centre, radius, vnorm, id, itype, title){
 
   
   // Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
@@ -252,13 +253,13 @@ function CrossSectionRadius(m, pt, radius, vnorm, id, itype, title){
 
   var dL = 0.1;
 
-  xct = pt.x;
-  yct = pt.y;
-  zct = pt.z;
+  xct = centre[0];
+  yct = centre[1];
+  zct = centre[2];
 
-  xch = pt.x + dL*vnorm.vx
-  ych = pt.y + dL*vnorm.vy
-  zch = pt.z + dL*vnorm.vz
+  xch = centre[0] + dL*vnorm[0]
+  ych = centre[1] + dL*vnorm[1]
+  zch = centre[2] + dL*vnorm[2]
 
   var cdsx = new CrossSection(	m,  CrossSection.PLANE, 0, 
                                     xct, yct, zct, 
@@ -515,30 +516,40 @@ Input:
     Any nodes within this rectangular area are to be included in the nodal rigid body
 */
 function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
+  
+  var nodes; 
 
+  if (pid == 0){
+    
+    // Get all nodes
+    nodes = Node.GetAll(m);
+  
+  } else {
 
-  // flag all nodes in part 
-	var pflag = AllocateFlag();
-	var p = Part.GetFromID(m, pid);
-	p.SetFlag(pflag);
-  m.PropagateFlag(pflag);
+    // Flag all nodes in part 
+    var pflag = AllocateFlag();
+    var p = Part.GetFromID(m, pid);
+    p.SetFlag(pflag);
+    m.PropagateFlag(pflag);
+  
+    // Fet all flagged nodes & return the flag
+    nodes = Node.GetFlagged(m, pflag);
+    ReturnFlag(pflag);
 
-  // get all flagged nodes & return the flag
-  var nodes = Node.GetFlagged(m, pflag);
-  ReturnFlag(pflag);
+  }
 
   var tol = 1e-4; // tolerance
 
-  // create enclosing box
+  // Create enclosing box
   var box = new Box(m, Box.NextFreeLabel(m), cx-dx/2, cx+dx/2, cy-dy/2, cy+dy/2, cz-dz/2, cz+dz/2,)
 
-	// // node set by box
+	// Node set by box
 	var box_nset = new Set(m, Set.NextFreeLabel(m, Set.NODE), Set.NODE, title);
   box_nset.general = true;
   var data = ["BOX", box.bid];
   box_nset.SetGeneralData(box_nset.general_lines, data);
   
-  // node set from the box
+  // Node set from the box
   var nset = new Set(m, pid_nrb, Set.NODE, title);
   //    create centre point/node
   const cnode = new Node(m, Node.NextFreeLabel(m), cx, cy, cz); 
@@ -552,18 +563,18 @@ function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
     }
   }
 
-  // create nodal rigid body
+  // Create nodal rigid body
   var nrb = new NodalRigidBody(m, pid_nrb, pid_nrb);
   
 
-  // delete box_nset
+  // Delete box_nset
   var delflag = AllocateFlag();
   box_nset.SetFlag(delflag);
   m.DeleteFlagged(delflag, false);
   ReturnFlag(delflag);
 
-
-  return {cnode, nrb}; // return the central node and the nodal rigid body objects
+  // Return the central node and the nodal rigid body objects
+  return {cnode, nrb}; 
 }
 
 /**

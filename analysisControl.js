@@ -3,7 +3,7 @@
  * @param {Model} m Model ID 
  * @param {Number} endtim Explicit dynamic analysis end time 
  * @param {Number} dt2ms Min. step time for mass scaling
- * @returns {object} Load curves
+ * @returns Load curves
  */
 function AnalysisControlExplicitStatic(m, endtim, dt2ms){
 
@@ -17,7 +17,7 @@ function AnalysisControlExplicitStatic(m, endtim, dt2ms){
     // - control 
     m.control.termination.endtim = endtim;
 
-    if (dt2ms >= 0) ErrorMessage('... dt2ms must be negative')
+    if (dt2ms > 0) ErrorMessage('... dt2ms must be negative')
     m.control.timestep.exists = true;
     m.control.timestep.dt2ms = dt2ms;
 

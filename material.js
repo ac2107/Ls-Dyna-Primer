@@ -120,3 +120,41 @@ function MAT_020_RIGID(m, mid, R0, E, PR, title){
 	return material
 
 }
+
+
+function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
+
+	var material = new Material(m, mid, "*MAT_072R3"); // *MAT_CONCRETE_DAMAGE_REL3
+	material.title = "Concrete (Solid)";
+	material.SetPropertyByName("RO", 2400);
+	material.SetPropertyByName("PR", 0.2);
+
+	if (FT == 0.0) 	material.SetPropertyByName("FT", 5E6) // 5MPa tensile strength as default
+	else material.SetPropertyByName("FT", FT)
+	
+	if (A0 < 0) material.SetPropertyByName("A0", A0) 
+	else material.SetPropertyByName("A0", -1*A0) 	// Compressive strength is always negative
+	
+	material.SetPropertyByName("RSIZE", 39.37);  	// inch / meter conversion
+	material.SetPropertyByName("UCF", 1.45e-4); 	// psi / pa conversion
+	material.SetPropertyByName("LCRATE", -1); 		// Use detail strain rate curve
+	material.SetPropertyByName("NOUT", 2.0); 		// Plastic strain = scaled damage
+
+	material.SetMaterialErosion();
+
+	// material.SetErosionPropertyByName("EXCL",   99);
+	// material.SetErosionPropertyByName("MXPRES", 99);
+	// material.SetErosionPropertyByName("MNEPS",  99);
+	// material.SetErosionPropertyByName("EFFEPS", 99);
+	material.SetErosionPropertyByName("VOLEPS", 0.05); // 5% volumetric strain for element deletion
+	// material.SetErosionPropertyByName("MNPRES", 99);
+	// material.SetErosionPropertyByName("SIGP1",  99);
+	// material.SetErosionPropertyByName("SIGVM",  99);
+	// material.SetErosionPropertyByName("MXEPS",  0.01);	// max principal strain
+	// material.SetErosionPropertyByName("EPSSH",  1.0); // 100% shear strain failure 
+	// material.SetErosionPropertyByName("SIGTH",  99);
+	// material.SetErosionPropertyByName("IMPULSE",99);
+	// material.SetErosionPropertyByName("FAILTM", 99);
+
+	return material
+}

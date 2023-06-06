@@ -233,7 +233,7 @@ function createPointsBetween(startPoint, endPoint, num) {
 function unitVectorByTwoNodes(m, nid1, nid2) {
 
 	// Define a tolerance for testing orientation
-	var tolerance = 1e-4;
+	var tolerance = 1e-5;
 
 
 	// Get the node coordinates
@@ -265,15 +265,15 @@ function unitVectorByTwoNodes(m, nid1, nid2) {
 	// Determine the orientation based on the unit vector
 	let orientation;
 	if (
-	  Math.abs(unitVector[0] - 1) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(unitVector[2]) <= tolerance
+	  Math.abs(Math.abs(unitVector[0]) - 1) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(unitVector[2]) <= tolerance
 	) {
 	  orientation = "x-axis";
 	} else if (
-	  Math.abs(unitVector[0]) <= tolerance && Math.abs(unitVector[1] - 1) <= tolerance && Math.abs(unitVector[2]) <= tolerance
+	  Math.abs(unitVector[0]) <= tolerance && Math.abs(Math.abs(unitVector[1]) - 1) <= tolerance && Math.abs(unitVector[2]) <= tolerance
 	) {
 	  orientation = "y-axis";
 	} else if (
-	  Math.abs(unitVector[0]) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(unitVector[2] - 1) <= tolerance
+	  Math.abs(unitVector[0]) <= tolerance && Math.abs(unitVector[1]) <= tolerance && Math.abs(Math.abs(unitVector[2]) - 1) <= tolerance
 	) {
 	  orientation = "z-axis";
 	} else {

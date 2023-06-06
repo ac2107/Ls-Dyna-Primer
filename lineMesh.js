@@ -41,14 +41,18 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
     
         // Define the orientation vector
         // If the unit vector is in global z-axis direction
+        
+        // Message(unitVector.orientation);
+        // Message(unitVector.unitVector);
+
         if (unitVector.orientation === 'z-axis') {vec_s = [1.0, 0, 0]}
         // If the unit vector is not in global z-axis direction
         else {
             vec_t = [0, 0, 1.0];
             vec_r = unitVector.unitVector;
+            vec_s = calculateCrossProduct(vec_t, vec_r).unitVector;
         }
 
-        vec_s = calculateCrossProduct(vec_t, vec_r).unitVector;
         // Set the beam orientation vector
         b.vx = vec_s[0];
         b.vy = vec_s[1];
