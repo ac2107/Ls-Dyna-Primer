@@ -350,3 +350,52 @@ for (const num of list) {
 
 return uniqueNumbers;
 }
+
+/**
+ * Generates a curve of time vs amplitude based on the provided points and parameters.
+ * The curve consists of three parts defined by four points:
+ * [t0, a0], [t1, a1], [t2, a1], and [t3, a2].
+ *
+ * @param {number} t1 - Time value for the start of the second part of the curve.
+ * @param {number} t2 - Time value for the start of the third part of the curve.
+ * @param {number} t3 - Time value for the end of the curve.
+ * @param {number} a1 - Amplitude value for the first and second part of the curve.
+ * @param {number} a2 - Amplitude value for the third part of the curve.
+ * @param {number} nmax - Number of data points between each part of the curve.
+ * @returns {Array} - Array of time and amplitude points representing the curve.
+ */
+function smoothStepCurve(t1, t2, t3, a1, a2, nmax) {
+	var t0 = 0.0;
+	var a0 = 0.0;
+  
+	var curve = [];
+  
+	// Helper function for smooth interpolation at the start of the step
+	function smoothStepStart(t) {
+		return t * t;
+	}
+
+	// Curve from [t0, a0] to [t1, a1]
+	for (var i = 0; i < nmax; i++) {
+		var t = t0 + (t1 - t0) * (i / nmax);
+		var a = a0 + (a1 - a0) * smoothStepStart(i / nmax);
+		curve.push([t, a]);
+	}
+
+	// Flat line from [t1, a1] to [t2, a1]
+	curve.push([t1, a1]);
+
+	// Curve from [t2, a1] to [t3, a2]
+	for (var i = 0; i <= nmax; i++) {
+		var t = t2 + (t3 - t2) * (i / nmax);
+		var a = a1 + (a2 - a1) * smoothStepStart(i / nmax);
+		curve.push([t, a]);
+	}
+  
+	return curve;
+  }
+  
+
+  
+
+  

@@ -566,12 +566,11 @@ function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
   // Create nodal rigid body
   var nrb = new NodalRigidBody(m, pid_nrb, pid_nrb);
   
-
   // Delete box_nset
-  var delflag = AllocateFlag();
-  box_nset.SetFlag(delflag);
-  m.DeleteFlagged(delflag, false);
-  ReturnFlag(delflag);
+  // var delflag = AllocateFlag();
+  // box_nset.SetFlag(delflag);
+  // m.DeleteFlagged(delflag, false);
+  // ReturnFlag(delflag);
 
   // Return the central node and the nodal rigid body objects
   return {cnode, nrb}; 

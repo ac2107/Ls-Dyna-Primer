@@ -1,3 +1,10 @@
+// --- How to coat segments on part
+// PlayMacro(mac_dir + "segment_coat_002.prm", {
+// 	variables: {
+// 	PID: pids.CONCRETE_BEAM,
+// 	SEGID: sids.SEGMENT_ALL
+// }});
+
 /**
  * Define *load_blast_enhanced card and create a rigid sphere or hemi-sphere
  * to show the size and location of the charge; create a temp key file and read back
