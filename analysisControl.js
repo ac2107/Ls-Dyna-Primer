@@ -100,13 +100,21 @@ function AnalysisControlExplicitDRToExplicitDynamic(){
     
 }
 
+/**
+ * Create control cards for explicit dynamic analysis (for all preload, blast and post-blast steps)
+ * @param {Model} m Model 
+ * @param {Object} tStep {preloadTime: 1.0, blastTime: 0.2, postBlastTime:1.0} 
+ * @param {Object} loadAmps {preLoad: l/250, postBlastLoad: l/100} can be either dispalcement or force
+ * @param {Number} dt2ms Step time for mass scaling in the post-blast step
+ * @returns Curve objects
+ */
 function AnalysisControlExplicitDynamic(m, tStep, loadAmps, dt2ms){
 
     Message('... Explicit dynamic analysis');
 
     // - curves
 
-    // -- BASE_LOAD_CURVE
+    // -- STATIC_LOAD_CURVE
     let crv = smoothStepCurve(  tStep.preloadTime, 
                                 tStep.preloadTime + tStep.blastTime, 
                                 tStep.preloadTime + tStep.blastTime + tStep.postBlastTime, 
@@ -114,9 +122,18 @@ function AnalysisControlExplicitDynamic(m, tStep, loadAmps, dt2ms){
                                 loadAmps.postBlastLoad, 
                                 100);
                                 
-    let BASE_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
-    for (let c of crv) {BASE_LOAD_CURVE.AddPoint(c[0], c[1])}
+    let STATIC_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
+    STATIC_LOAD_CURVE.heading = "STATIC_LOAD_CURVE";
+    for (let c of crv) {STATIC_LOAD_CURVE.AddPoint(c[0], c[1])}
 
+    // --- Add automatic mass scaling after blast stage
+    let dt2ms_ini = -1e-6;
+    let POST_BLAST_MASS_SCALING_CURVE = new Curve(Curve.CURVE, m, 1000002,) 
+    POST_BLAST_MASS_SCALING_CURVE.heading = "POST_BLAST_MASS_SCALING_CURVE";
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(0, dt2ms_ini);
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime, dt2ms_ini);
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime+1e-5, dt2ms);
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime + tStep.postBlastTime, dt2ms);
 
     // - control 
     let endtim = tStep.preloadTime + tStep.blastTime + tStep.postBlastTime;
@@ -124,7 +141,8 @@ function AnalysisControlExplicitDynamic(m, tStep, loadAmps, dt2ms){
 
     if (dt2ms > 0) ErrorMessage('... dt2ms must be negative')
     m.control.timestep.exists = true;
-    m.control.timestep.dt2ms = dt2ms;
+    // m.control.timestep.dt2ms = dt2ms;
+    m.control.timestep.dt2mslc = POST_BLAST_MASS_SCALING_CURVE.lcid;
 
     // - database
     var N_d3plot = 50.0;
@@ -186,7 +204,8 @@ function AnalysisControlExplicitDynamic(m, tStep, loadAmps, dt2ms){
     m.control.output.exists = true;
     m.control.output.nrefup = 1;
 
-    return {BASE_LOAD_CURVE}
+    return {STATIC_LOAD_CURVE, 
+            POST_BLAST_MASS_SCALING_CURVE}
 
 }
 
