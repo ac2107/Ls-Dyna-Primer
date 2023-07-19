@@ -266,13 +266,15 @@ function CrossSectionRadius(m, centre, radius, vnorm, id, itype, title){
                                     xch, ych, zch, 
                                     0, 0, 0, 
                                     0, 0, 
-                                    0, 0, CrossSection.NextFreeLabel(m), 
-                                    title,
+                                    0, 0, 0, title
+                                    
+                                    
   );
 
   cdsx.radius = radius;
   cdsx.id = id;
   cdsx.itype = itype; 
+  
 
   return cdsx
 
@@ -544,7 +546,7 @@ function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
   var box = new Box(m, Box.NextFreeLabel(m), cx-dx/2, cx+dx/2, cy-dy/2, cy+dy/2, cz-dz/2, cz+dz/2,)
 
 	// Node set by box
-	var box_nset = new Set(m, Set.NextFreeLabel(m, Set.NODE), Set.NODE, title);
+	var box_nset = new Set(m, pid_nrb*1000, Set.NODE, title);
   box_nset.general = true;
   var data = ["BOX", box.bid];
   box_nset.SetGeneralData(box_nset.general_lines, data);
@@ -636,7 +638,7 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   // box.Edit();
   
   // node set by box
-	var box_nset = new Set(m, Set.NextFreeLabel(m, Set.NODE), Set.NODE, title);
+	var box_nset = new Set(m, pid_nrb*1000, Set.NODE, title);
   box_nset.general = true;
   var data = ["BOX", box.bid];
   box_nset.SetGeneralData(box_nset.general_lines, data);
@@ -672,6 +674,59 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
   return {cnode, nrb}; // return the central node and the nodal rigid body objects
 
 }
+
+/**
+ * 
+ * @param {*} m 
+ * @param {*} pid 
+ * @param {*} cx 
+ * @param {*} cy 
+ * @param {*} cz 
+ * @param {*} dx 
+ * @param {*} dy 
+ * @param {*} dz 
+ * @param {*} title 
+ * @returns 
+ */
+function getNodesByBox(m, pid, sid, cx, cy, cz, dx, dy, dz, title){
+  
+  var nodes; 
+
+  if (pid == 0){
+    
+    // Get all nodes
+    nodes = Node.GetAll(m);
+  
+  } else {
+
+    // Flag all nodes in part 
+    var pflag = AllocateFlag();
+    var p = Part.GetFromID(m, pid);
+    p.SetFlag(pflag);
+    m.PropagateFlag(pflag);
+  
+    // Fet all flagged nodes & return the flag
+    nodes = Node.GetFlagged(m, pflag);
+    ReturnFlag(pflag);
+
+  }
+
+  var tol = 1e-4; // tolerance
+
+  // Create enclosing box
+  var box = new Box(m, Box.NextFreeLabel(m), cx-dx/2, cx+dx/2, cy-dy/2, cy+dy/2, cz-dz/2, cz+dz/2,)
+
+	// Node set by box
+  if (sid == 0){ sid =Set.NextFreeLabel(m, Set.NODE) }
+	var box_nset = new Set(m, sid, Set.NODE, title);
+  box_nset.general = true;
+  var data = ["BOX", box.bid];
+  box_nset.SetGeneralData(box_nset.general_lines, data);
+  
+  // Return the central node and the nodal rigid body objects
+  return box_nset; 
+}
+
 /**
  * 
  * Create Coordinate system by vector

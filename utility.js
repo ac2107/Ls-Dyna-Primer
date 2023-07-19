@@ -355,19 +355,23 @@ return uniqueNumbers;
  * Generates a curve of time vs amplitude based on the provided points and parameters.
  * The curve consists of three parts defined by four points:
  * [t0, a0], [t1, a1], [t2, a1], and [t3, a2].
- *
+ * 
+ * @param {Model} m Model 
  * @param {number} t1 - Time value for the start of the second part of the curve.
  * @param {number} t2 - Time value for the start of the third part of the curve.
  * @param {number} t3 - Time value for the end of the curve.
  * @param {number} a1 - Amplitude value for the first and second part of the curve.
  * @param {number} a2 - Amplitude value for the third part of the curve.
  * @param {number} nmax - Number of data points between each part of the curve.
- * @returns {Array} - Array of time and amplitude points representing the curve.
+ * @param {boolean} bool - default is false, return array of points [t, a]; if true, return a CURVE object; 
+ * @returns Array of time and amplitude points [t, a] or a CURVE object.
  */
-function smoothStepCurve(t1, t2, t3, a1, a2, nmax) {
+function smoothStepCurve(m, t1, t2, t3, a1, a2, nmax, bool = false) {
 	var t0 = 0.0;
 	var a0 = 0.0;
   
+	var crv;
+
 	var curve = [];
   
 	// Helper function for smooth interpolation at the start of the step
@@ -391,8 +395,19 @@ function smoothStepCurve(t1, t2, t3, a1, a2, nmax) {
 		var a = a1 + (a2 - a1) * smoothStepStart(i / nmax);
 		curve.push([t, a]);
 	}
-  
-	return curve;
+	crv = curve;
+	// 
+	if (bool == true){
+
+		let LOAD_CURVE = new Curve(Curve.CURVE, m, Curve.NextFreeLabel(m));
+		LOAD_CURVE.heading = "LOAD_CURVE";
+		for (let c of curve) {LOAD_CURVE.AddPoint(c[0], c[1])}
+
+		crv = LOAD_CURVE
+
+	}
+
+	return crv;
   }
   
 

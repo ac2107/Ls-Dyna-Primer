@@ -50,12 +50,13 @@ function MAT_024_STEEL(m, mid, SIGY, title){
 
 	material.title = title;
 	material.SetPropertyByName("RO", 7850.0); 		// density (kg/m3)
-	material.SetPropertyByName("E", 200e9); 		// elastic modulus (Pa)
+	material.SetPropertyByName("E", 210e9); 		// elastic modulus (Pa)
 	material.SetPropertyByName("PR", 0.3); 			// Poisson's ratio
 	material.SetPropertyByName("SIGY", SIGY); 		// yield strength (Pa)
 	material.SetPropertyByName("ETAN", 1.0e9); 		// tangent modulus (Pa)
 	material.SetPropertyByName("C", 1300.0); 		// Cowper-Symonds parameter
 	material.SetPropertyByName("P", 5.0); 			// Cowper-Symonds parameter
+	material.SetPropertyByName("FAIL", 0.1); 
 
 	material.SetMaterialErosion();
 	material.SetErosionPropertyByName("EXCL", 99);
@@ -112,9 +113,9 @@ function MAT_020_RIGID(m, mid, R0, E, PR, title){
 	material.SetPropertyByName("RO", R0); 	// density (kg/m3)
 	material.SetPropertyByName("E", E); 	// elastic modulus (Pa)
 	material.SetPropertyByName("PR", PR); 	// Poisson's ratio
-	material.SetPropertyByName("CMO", 1); 
-	material.SetPropertyByName("CON1", 7); 
-	material.SetPropertyByName("CON2", 7); 
+	// material.SetPropertyByName("CMO", 1); 
+	// material.SetPropertyByName("CON1", 7); 
+	// material.SetPropertyByName("CON2", 7); 
 	material.title = title;
 
 	return material
@@ -127,7 +128,7 @@ function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
 	var material = new Material(m, mid, "*MAT_072R3"); // *MAT_CONCRETE_DAMAGE_REL3
 	material.title = "Concrete (Solid)";
 	material.SetPropertyByName("RO", 2400);
-	material.SetPropertyByName("PR", 0.2);
+	material.SetPropertyByName("PR", 0.15);
 
 	if (FT == 0.0) 	material.SetPropertyByName("FT", 5E6) // 5MPa tensile strength as default
 	else material.SetPropertyByName("FT", FT)

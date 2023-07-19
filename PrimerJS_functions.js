@@ -1003,7 +1003,7 @@ function beamLoadStatic(m, n1, n2, load, width){
 	var node_set = createSetNodeID(m, node_list, Set.NextFreeLabel(m, Set.NODE), 'node set mass');
 
 	// >>> create mass 
-	var mass = unitVectorByTwoNodes(m, n1, n2).len * width * load * 1000.0 / 9.81; // kg
+	var mass = unitVectorByTwoNodes(m, n1, n2).distance * width * load * 1000.0 / 9.81; // kg
 	var node_mass = new Mass(m, Mass.NextFreeLabel(m), node_set.sid, mass, Mass.NODE_SET);
 }
 

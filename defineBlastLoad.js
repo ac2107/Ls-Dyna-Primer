@@ -179,7 +179,7 @@ function selectBlastSegments(m, segid_all, segid_blast, cx, cy, cz, angle_in){
 		var sseg = Set.GetFromID(m, sids, Set.SEGMENT);
 		sseg.Sketch();
 	
-		var scheck = 0;
+		var scheck = 1;
 		while(scheck == 0)
 		{
 			var answer = Window.Question("Blast Segment Check", "Are the blast load segments correct");

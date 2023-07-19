@@ -115,12 +115,14 @@ function AnalysisControlExplicitDynamic(m, tStep, loadAmps, dt2ms){
     // - curves
 
     // -- STATIC_LOAD_CURVE
-    let crv = smoothStepCurve(  tStep.preloadTime, 
+    let crv = smoothStepCurve(  m,
+                                tStep.preloadTime, 
                                 tStep.preloadTime + tStep.blastTime, 
                                 tStep.preloadTime + tStep.blastTime + tStep.postBlastTime, 
                                 loadAmps.preLoad, 
                                 loadAmps.postBlastLoad, 
-                                100);
+                                100, 
+                                false);
                                 
     let STATIC_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
     STATIC_LOAD_CURVE.heading = "STATIC_LOAD_CURVE";
