@@ -188,7 +188,7 @@ function getBeamElementsByNodes(m, n1, n2,) {
  * @param {*} nsid 
  * @returns 
  */
-function getBeamByNodes(m, n1, n2, nsid){
+function getBeamElementsByNodesSet(m, n1, n2, nsid){
 
 	// find all nodes and get beam elements between two nodes [n1, n2]
 	// https://stackoverflow.com/questions/7050186/find-if-point-lays-on-line-segment

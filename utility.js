@@ -410,7 +410,97 @@ function smoothStepCurve(m, t1, t2, t3, a1, a2, nmax, bool = false) {
 	return crv;
   }
   
+/**
+ * Computes the unit vector perpendicular from the line segment (n1, n2) to n3.
+ *
+ * @param {Array<number>} n1 - The [x, y, z] coordinates of the first node.
+ * @param {Array<number>} n2 - The [x, y, z] coordinates of the second node.
+ * @param {Array<number>} n3 - The [x, y, z] coordinates of the third node.
+ * @return {Array<number>} - The [x, y, z] components of the unit normal vector.
+ */
+function unitVectorLineToPoint(n1, n2, n3) {
+  // Step 1: Create vector v = n3 - n1
+  let v = [n3[0]-n1[0], n3[1]-n1[1], n3[2]-n1[2]];
+  
+  // Step 2: Create line vector d = n2 - n1
+  let d = [n2[0]-n1[0], n2[1]-n1[1], n2[2]-n1[2]];
+
+  // Step 3: Compute the projection of v onto d, subtract it from v
+  let dotProduct = (v[0]*d[0] + v[1]*d[1] + v[2]*d[2]) / (d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
+  let proj = [dotProduct*d[0], dotProduct*d[1], dotProduct*d[2]];
+  let res = [v[0]-proj[0], v[1]-proj[1], v[2]-proj[2]];
+  
+  // Step 4: Normalize the resulting vector to get the unit vector
+  let magnitude = Math.sqrt(res[0]*res[0] + res[1]*res[1] + res[2]*res[2]);
+  let unitVevtor = [res[0]/magnitude, res[1]/magnitude, res[2]/magnitude];
+
+  return unitVevtor;
+}
 
   
+/**
+ * Rotates a vector around an axis by a specified angle.
+ *
+ * This function uses quaternion rotation to perform the rotation.
+ * 
+ * @param {Array<number>} v - The vector to rotate. This should be a 3-element array 
+ * representing the vector in 3D space, in the form [x, y, z].
+ *
+ * @param {Array<number>} axis - The axis to rotate around. This should also be a 
+ * 3-element array representing the vector in 3D space, in the form [x, y, z].
+ *
+ * @param {number} theta - The angle by which to rotate the vector, in degrees. The
+ * direction of rotation follows the right-hand rule, with positive angles 
+ * representing counterclockwise rotation when the axis of rotation points towards 
+ * the observer.
+ *
+ * @returns {Array<number>} A 3-element array representing the rotated vector, in 
+ * the form [x, y, z].
+ *
+ * @example
+ * let v1 = [1, 0, 0];
+ * let v2 = [0, 1, 0];
+ * let theta = 45;  // Rotation of 45 degrees
+ *
+ * let result = rotateVector(v1, v2, theta);
+ * console.log(result);  // Output: Rotated vector [x, y, z]
+ */
+function rotateVector(v, axis, theta) {
+    // Convert theta from degrees to radians
+    theta = theta * (Math.PI / 180);
 
-  
+    // Normalizing axis
+    let axisMagnitude = Math.sqrt(axis[0]*axis[0] + axis[1]*axis[1] + axis[2]*axis[2]);
+    let u = [axis[0]/axisMagnitude, axis[1]/axisMagnitude, axis[2]/axisMagnitude];
+
+    // Creating quaternion representation of v
+    let v_quat = [0].concat(v);
+
+    // Creating quaternion for rotation
+    let axis_quat = [Math.cos(theta/2)].concat(u.map(i => i*Math.sin(theta/2)));
+
+    // Creating inverse of quaternion for rotation
+    let axis_quat_inv = [axis_quat[0], -axis_quat[1], -axis_quat[2], -axis_quat[3]];
+
+    // Quaternion multiplication: q1*q2
+    let temp1 = [
+        axis_quat[0]*v_quat[0] - axis_quat[1]*v_quat[1] - axis_quat[2]*v_quat[2] - axis_quat[3]*v_quat[3],
+        axis_quat[0]*v_quat[1] + axis_quat[1]*v_quat[0] + axis_quat[2]*v_quat[3] - axis_quat[3]*v_quat[2],
+        axis_quat[0]*v_quat[2] + axis_quat[2]*v_quat[0] + axis_quat[3]*v_quat[1] - axis_quat[1]*v_quat[3],
+        axis_quat[0]*v_quat[3] + axis_quat[3]*v_quat[0] + axis_quat[1]*v_quat[2] - axis_quat[2]*v_quat[1]
+    ];
+
+    // Quaternion multiplication: temp1*axis_quat_inv
+    let v_rot_quat = [
+        temp1[0]*axis_quat_inv[0] - temp1[1]*axis_quat_inv[1] - temp1[2]*axis_quat_inv[2] - temp1[3]*axis_quat_inv[3],
+        temp1[0]*axis_quat_inv[1] + temp1[1]*axis_quat_inv[0] + temp1[2]*axis_quat_inv[3] - temp1[3]*axis_quat_inv[2],
+        temp1[0]*axis_quat_inv[2] + temp1[2]*axis_quat_inv[0] + temp1[3]*axis_quat_inv[1] - temp1[1]*axis_quat_inv[3],
+        temp1[0]*axis_quat_inv[3] + temp1[3]*axis_quat_inv[0] + temp1[1]*axis_quat_inv[2] - temp1[2]*axis_quat_inv[1]
+    ];
+
+    // Extracting vector part of quaternion
+    let v_rot = v_rot_quat.slice(1);
+
+    return v_rot;
+}
+

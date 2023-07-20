@@ -128,7 +128,7 @@ return lines;
  * Split beam element
  * Delete the beam element and then create new beam elements with given element size
  * @param {Model} m Model, object
- * @param {Number} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
+ * @param {*} ele Beam element eid (number), array of beam element eids (object - array of numbers), or array of beam element objects (object - array of beam element objects)
  * @param {Number} len Element length or number of elements; element length if > 0 and number of elements if < 0
  */
 function splitBeamElement(m, ele, len){
@@ -222,9 +222,50 @@ function combineBeamElement(m, blist){
     // return newBeam
 }
 
+/**
+ * 
+ * @param {Model} m model
+ * @param {Array} blist list of beam ids
+ * @param {Number} theta angle of rotation about beam axial axis, follow right hand rule
+ */
+function rotateBeamElement(m, blist, theta=0){
 
+    for (var bid of blist){
 
+        let beam = Beam.GetFromID(m, bid);
 
+        if (beam.orientation ==0) {
+
+            let node1 = Node.GetFromID(m, beam.n1);
+            let node2 = Node.GetFromID(m, beam.n2);
+            let node3 = Node.GetFromID(m, beam.n3);
+    
+            let n1 = [node1.x, node1.y, node1.z];
+            let n2 = [node2.x, node2.y, node2.z];
+            let n3 = [node3.x, node3.y, node3.z];
+    
+            let unitVevtor = unitVectorLineToPoint(n1, n2, n3);
+
+            let axis = unitVectorByTwoNodes(m, beam.n1, beam.n2).unitVector;
+            let unitVevtor_rot = rotateVector(unitVevtor, axis, theta);
+
+            beam.orientation = 1;
+
+            beam.vx = unitVevtor_rot[0];
+            beam.vy = unitVevtor_rot[1];
+            beam.vz = unitVevtor_rot[2];
+
+            beam.n3 = 0;
+
+        }
+
+        else {
+
+            WarningMessage("Complete implementation of the function...")
+
+        }
+    }
+}
 
 
 

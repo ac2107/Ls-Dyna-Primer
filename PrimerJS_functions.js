@@ -395,7 +395,7 @@ function reflectPoint(p, p0, p1, pid) {
  * 
  * @param {Model} m Model 
  * @param {Number} pid Part id 
- * @param {Boolean} bool True or false for recursive deletion  
+ * @param {Boolean} bool true or false for recursive deletion  
  * @returns 
  */
 function deletePart(m, pid, bool) {
@@ -419,8 +419,9 @@ function deletePart(m, pid, bool) {
  * 
  * @param {Model} m Model 
  * @param {*} sh  number (eid) or an array of numbers (eid)
+ * @param {Boolean} bool true or false for recursive deletion 
  */
-function deleteShellElement(m, sh) {
+function deleteShellElement(m, sh, bool = false) {
     /*
     sh = shell element id, can be single number or a list of ids [] 
     */
@@ -454,8 +455,9 @@ function deleteShellElement(m, sh) {
  * 
  * @param {Model} m Model 
  * @param {*} bid  number (bid) or an array of numbers (bid)
+ * @param {Boolean} bool true or false for recursive deletion  
  */
-function deleteBeamElement(m, bid) {
+function deleteBeamElement(m, bid, bool = false) {
     /*
     bid = beam element id, can be single number or a list of ids [] 
     */
@@ -480,7 +482,7 @@ function deleteBeamElement(m, bid) {
     }
 
     // delete all flagged shell elements
-    m.DeleteFlagged(flag);
+    m.DeleteFlagged(flag, bool);
     ReturnFlag(flag);
 
 }
