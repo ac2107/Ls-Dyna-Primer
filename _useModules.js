@@ -11,6 +11,7 @@ Use("getBeamElementsByNodes.js");
 
 Use("lineMesh.js");
 Use('shellMesh.js');
+Use('solidMesh.js');
 
 Use("theBlueBookP363.js");
 Use('utility.js');
