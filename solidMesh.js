@@ -7,7 +7,6 @@
  * @param {number} pid_solid - Part ID for the solid elements.
  * @param {number} size_z - Element size for extrusion of each layer in the z-direction (in meters).
  * @param {number} Lz - Total length of the extrusion (in meters).
- * @returns {Array} An array containing objects for each layer, where each object has arrays of nodesExtruded and solids representing the extruded nodes and solid elements for that layer.
  *
  * @example
  * // Example usage:
