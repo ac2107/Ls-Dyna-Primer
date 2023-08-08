@@ -7,6 +7,5 @@ End In
 Window("Coat entity").Menu("SELECT PARTS").Button("Key_In")
 Window("Coat entity").Window("KEY IN").Textbox("Keyin input") = "$PID"
 Window("Coat entity").Button("Apply")
-In Window("Tools/Keywords")
-    .Button("Model Tab")
-End In
+Window("Coat entity").Window("KEY IN").Button("DISMISS")
+Window("Tools/Keywords").Button("Model Tab")
