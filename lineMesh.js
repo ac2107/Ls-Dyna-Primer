@@ -65,10 +65,69 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
     return {nids: newNodes, bids: newBeams}
 }
 
+/**
+ * Create a group of main reinforcement bars (beam elements) in XY plane, extending in Z direction
+ *  - Similar to how AdSec reinforcement type "line" works
+ *  - Define the positions of the line group by two ponts in the XY plane
+ *  - Define the length of the reiforcement bars in Z direction
+ * @param {Model} m Model 
+ * @param {Number} pid Part id
+ * @param {Number} N Number of reinforecements between starting and ending points
+ * @param {Number} x0 Starting point x coordiante
+ * @param {Number} y0 Starting point y coordiante
+ * @param {Number} x1 Ending point x coordiante
+ * @param {Number} y1 Ending point y coordiante
+ * @param {Number} z0 Starting coordiante of the reinforcement group in the spanning (Z) direction
+ * @param {Number} z1 Ending coordiante of the reinforcement group in the spanning (Z) direction
+ * @param {Number} bsize Beam element size
+ * @returns 
+ */
+function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
+
+    // Similar to AdSec
+    // 
+    //
+    //
+    //
+    //
+    //
+    // Defined in XY plane only, spanning in Z direction
+    // Creates a group of equally spaced line meshes between (x0, y0) and (x1, y1) 
+    
+    if (N <= 1) {
+        throw new Error("N should be greater than 1 to include starting and ending points");
+    }
+
+    // Calculate step intervals
+    const stepX = (x1 - x0) / (N - 1);
+
+    const points = [];
+    for (let i = 0; i < N; i++) {
+        const currentX = x0 + stepX * i;
+        const currentY = y0 + ((y1 - y0) / (x1 - x0)) * (currentX - x0);
+        points.push([currentX, currentY]);
+    }
+
+    // Create meshed reinforcement beam group
+    const nodes = [];
+    const beams = [];
+    for (var pt of points){
+
+        Message(pt);
+        
+        var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z0);
+        var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z1);
+        var beam = lineMeshByNodes(m, pid, bsize, node0.nid, node1.nid);
+
+    } 
+
+    return {points, nodes, beams};
+}
+
 
 
 /**
- * Creates a series of equally spaced lines within a rectangle in the X direction.
+ * Creates a series of equally spaced lines within a rectangle in the X direction in the XY plane
  *
  * @param {number} x1 - The x-coordinate of the first point defining the rectangle.
  * @param {number} y1 - The y-coordinate of the first point defining the rectangle.
@@ -96,7 +155,7 @@ function createLinesInRectangleX(x1, y1, x2, y2, z, numLines) {
 }
 
 /**
- * Creates a series of equally spaced lines within a rectangle in the Y direction.
+ * Creates a series of equally spaced lines within a rectangle in the Y direction in the XY plane. 
  *
  * @param {number} x1 - The x-coordinate of the first point defining the rectangle.
  * @param {number} y1 - The y-coordinate of the first point defining the rectangle.
@@ -122,6 +181,7 @@ for (var i = 0; i < numLines; i++) {
 
 return lines;
 }
+
 
 
 /**
