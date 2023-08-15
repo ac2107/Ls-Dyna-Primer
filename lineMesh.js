@@ -70,6 +70,8 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
  *  - Similar to how AdSec reinforcement type "line" works
  *  - Define the positions of the line group by two ponts in the XY plane
  *  - Define the length of the reiforcement bars in Z direction
+ *  - Coordiantes of starting and ending bars centroid should be used
+ *  - If N = 1, "Point" mode, create single rebar by (x0, y0), (x1, y1) will be ignored
  * @param {Model} m Model 
  * @param {Number} pid Part id
  * @param {Number} N Number of reinforecements between starting and ending points
@@ -83,45 +85,59 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
  * @returns 
  */
 function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
-
-    // Similar to AdSec
-    // 
-    //
-    //
-    //
-    //
-    //
-    // Defined in XY plane only, spanning in Z direction
-    // Creates a group of equally spaced line meshes between (x0, y0) and (x1, y1) 
     
-    if (N <= 1) {
-        throw new Error("N should be greater than 1 to include starting and ending points");
+    if (N < 1) {
+        ErrorMessage("N should be greater than 0");
+        throw new Error("N should be greater than 0");
     }
 
-    // Calculate step intervals
-    const stepX = (x1 - x0) / (N - 1);
+    else if (N == 1) {
 
-    const points = [];
-    for (let i = 0; i < N; i++) {
-        const currentX = x0 + stepX * i;
-        const currentY = y0 + ((y1 - y0) / (x1 - x0)) * (currentX - x0);
-        points.push([currentX, currentY]);
-    }
+        let nodes = [];
+        let beams = [];
 
-    // Create meshed reinforcement beam group
-    const nodes = [];
-    const beams = [];
-    for (var pt of points){
-
-        Message(pt);
-        
-        var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z0);
-        var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z1);
+        var node0 = new Node(m, Node.NextFreeLabel(m), x0, y0, z0);
+        var node1 = new Node(m, Node.NextFreeLabel(m), x0, y0, z1);
         var beam = lineMeshByNodes(m, pid, bsize, node0.nid, node1.nid);
 
-    } 
+        beams = beam.bids;
 
-    return {points, nodes, beams};
+        WarningMessage('lineReinfGroupMesh() in POINT model')
+
+        return {nodes, beams};
+    }
+
+    else {
+
+        // Calculate step intervals
+        const stepX = (x1 - x0) / (N - 1);
+
+        const points = [];
+        for (let i = 0; i < N; i++) {
+            const currentX = x0 + stepX * i;
+            const currentY = y0 + ((y1 - y0) / (x1 - x0)) * (currentX - x0);
+            points.push([currentX, currentY]);
+        }
+
+        // Create meshed reinforcement beam group
+        let nodes = [];
+        let beams = [];
+        for (var pt of points){
+
+            Message(pt);
+            
+            var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z0);
+            var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z1);
+            var beam = lineMeshByNodes(m, pid, bsize, node0.nid, node1.nid);
+
+        } 
+
+        WarningMessage('lineReinfGroupMesh() in LINE model')
+
+        return {points, nodes, beams};
+    
+    }
+
 }
 
 
