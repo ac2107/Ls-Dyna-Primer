@@ -10,7 +10,7 @@ function MAT_001_ELASTIC_CONCRETE(m, mid, title){
 
 	var material = new Material(m, mid, "*MAT_001");
 	
-	material.title = 'Reinforced concrete (elastic)'
+	material.title = title
 	material.SetPropertyByName("RO", 2549.0); 	// density (kg/m3)
 	material.SetPropertyByName("E", 33.5e9); 	// elastic modulus (Pa)
 	material.SetPropertyByName("PR", 0.17); 	// Poisson's ratio
@@ -28,7 +28,7 @@ function MAT_001_ELASTIC_STEEL(m, mid, title){
 
 	var material = new Material(m, mid, "*MAT_001");
 
-	material.title = 'Steel (elastic)'
+	material.title = title
 	material.SetPropertyByName("RO", 7850.0); 	// density (kg/m3)
 	material.SetPropertyByName("E", 200e9); 	// elastic modulus (Pa)
 	material.SetPropertyByName("PR", 0.3); 		// Poisson's ratio
@@ -76,9 +76,6 @@ function MAT_024_STEEL(m, mid, SIGY, title){
 	return material
 }
 
-
-
-
 /**
  * Null material model, density = 1kg/m3
  * @param {Model} m 
@@ -95,7 +92,6 @@ function MAT_009_NULL(m, mid, title){
 	return material
 
 }
-
 
 /**
  * Rigid material model
@@ -122,11 +118,10 @@ function MAT_020_RIGID(m, mid, R0, E, PR, title){
 
 }
 
-
 function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
 
 	var material = new Material(m, mid, "*MAT_072R3"); // *MAT_CONCRETE_DAMAGE_REL3
-	material.title = "Concrete (Solid)";
+	material.title = title;
 	material.SetPropertyByName("RO", 2400);
 	material.SetPropertyByName("PR", 0.15);
 
@@ -159,3 +154,37 @@ function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
 
 	return material
 }
+
+function MAT_004_STEEL_THERMAL(m, mid, T1, T2, T3, E, PR, ALPHA, SIGY, ETAN, title){
+
+	var material = new Material(m, mid, "*MAT_004"); // *MAT_ELASTIC_PLASTIC_THERMAL
+	material.title = title;
+	material.SetPropertyByName("RO", 7850);
+
+	material.SetPropertyByName("T1", T1);
+	material.SetPropertyByName("T2", T2);
+	material.SetPropertyByName("T3", T3);
+
+	material.SetPropertyByName("E1", E);
+	material.SetPropertyByName("E2", E);
+	material.SetPropertyByName("E3", E);
+	
+	material.SetPropertyByName("PR1", PR);
+	material.SetPropertyByName("PR2", PR);
+	material.SetPropertyByName("PR3", PR);
+
+	material.SetPropertyByName("ALPHA1", ALPHA);
+	material.SetPropertyByName("ALPHA2", ALPHA);
+	material.SetPropertyByName("ALPHA3", ALPHA);
+
+	material.SetPropertyByName("SIGY1", SIGY);
+	material.SetPropertyByName("SIGY2", SIGY);
+	material.SetPropertyByName("SIGY3", SIGY);
+
+	material.SetPropertyByName("ETAN1", ETAN);
+	material.SetPropertyByName("ETAN2", ETAN);
+	material.SetPropertyByName("ETAN3", ETAN);
+}
+
+
+
