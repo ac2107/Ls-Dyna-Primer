@@ -19,9 +19,9 @@
  * @param charge_y y coordinate of charge [m]
  * @param charge_z z coordinate of charge [m]
  * @param title part name for the charge (rigid shell part)
- * @param boo true = use *load_blast_enhanced card; false = Viper load, no *load_blast_enhanced card defined
+ * @param load "LBE" = use *load_blast_enhanced card; "VIPER" = Viper load, no *load_blast_enhanced card defined
  */
-function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass, charge_x, charge_y, charge_z, title, boo, js_dir) {
+function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass, charge_x, charge_y, charge_z, title, load, js_dir) {
 
 	Message("... defining blast load ...")
 
@@ -70,7 +70,7 @@ function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass,
 	if (charge_type == 1) var blast = 1; // Hemispherical blast
 	else if (charge_type == 2) var blast = 2; // Spherical blast
 
-	if (boo == true) {
+	if (load == "LBE") {
 		Message("use *LOAD_BLAST_ENHANCED");
 
 		var f = new File(js_dir + "ibtmp.key", File.WRITE);
@@ -89,7 +89,7 @@ function defineBlastLoad(m, bid, sids, pre_blast_load, charge_type, charge_mass,
 
 		var deleted = File.Delete(js_dir + "ibtmp.key") // delete temp file
 
-	} else if (boo == false) {
+	} else if (load == "VIPER") {
 		Message("Use Viper");
 	}
 
