@@ -152,12 +152,12 @@ function meshRuledFlagged(m, pid, n1, n2, n3, n4, num, reverse, flag){
  * Generates a quad mesh for a rectangular 2D surface.
  *
  * @param {Model} m - Model
- * @param {number} Lx - Length of the slab in the x-direction (in meters).
- * @param {number} Ly - Length of the slab in the y-direction (in meters).
+ * @param {number} Lx - Dimension of the rectangle in the x-direction (in meters).
+ * @param {number} Ly - Dimension of the rectangle in the y-direction (in meters).
  * @param {number} size_x - Element size in the x-direction (in meters).
  * @param {number} size_y - Element size in the y-direction (in meters).
- * @param {number} x0 - x-coordinate of the bottom-left corner of the slab (in meters).
- * @param {number} y0 - y-coordinate of the bottom-left corner of the slab (in meters).
+ * @param {number} x0 - x-coordinate of the bottom-left corner of the rectangle (in meters).
+ * @param {number} y0 - y-coordinate of the bottom-left corner of the rectangle (in meters).
  * @param {number} pid - Part ID for shell elements (default value is 1).
 
  * @example
