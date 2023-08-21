@@ -75,16 +75,13 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
  * @param {Model} m Model 
  * @param {Number} pid Part id
  * @param {Number} N Number of reinforecements between starting and ending points
- * @param {Number} x0 Starting point x coordiante
- * @param {Number} y0 Starting point y coordiante
- * @param {Number} x1 Ending point x coordiante
- * @param {Number} y1 Ending point y coordiante
- * @param {Number} z0 Starting coordiante of the reinforcement group in the spanning (Z) direction
- * @param {Number} z1 Ending coordiante of the reinforcement group in the spanning (Z) direction
+ * @param {Array} p0 Starting point x coordiante
+ * @param {Array} p1 Starting point y coordiante
+ * @param {Array} z Ending point x coordiante
  * @param {Number} bsize Beam element size
  * @returns 
  */
-function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
+function lineReinfGroupMesh(m, pid, N, p0, p1, z, bsize){
     
     if (N < 1) {
         ErrorMessage("N should be greater than 0");
@@ -96,8 +93,8 @@ function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
         let nodes = [];
         let beams = [];
 
-        var node0 = new Node(m, Node.NextFreeLabel(m), x0, y0, z0);
-        var node1 = new Node(m, Node.NextFreeLabel(m), x0, y0, z1);
+        var node0 = new Node(m, Node.NextFreeLabel(m), p0[0], p0[1], z[0]);
+        var node1 = new Node(m, Node.NextFreeLabel(m), p0[0], p0[1], z[1]);
         var beam = lineMeshByNodes(m, pid, bsize, node0.nid, node1.nid);
 
         beams = beam.bids;
@@ -110,12 +107,12 @@ function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
     else {
 
         // Calculate step intervals
-        const stepX = (x1 - x0) / (N - 1);
+        const stepX = (p1[0] - p0[0]) / (N - 1);
 
         const points = [];
         for (let i = 0; i < N; i++) {
-            const currentX = x0 + stepX * i;
-            const currentY = y0 + ((y1 - y0) / (x1 - x0)) * (currentX - x0);
+            const currentX = p0[0] + stepX * i;
+            const currentY = p0[1] + ((p1[1] - p0[1]) / (p1[0] - p0[0])) * (currentX - p0[0]);
             points.push([currentX, currentY]);
         }
 
@@ -126,8 +123,8 @@ function lineReinfGroupMesh(m, pid, N, x0, y0, x1, y1, z0, z1, bsize){
 
             Message(pt);
             
-            var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z0);
-            var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z1);
+            var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z[0]);
+            var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z[1]);
             var beam = lineMeshByNodes(m, pid, bsize, node0.nid, node1.nid);
 
         } 
