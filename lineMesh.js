@@ -81,7 +81,7 @@ function lineMeshByNodes(m, pid, lennum, n1, n2) {
  * @param {Number} bsize Beam element size
  * @returns 
  */
-function lineReinfGroupMesh(m, pid, N, p0, p1, z, bsize){
+function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
     
     if (N < 1) {
         ErrorMessage("N should be greater than 0");
@@ -136,6 +136,15 @@ function lineReinfGroupMesh(m, pid, N, p0, p1, z, bsize){
     }
 
 }
+
+
+function lineSegmentReinfMesh(){
+
+
+}
+
+
+
 
 
 
