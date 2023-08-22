@@ -137,15 +137,42 @@ function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
 
 }
 
+/**
+ * Create a group of line segments in the XY plane (i.e. on element section) and populate into the spanning direction (Z) of the lement
+ * - Primarily used for creating closed or open shear links/ties for a RC element
+ * @param {Model} m Model id
+ * @param {Number} pid Part id
+ * @param {Array} points Array of points [x, y], defining the line segments on XY plane
+ * @param {Array} spacing Array of parameters [start, end, spc] for spacing of the line segments in the element spanning direction,
+ *                        start = starting distance, end = ending distance, spc = spacing between each sets of line segments
+ * @param {Number} bsize Beam element size
+ * @param {String} option Option to set "CLOSED" or "OPEN" line segments, "CLOSED" means the last point is connected to the first point
+ */
+function lineReinfSegMesh(m, pid, points, spacing, bsize, option){
 
-function lineSegmentReinfMesh(){
+    let s = spacing[0];
 
+    while ( s < spacing[1]){
+        
+        let nodes = []
 
+        for (var pt of points){
+            let node = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], s);
+            nodes.push(node);
+        }
+
+        for (let i = 0; i < nodes.length-1; i++) lineMeshByNodes(m, pid, bsize, nodes[i].nid, nodes[i+1].nid);
+
+        if (option == 'CLOSED'){
+
+            let len = nodes.length;
+            lineMeshByNodes(m, pid, bsize, nodes[0].nid, nodes[len-1].nid);
+        }
+
+        s = s + spacing[2];
+
+    }
 }
-
-
-
-
 
 
 /**
