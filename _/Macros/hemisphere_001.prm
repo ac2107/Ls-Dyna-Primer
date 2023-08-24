@@ -1,0 +1,46 @@
+MacroName("Hemisphere")
+MacroDescription("Mesh Hemisphere")
+
+MacroVariable("PID", "Shell Part ID", "1")
+
+MacroVariable("CEN_X", "Block Center X", "0.0")
+MacroVariable("CEN_Y", "Block Center Y", "0.0")
+MacroVariable("CEN_Z", "Block Center Z", "0.0")
+
+MacroVariable("NORM_X", "Normal X", "0.0")
+MacroVariable("NORM_Y", "Normal Y", "0.0")
+MacroVariable("NORM_Z", "Normal Z", "-1.0")
+
+MacroVariable("RAD", "Radius", "0.1")
+MacroVariable("ELE", "No. Elements", "16")
+
+#############################################################
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Popup("Shapes")
+End In
+
+PopupWindow1().Button("Hemisphere")
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$PID"
+    .Popup("Centre definition method")
+End In
+PopupWindow1().Button("coord")
+
+In Window("SIMPLE MESHING")
+    .Textbox(#183) = "$CEN_X"
+    .Textbox(#185) = "$CEN_Y"
+    .Textbox(#187) = "$CEN_Z"
+    .Popup("Centre definition method b")
+End In
+PopupWindow1().Button("coord")
+In Window("SIMPLE MESHING")
+    .Textbox(#189) = "$NORM_X"
+    .Textbox(#191) = "$NORM_Y"
+    .Textbox(#193) = "$NORM_Z"
+    .Textbox("Radius") = "$RAD"
+    .Textbox("Element size/no. of elements along Circumference") = "$ELE"
+    .Button("Apply")
+    .Button("Dismiss")
+End In

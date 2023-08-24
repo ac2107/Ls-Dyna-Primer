@@ -1,0 +1,38 @@
+In Window("Tools/Keywords")
+    .Button("Tools")
+    .Button("Mesh tools")
+    .Button("Mesh")
+End In
+PopupWindow1().Button("Area")
+Window("SIMPLE MESHING").Popup("Mesh mode")
+PopupWindow1().Button("Cylinder/Tube")
+In Window("SIMPLE MESHING")
+    .Radio("Multiple radio") = "Cylinder"
+    .Textbox("PID") = "$PID"
+    .Popup("Centre definition method")
+End In
+PopupWindow1().Button("coord")
+In Window("SIMPLE MESHING")
+    .Textbox(#183) = "$X0"
+    .Textbox(#185) = "$Y0"
+    .Textbox(#187) = "$Z0"
+    .Popup("Centre definition method b")
+End In
+PopupWindow1().Button("coord")
+In Window("SIMPLE MESHING")
+    .Textbox(#189) = "$X1"
+    .Textbox(#191) = "$Y1"
+    .Textbox(#193) = "$Z1"
+    .Textbox("Radius") = "$RADIUS"
+    .Textbox("Element size/no. of elements along Circumference") = "$NCIR"
+    .Textbox("Length") = "$LENGTH"
+    .Textbox("Element size/no. of elements along Height") = "NHEI"
+    .Button("Apply")
+End In
+In Window("Tools/Keywords")
+    .Button("Tools")
+    .Button("Macro")
+End In
+In Window("Tools/Keywords")
+    .Button("Model Tab")
+End In

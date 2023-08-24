@@ -1,0 +1,42 @@
+MacroName("Extrude")
+MacroDescription("Shell Extrude")
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Popup("Shapes")
+    .Popup("Mesh")
+End In
+PopupWindow1().Button("Extrude")
+
+Window("SIMPLE MESHING").Popup("Entity to be extruded")
+PopupWindow1().Button("Shells")
+
+Window("SIMPLE MESHING").Button("Select start")
+Window("SIMPLE MESHING").Menu("SELECT SHELLS").Button("Filter")
+In Window("SIMPLE MESHING").Menu("FILTER ITEMS")
+    .Select1("By PART ... (ANY)")
+    .Select2("$SHELL_PID")
+End In
+
+In Window("SIMPLE MESHING").Menu("SELECT SHELLS")
+    .Button("All")
+    .Button("Apply")
+End In
+
+Window("SIMPLE MESHING").Popup("Entity to be created")
+PopupWindow1().Button("Solids")
+
+In Window("SIMPLE MESHING")
+    .Textbox("PID") = "$SOLID_PID"
+End In
+
+Window("SIMPLE MESHING").Popup("Element size or no. of elements?")
+PopupWindow1().Button("No. of solids")
+Window("SIMPLE MESHING").Textbox("Element size/no. of elements") = "$ELE"
+
+Window("SIMPLE MESHING").Popup("Direction")
+PopupWindow1().Button("$DIR")
+Window("SIMPLE MESHING").Textbox("distance") = "$HEIGHT"
+
+Window("SIMPLE MESHING").Button("Apply")
+Window("SIMPLE MESHING").Button("Dismiss")

@@ -1,0 +1,13 @@
+In Window("Tools/Keywords")
+    .Button("Model Tab")
+    .Button("Mesh tools")
+    .Popup("Split")
+End In
+PopupWindow1().Button("Beam")
+Window("SPLIT BEAMS").Menu("SELECT BEAMS").Button("Key_In")
+Window("SPLIT BEAMS").Window("KEY IN").Textbox("Keyin input") = "$BLIST"
+In Window("SPLIT BEAMS")
+    .Textbox("Split into:") = "$DIV"
+    .Button("Apply")
+    .Button("Dismiss")
+End In

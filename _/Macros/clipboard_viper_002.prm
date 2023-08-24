@@ -1,0 +1,32 @@
+# >>> WRITE OUT ALL SOLID ELEMENTS FOR VIPER OBSTACLES <<<
+
+In Window("Tools/Keywords")
+    .Button("Tools")
+End In
+
+Window("Tools/Keywords").Button("Clipboard")
+
+Window("CLIPBOARD").Button("+ (ADD)")
+In Window("CLIPBOARD").Menu("SELECT ENTITIES")
+    .Select1("SOLID...")
+    .Button("All")
+End In
+Window("CLIPBOARD").Button("ADD ITEMS")
+
+
+Window("CLIPBOARD").Button("List contents")
+DialogWindow("LISTING").Button("Quit")
+
+In Window("CLIPBOARD")
+    .Radio("Show Radio") = "Show in clipboard"
+    .Button("Propagate Selection")
+    .Button("Write keyword file")
+    .Textbox("Keyword file") = "$FILE"
+    .Textbox("Keyword title") = "Viper_solid.key"
+    .Button("Apply")
+End In
+
+$Window("CLIPBOARD").Window("FILE EXISTS ACTION").Button("New file")
+
+Window("CLIPBOARD").Button("Dismiss")
+

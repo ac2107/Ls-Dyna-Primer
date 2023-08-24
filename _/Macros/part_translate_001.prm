@@ -1,0 +1,22 @@
+Window("Tools/Keywords").Button("Model Tab")
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Button("Orient")
+End In
+Window("Orient").Button("Translate")
+
+In Window("Orient").Menu("ORIENT ITEMS")
+    .Select1("PART...")
+    .Button("Key_In")
+End In
+Window("Orient").Window("KEY IN").Textbox("Keyin input") = "$PID"
+In Window("Orient")
+    .Textbox("Translation distance") = "$TD"
+    .Button("Apply")
+End In
+Window("Orient").Window("CONFIRM ORIENT").Button("Accept")
+
+Window("Tools/Keywords").Button("Model Tab")
+
+

@@ -1,0 +1,11 @@
+MacroName("Show")
+MacroDescription("show node and label")
+
+GraphicsWindow("GRAPHICS 1").Button("Display")
+PopupWindow1().Button("Entities")
+In Window("ENTITIES")
+    .Button("ALL NODES label") = On
+    .Button("ALL NODES drawn") = On
+    .Button("Update")
+    .Button("Dismiss")
+End In

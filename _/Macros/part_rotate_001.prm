@@ -1,0 +1,25 @@
+Window("Tools/Keywords").Button("Model Tab")
+
+In Window("Tools/Keywords")
+    .Button("Mesh tools")
+    .Button("Orient")
+End In
+
+Window("Orient").Button("Rotate")
+
+Window("Orient").Textbox("Centre of rotation") = "$CoR"
+
+Window("Orient").Textbox("Rotation angles") = "$RA"
+
+In Window("Orient").Menu("ORIENT ITEMS")
+    .Select1("PART...")
+    .Button("Key_In")
+End In
+
+Window("Orient").Window("KEY IN").Textbox("Keyin input") = "$PID"
+
+Window("Orient").Button("Apply")
+
+Window("Orient").Window("CONFIRM ORIENT").Button("Accept")
+
+Window("Tools/Keywords").Button("Model Tab")

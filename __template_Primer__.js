@@ -19,7 +19,8 @@ var js_dir = Get_JS_Dir(arguments[0]);
 Message("JavaScript Dir: "+js_dir);
 
 // Get Macro Directory
-var mac_dir = js_dir+"Macros"+slash;
+// var mac_dir = js_dir+"Macros"+slash;
+var mac_dir = "C:\\Users\\Anqi.Chen\\Documents\\GitHub\\Ls-Dyna-Primer\\Macros\\"
 Message("Macro Dir: "+mac_dir);
 
 // Option to show field headers in the key field
@@ -72,19 +73,19 @@ m.comments = comment_text;
 
 
 //========================= DATABASE ===========================================
-m.database.binary.d3plot.exists = true;
-m.database.binary.d3plot.dt = 2e-3;
-m.database.binary.d3plot.lcdt = Variable_D3PLOT_Output_Curve.lcid;
+// m.database.binary.d3plot.exists = true;
+// m.database.binary.d3plot.dt = 2e-3;
+// m.database.binary.d3plot.lcdt = Variable_D3PLOT_Output_Curve.lcid;
 
-m.database.binary.d3thdt.exists = true;
-m.database.binary.d3thdt.dt = 1e-4;
+// m.database.binary.d3thdt.exists = true;
+// m.database.binary.d3thdt.dt = 1e-4;
 
 //m.database.binary.blstfor.exists = true;
 //m.database.binary.blstfor.dt = 1e-5;
 
-m.database.glstat.exists = true;
-m.database.glstat.dt = 1e-4;
-m.database.glstat.binary = 3;
+// m.database.glstat.exists = true;
+// m.database.glstat.dt = 1e-4;
+// m.database.glstat.binary = 3;
 
 // // === beam element integration point output
 // m.database.extent_binary.exists = true;

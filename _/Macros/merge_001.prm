@@ -1,0 +1,20 @@
+MacroName("Merge")
+MacroDescription("Merge Nodes for a Part")
+
+In Window("Tools/Keywords")
+    .Button("Tools")
+    .Button("NODE")
+End In
+Window("Node").Button("Merge")
+Window("Remove").Button("Select")
+In Window("Remove").Menu("SELECT OBJECTS")
+    .Select1("PART...")
+    .Button("Key_In")
+End In
+Window("Remove").Window("KEY IN").Textbox("Keyin input") = "$PID"
+In Window("Remove")
+    .Button("Finish")
+    .Textbox("Merge tolerance") = "$TOL"
+    .Button("Apply")
+End In
+

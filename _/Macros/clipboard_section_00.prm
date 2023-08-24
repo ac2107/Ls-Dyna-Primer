@@ -1,0 +1,29 @@
+Version("18.0", 28953)
+Window("Tools/Keywords").Button("Tools")
+Window("Tools/Keywords").Button("Clipboard")
+Window("CLIPBOARD").Menu("SELECT MODEL").Button("Key_In")
+In Window("CLIPBOARD").Window("KEY IN")
+    .Textbox("Keyin input") = "$MID"
+End In
+
+Window("CLIPBOARD").Button("+ (ADD)")
+
+In Window("CLIPBOARD").Menu("SELECT ENTITIES")
+    .Select1("SECTION...")
+    .Button("All")
+End In
+Window("CLIPBOARD").Button("ADD ITEMS")
+
+Window("CLIPBOARD").Button("Propagate Selection")
+
+Window("CLIPBOARD").Button("Write keyword file")
+
+In Window("CLIPBOARD")
+    .Textbox("Keyword title") = "$TITLE"
+    .Textbox("Keyword file") = "$KEY_FILE"
+    .Button("Apply")
+End In
+
+Window("CLIPBOARD").Button("Dismiss")
+
+Window("Tools/Keywords").Button("Model Tab")
