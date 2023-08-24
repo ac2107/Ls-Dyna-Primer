@@ -133,6 +133,8 @@ function getNodesBetweenTwoNodesPart(m, n1, n2, pid) {
 	m.PropagateFlag(flag_part);
 
 	var node_list = [] // contain the node list within the line segment
+	var node_list_sorted = [] 	// sorted list of node nids
+	var node_obj = [];			// list of node objects to be sorted
 	
 	var node1 = Node.GetFromID(m, n1);
 	var node2 = Node.GetFromID(m, n2);
@@ -162,5 +164,30 @@ function getNodesBetweenTwoNodesPart(m, n1, n2, pid) {
 
 	ReturnFlag(flag_part);
 
-	return node_list
+	// >>> create a list of node objects for sorting
+	for (var nid of node_list){
+		// >> get node
+		var node = Node.GetFromID(m, nid);
+		// >> work out distance to the first node n1
+		var dist = unitVectorByTwoNodes(m, n1, nid).distance;
+		// >> add the distance as property to a NODE object
+		node.dist = dist;
+		// >> push the node obj to the list
+		node_obj.push(node);
+
+	}
+	
+	// 	>>> sorting the node list by property "dist"
+	node_obj.sort((a, b) => (a.dist > b.dist) ? 1 : -1)
+
+	for (var node of node_obj){
+		// Message([node.nid, node.dist]);
+		if (isThirdNode(m, node)){}
+		else {
+			node_list_sorted.push(node.nid)
+		}
+	}
+
+	return node_list_sorted
+
 }

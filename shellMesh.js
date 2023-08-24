@@ -223,6 +223,189 @@ function quadMeshRectangle(m, pid, Lx, Ly, size_x, size_y, x0 = 0, y0 = 0) {
 	return { nodes, shells };
   }
 
+/**
+ * Create a circle meshed with quad elements in XY plane
+ * @param {Model} m Model
+ * @param {Number} pid Part id 
+ * @param {Number} R Circle radius [m] 
+ * @param {Number} cx Circle centre x coordiante
+ * @param {Number} cy Circle centre y coordiante
+ * @param {Number} esize Nominal element size 
+ */
+function quadMeshCircle(m, pid, R, cx, cy, esize){
 
-  
+	const z = 0;
+	const fR = 0.35;
+
+	var num = Math.ceil(fR*R/esize);
+
+	let node1 = new Node(m, Node.NextFreeLabel(m), 0, 0, z);
+	let node2 = new Node(m, Node.NextFreeLabel(m), fR*R, fR*R, z);
+	let node3 = new Node(m, Node.NextFreeLabel(m), fR*R, 0, z);
+	let node4 = new Node(m, Node.NextFreeLabel(m), fR*R, -fR*R, z);
+	let node5 = new Node(m, Node.NextFreeLabel(m), 0, -fR*R, z);
+	let node6 = new Node(m, Node.NextFreeLabel(m), -fR*R, -fR*R, z);
+	let node7 = new Node(m, Node.NextFreeLabel(m), -fR*R, 0, z);
+	let node8 = new Node(m, Node.NextFreeLabel(m), -fR*R, fR*R, z);
+	let node9 = new Node(m, Node.NextFreeLabel(m), 0, fR*R, z);
+
+	let node10 = new Node(m, Node.NextFreeLabel(m), 0, R, z);
+	let node11 = new Node(m, Node.NextFreeLabel(m), Math.sqrt(R*R/2.0), Math.sqrt(R*R/2.0), z);
+	let node12 = new Node(m, Node.NextFreeLabel(m), R, 0, z);
+	let node13 = new Node(m, Node.NextFreeLabel(m), Math.sqrt(R*R/2.0), -Math.sqrt(R*R/2.0), z);
+	let node14 = new Node(m, Node.NextFreeLabel(m), 0, -R, z);
+	let node15 = new Node(m, Node.NextFreeLabel(m), -Math.sqrt(R*R/2.0), -Math.sqrt(R*R/2.0), z);
+	let node16 = new Node(m, Node.NextFreeLabel(m), -R, 0, z);
+	let node17 = new Node(m, Node.NextFreeLabel(m), -Math.sqrt(R*R/2.0), Math.sqrt(R*R/2.0), z);
+
+	let node_list = [node1, node2, node3, node4, node5, node6, node7, node8, node9, node10, node11, node12,
+	node13, node14, node15, node16, node17];
+
+	_meshRectangle(node1, node3, node2, node9, num, num);
+	_meshRectangle(node7, node1, node9, node8, num, num);
+	_meshRectangle(node5, node4, node3, node1, num, num);
+	_meshRectangle(node6, node5, node1, node7, num, num);
+
+	// let nodes_arc1 = _computeNodes(node11, node10, R, num-1);
+	// let nodes_arc2 = _computeNodes(node12, node11, R, num-1);
+	// let nodes_arc3 = _computeNodes(node13, node12, R, num-1);
+	// let nodes_arc4 = _computeNodes(node14, node13, R, num-1);
+	// let nodes_arc5 = _computeNodes(node15, node14, R, num-1);
+	// let nodes_arc6 = _computeNodes(node16, node15, R, num-1);
+	// let nodes_arc7 = _computeNodes(node17, node16, R, num-1);
+	// let nodes_arc8 = _computeNodes(node10, node17, R, num-1);
+
+	let flag_merge = AllocateFlag();
+	let _p = Part.GetFromID(m, pid);
+	_p.SetFlag(flag_merge);
+	m.PropagateFlag(flag_merge);
+	for (var node of node_list) node.SetFlag(flag_merge);
+	m.MergeNodes(flag_merge, 1e-5);
+	ReturnFlag(flag_merge);
+	
+	let edge_line1 = getNodesBetweenTwoNodesPart(m, node2.nid, node9.nid, pid);
+	// let edge_line2 = getNodesBetweenTwoNodes(m, node3.nid, node2.nid);
+	// let edge_line3 = getNodesBetweenTwoNodes(m, node4.nid, node3.nid);
+	// let edge_line4 = getNodesBetweenTwoNodes(m, node5.nid, node4.nid);
+	// let edge_line5 = getNodesBetweenTwoNodes(m, node6.nid, node5.nid);
+	// let edge_line6 = getNodesBetweenTwoNodes(m, node7.nid, node6.nid);
+	// let edge_line7 = getNodesBetweenTwoNodes(m, node8.nid, node7.nid);
+	// let edge_line8 = getNodesBetweenTwoNodes(m, node9.nid, node8.nid);
+	
+	Message(edge_line1);
+
+	// _generateCurvedShellMesh(nodes_arc1, edge_line1, num);
+	// _generateCurvedShellMesh(nodes_arc2, edge_line2, num);
+	// _generateCurvedShellMesh(nodes_arc3, edge_line3, num);
+	// _generateCurvedShellMesh(nodes_arc4, edge_line4, num);
+	// _generateCurvedShellMesh(nodes_arc5, edge_line5, num);
+	// _generateCurvedShellMesh(nodes_arc6, edge_line6, num);
+	// _generateCurvedShellMesh(nodes_arc7, edge_line7, num);
+	// _generateCurvedShellMesh(nodes_arc8, edge_line8, num);
+
+
+
+
+
+	function _meshRectangle(node1, node2, node3, node4, numX, numY) {
+
+		let shells = [];
+		let nodes = [];
+
+		// Calculate the increment in x and y direction based on the number of divisions
+		let deltaX = (node2.x - node1.x) / numX;
+		let deltaY = (node3.y - node2.y) / numY;
+
+		// Generate nodes for each subdivision
+		for (let i = 0; i <= numY; i++) {
+			for (let j = 0; j <= numX; j++) {
+				nodes.push(new Node(m, Node.NextFreeLabel(m), node1.x + j * deltaX, node1.y + i * deltaY, 0));
+			}
+		}
+
+		// Define shell elements using nodes of each subdivision
+		for (let i = 0; i < numY; i++) {
+			for (let j = 0; j < numX; j++) {
+				
+				let n1 = nodes[i * (numX + 1) + j];
+				let n2 = nodes[i * (numX + 1) + j + 1];
+				let n3 = nodes[(i + 1) * (numX + 1) + j + 1];
+				let n4 = nodes[(i + 1) * (numX + 1) + j];
+
+				shells.push(new Shell(m, Shell.NextFreeLabel(m), 999, n1.nid, n2.nid, n3.nid, n4.nid));
+			}
+		}
+
+	    return shells;
+	}
+
+
+	function _computeNodes(nodeA, nodeB, R, N) {
+
+		const theta = Math.acos((nodeA.x * nodeB.x + nodeA.y * nodeB.y) / (R * R));
+		const deltaTheta = theta / (N + 1);
+	
+		const alpha = Math.atan2(nodeA.y, nodeA.x);  // Starting angle of node A
+	
+		const nodes= [];
+	
+		for (let i = 1; i <= N; i++) {
+			const x = R * Math.cos(alpha + i * deltaTheta);
+			const y = R * Math.sin(alpha + i * deltaTheta);
+			let newNode = new Node(m, Node.NextFreeLabel(m), x, y, 0);
+			nodes.push(newNode.nid);
+		}
+	
+		// Prepend nodeA and append nodeB
+		nodes.unshift(nodeA.nid);
+		nodes.push(nodeB.nid);
+		
+
+
+		return nodes;
+	}
+
+	function _generateMeshNodes(nodeA, nodeB, M) {
+		const interpolatedNodes = [];
+	
+		for (let i = 1; i <= M; i++) {
+			const t = i / (M + 1);
+			const x = nodeA.x + t * (nodeB.x - nodeA.x);
+			const y = nodeA.y + t * (nodeB.y - nodeA.y);
+			
+			interpolatedNodes.push(new Node(m, Node.NextFreeLabel(m), x, y, z));
+		}
+	
+		return interpolatedNodes;
+	}
+
+	function _generateCurvedShellMesh(list1, list2, M) {
+		const shells = [];
+
+		const allNodes = [];
+	
+		// Generate nodes for all node pairs
+		for (let i = 0; i < list1.length; i++) {
+			const nodesBetween = _generateMeshNodes(Node.GetFromID(m, list1[i]), Node.GetFromID(m, list2[i]), M);
+			allNodes.push([list1[i]].concat(nodesBetween.map(n => n.nid)).concat([list2[i]]));
+		}
+	
+		// Generate shell elements
+		for (let i = 0; i < list1.length - 1; i++) {
+			for (let j = 0; j < allNodes[i].length - 1; j++) {
+				const nid1 = allNodes[i+1][j];
+				const nid2 = allNodes[i+1][j+1];
+				const nid3 = allNodes[i][j+1];
+				const nid4 = allNodes[i][j];
+				
+				shells.push(new Shell(m, Shell.NextFreeLabel(m), pid, nid1, nid2, nid3, nid4));
+			}
+		}
+	
+		return shells;
+	}
+
+	return 0
+  }
+
 
