@@ -8,6 +8,7 @@
 
 
 //========================= GENERAL SETTINGS ===================================
+// @ts-ignore
 var start_time = new Date();
 // Check OS and set slash type
 if( Unix() ) var slash = "/";
@@ -25,6 +26,17 @@ Message("Macro Dir: "+mac_dir);
 
 // Option to show field headers in the key field
 // PlayMacro(mac_dir+"headers_001.prm")
+
+//========================= WRTIE PATH =========================================
+var write_dir = null;
+// @ts-ignore
+// var write_dir = 
+// "E:\\Projects\\000_Changi_airport\\Dyna\\Floor_beams\\T5_floor\\PB1200dx1300w_1a_PB1\\";
+if (write_dir === null){
+	write_dir = js_dir
+}
+Message("Write Dir: " + write_dir);
+
 //========================= USE MODULES ========================================
 // all Primer js scripts are in "C:\Users\Anqi.Chen\OneDrive - Arup\Shared with Everyone\Scripts\Primer_js"
 Use("_useModules.js");
