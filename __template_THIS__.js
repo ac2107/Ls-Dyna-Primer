@@ -37,77 +37,61 @@ Curve.DeleteFlagged(f_del);
 
 Message("Post-processing");
 
-var n, line;
-var csv = new File(js_dir+'slab_forces.csv', File.WRITE);
-//------- Tension and compression ----------------------------------------------
 
-m.FlagAll(f, Entity.X_SECTION);
-if (m.QueryDataPresent(Component.XSEC_FX, Entity.X_SECTION)) {
-   var curve_array= m.GetDataFlagged(f, Component.XSEC_FX); }
-
-csv.Writeln('csid, Tmax, Cmax')
-for (let i = 1; i < curve_array.length+1; i++){
-   var curve = Curve.GetFromID(i);
-   var Tmax = curve.ymax/1000.0;
-   var Cmax = curve.ymin/1000.0;
-   Message([i, Tmax, Cmax]);
-   csv.Writeln(i + ',' + Tmax + ',' + Cmax)
-   if (i > 1000) break
-}
-
-
-//------- Shear Horizontal -----------------------------------------------------
-Curve.FlagAll(f_del);
-Curve.DeleteFlagged(f_del);
-
-m.FlagAll(f, Entity.X_SECTION);
-if (m.QueryDataPresent(Component.XSEC_FY, Entity.X_SECTION)) {
-   var curve_array= m.GetDataFlagged(f, Component.XSEC_FY); }
-
-
-csv.Writeln('csid, VEd_h, 0')
-for (let i = 1; i < curve_array.length+1; i++){
-
-
-   var curve = Curve.GetFromID(i);
-
-   var Vmax = curve.ymax/1000.0;
-   var Vmin = curve.ymin/1000.0;
-
-   var VEd = Math.max(Math.abs(Vmax), Math.abs(Vmin));
-
-   Message([i, VEd]);
-   csv.Writeln(i + ',' + VEd + ',' + '0')
-
-   if (i > 1000) break
-}
-
-
-//------- Shear Veritcal -------------------------------------------------------
-Curve.FlagAll(f_del);
-Curve.DeleteFlagged(f_del);
 
 m.FlagAll(f, Entity.X_SECTION);
 if (m.QueryDataPresent(Component.XSEC_FZ, Entity.X_SECTION)) {
-   var curve_array= m.GetDataFlagged(f, Component.XSEC_FZ); }
+   let curve_array= m.GetDataFlagged(f, Component.XSEC_FZ); }
 
-csv.Writeln('csid, VEd_v, 0')
-for (let i = 1; i < curve_array.length+1; i++){
-   var curve = Curve.GetFromID(i);
-   var Vmax = curve.ymax/1000.0;
-   var Vmin = curve.ymin/1000.0;
-   var VEd = Math.max(Math.abs(Vmax), Math.abs(Vmin));
 
-   Message([i, VEd]);
-   csv.Writeln(i + ',' + VEd + ',' + '0')
+Curve.Delete(3);
 
-   if (i > 1000) break
+// XSEC1
+var fz1 = Curve.GetFromID(1);
+// --- reverse fz1 
+
+for (let i = 1; i<fz1.npoints+1; i++){
+
+   let x_val = fz1.GetPoint(i)[0];
+   let y_val = fz1.GetPoint(i)[1];
+
+   fz1.SetPoint(i, x_val, y_val*-1);
+
 }
 
+// XSEC2
+var fz2 = Curve.GetFromID(2);
 
 
+// Total reaction forces
 
+var fz = new Curve(3, 'Z force - TOTAL', "Z force - TOTAL");
 
+for (let i = 1; i<fz1.npoints+1; i++){
+   
+   let x_val = fz1.GetPoint(i)[0];
+
+   let y_val = (fz1.GetPoint(i)[1] + fz2.GetPoint(i)[1])/1000.0;
+
+   fz.AddPoint(x_val, y_val);
+
+}
+
+fz1.RemoveFromGraph(1);
+fz2.RemoveFromGraph(1);
+
+var g1 = Graph.GetFromID(1);
+
+g1.xlabel = 'Time (Sec)';
+g1.ylabel = 'Force (kN)'
+
+g1.x_unit_size = 12;
+g1.xlabel_size = 12;
+
+g1.y_unit_size = 12;
+g1.ylabel_size = 12;
+
+Plot();
 
 //========================= FUNCTIONS ==========================================
 function Get_JS_Dir(start_path) {
