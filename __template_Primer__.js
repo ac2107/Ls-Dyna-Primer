@@ -82,6 +82,43 @@ m.comments = comment_text;
 // continue further process
 
 
+//========================= BLAST LOAD =========================================
+
+// const PBIED_segment = 	{m: 20.0, cx: 0, cy: 0.2, cz: d/2+0.2}; 
+// const PBIED_blast = 	PBIED_segment;
+// // const PBIED_blast = {m: 20.0, cx: 1.0, cy: -0.5, cz: d/2+0.2};
+
+// const blast = true;
+
+// if (blast){
+
+// 	PlayMacro(mac_dir + "segment_coat_002.prm", {
+// 						variables: {
+// 						PID: pids.CONCRETE_BEAM,
+// 						SEGID: sids.SEGMENT_ALL
+// 	}});
+	
+// 	const blastFace = selectBlastSegments(m, sids.SEGMENT_ALL, sids.SEGMENT_BLAST_FACE,
+// 					PBIED_segment.cx, PBIED_segment.cy, PBIED_segment.cz, 90,
+// 	);
+
+// 	const blastLoad = defineBlastLoad(m, 1, sids.SEGMENT_BLAST_FACE, tStep.preloadTime, 
+// 									1, PBIED_blast.m, 
+// 									PBIED_blast.cx, PBIED_blast.cy, PBIED_blast.cz, 
+// 									'PBIED', true
+// 	);
+// }
+
+// === Import load curces from Viper
+// m.Import(js_dir+'viperdyne_PBIED_beam_end.k'); 
+// // m.Import(js_dir+'viperdyne_PBIED_mid_span.k');
+// // Offset Viper load curves for applying preload
+// var curves = Curve.GetAll(m);
+// for (var crv of curves){
+// 	if (crv.lcid < 1000000){
+// 		crv.offa = tStep.preloadTime;
+// 	}
+// }
 
 
 //========================= DATABASE ===========================================
