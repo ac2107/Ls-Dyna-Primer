@@ -261,19 +261,19 @@ function quadMeshCircle(m, pid, R, cx, cy, esize){
 	let node_list = [node1, node2, node3, node4, node5, node6, node7, node8, node9, node10, node11, node12,
 	node13, node14, node15, node16, node17];
 
-	_meshRectangle(node1, node3, node2, node9, num, num);
-	_meshRectangle(node7, node1, node9, node8, num, num);
-	_meshRectangle(node5, node4, node3, node1, num, num);
-	_meshRectangle(node6, node5, node1, node7, num, num);
+	let shell_rec1 = _meshRectangle(node1, node3, node2, node9, num, num);
+	let shell_rec2 = _meshRectangle(node7, node1, node9, node8, num, num);
+	let shell_rec3 = _meshRectangle(node5, node4, node3, node1, num, num);
+	let shell_rec4 = _meshRectangle(node6, node5, node1, node7, num, num);
 
-	// let nodes_arc1 = _computeNodes(node11, node10, R, num-1);
-	// let nodes_arc2 = _computeNodes(node12, node11, R, num-1);
-	// let nodes_arc3 = _computeNodes(node13, node12, R, num-1);
-	// let nodes_arc4 = _computeNodes(node14, node13, R, num-1);
-	// let nodes_arc5 = _computeNodes(node15, node14, R, num-1);
-	// let nodes_arc6 = _computeNodes(node16, node15, R, num-1);
-	// let nodes_arc7 = _computeNodes(node17, node16, R, num-1);
-	// let nodes_arc8 = _computeNodes(node10, node17, R, num-1);
+	let nodes_arc1 = _computeNodes(node11, node10, R, num-1);
+	let nodes_arc2 = _computeNodes(node12, node11, R, num-1);
+	let nodes_arc3 = _computeNodes(node13, node12, R, num-1);
+	let nodes_arc4 = _computeNodes(node14, node13, R, num-1);
+	let nodes_arc5 = _computeNodes(node15, node14, R, num-1);
+	let nodes_arc6 = _computeNodes(node16, node15, R, num-1);
+	let nodes_arc7 = _computeNodes(node17, node16, R, num-1);
+	let nodes_arc8 = _computeNodes(node10, node17, R, num-1);
 
 	let flag_merge = AllocateFlag();
 	let _p = Part.GetFromID(m, pid);
@@ -284,28 +284,33 @@ function quadMeshCircle(m, pid, R, cx, cy, esize){
 	ReturnFlag(flag_merge);
 	
 	let edge_line1 = getNodesBetweenTwoNodesPart(m, node2.nid, node9.nid, pid);
-	// let edge_line2 = getNodesBetweenTwoNodes(m, node3.nid, node2.nid);
-	// let edge_line3 = getNodesBetweenTwoNodes(m, node4.nid, node3.nid);
-	// let edge_line4 = getNodesBetweenTwoNodes(m, node5.nid, node4.nid);
-	// let edge_line5 = getNodesBetweenTwoNodes(m, node6.nid, node5.nid);
-	// let edge_line6 = getNodesBetweenTwoNodes(m, node7.nid, node6.nid);
-	// let edge_line7 = getNodesBetweenTwoNodes(m, node8.nid, node7.nid);
-	// let edge_line8 = getNodesBetweenTwoNodes(m, node9.nid, node8.nid);
+	let edge_line2 = getNodesBetweenTwoNodesPart(m, node3.nid, node2.nid, pid);
+	let edge_line3 = getNodesBetweenTwoNodesPart(m, node4.nid, node3.nid, pid);
+	let edge_line4 = getNodesBetweenTwoNodesPart(m, node5.nid, node4.nid, pid);
+	let edge_line5 = getNodesBetweenTwoNodesPart(m, node6.nid, node5.nid, pid);
+	let edge_line6 = getNodesBetweenTwoNodesPart(m, node7.nid, node6.nid, pid);
+	let edge_line7 = getNodesBetweenTwoNodesPart(m, node8.nid, node7.nid, pid);
+	let edge_line8 = getNodesBetweenTwoNodesPart(m, node9.nid, node8.nid, pid);
 	
-	Message(edge_line1);
+	var shell1 = _generateCurvedShellMesh(nodes_arc1, edge_line1, num);
+	var shell2 = _generateCurvedShellMesh(nodes_arc2, edge_line2, num);
+	var shell3 = _generateCurvedShellMesh(nodes_arc3, edge_line3, num);
+	var shell4 = _generateCurvedShellMesh(nodes_arc4, edge_line4, num);
+	var shell5 = _generateCurvedShellMesh(nodes_arc5, edge_line5, num);
+	var shell6 = _generateCurvedShellMesh(nodes_arc6, edge_line6, num);
+	var shell7 = _generateCurvedShellMesh(nodes_arc7, edge_line7, num);
+	var shell8 = _generateCurvedShellMesh(nodes_arc8, edge_line8, num);
 
-	// _generateCurvedShellMesh(nodes_arc1, edge_line1, num);
-	// _generateCurvedShellMesh(nodes_arc2, edge_line2, num);
-	// _generateCurvedShellMesh(nodes_arc3, edge_line3, num);
-	// _generateCurvedShellMesh(nodes_arc4, edge_line4, num);
-	// _generateCurvedShellMesh(nodes_arc5, edge_line5, num);
-	// _generateCurvedShellMesh(nodes_arc6, edge_line6, num);
-	// _generateCurvedShellMesh(nodes_arc7, edge_line7, num);
-	// _generateCurvedShellMesh(nodes_arc8, edge_line8, num);
+	var shells = [shell_rec1, shell_rec2, shell_rec3, shell_rec4,
+		shell1, shell2, shell3, shell4, shell5, shell6, shell7, shell8].flat();
 
-
-
-
+	let flag_merge2 = AllocateFlag();
+	let _p2 = Part.GetFromID(m, pid);
+	_p2.SetFlag(flag_merge2);
+	m.PropagateFlag(flag_merge2);
+	for (var node of node_list) node.SetFlag(flag_merge);
+	m.MergeNodes(flag_merge, 1e-5);
+	ReturnFlag(flag_merge);
 
 	function _meshRectangle(node1, node2, node3, node4, numX, numY) {
 
@@ -332,13 +337,12 @@ function quadMeshCircle(m, pid, R, cx, cy, esize){
 				let n3 = nodes[(i + 1) * (numX + 1) + j + 1];
 				let n4 = nodes[(i + 1) * (numX + 1) + j];
 
-				shells.push(new Shell(m, Shell.NextFreeLabel(m), 999, n1.nid, n2.nid, n3.nid, n4.nid));
+				shells.push(new Shell(m, Shell.NextFreeLabel(m), pid, n1.nid, n2.nid, n3.nid, n4.nid));
 			}
 		}
 
 	    return shells;
 	}
-
 
 	function _computeNodes(nodeA, nodeB, R, N) {
 
@@ -405,7 +409,7 @@ function quadMeshCircle(m, pid, R, cx, cy, esize){
 		return shells;
 	}
 
-	return 0
+	return shells
   }
 
 
