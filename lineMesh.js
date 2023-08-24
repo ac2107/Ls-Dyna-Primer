@@ -139,7 +139,7 @@ function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
 
 
 /**
- * Create a group of line segments in the XY plane (i.e. on element section) and populate into the spanning direction (Z) of the lement
+ * Create a group of line segments in the XY plane (i.e. on element section) and populate into the spanning direction (Z) of the element
  * - Primarily used for creating closed or open shear links/ties for a RC element
  * @param {Model} m Model id
  * @param {Number} pid Part id
