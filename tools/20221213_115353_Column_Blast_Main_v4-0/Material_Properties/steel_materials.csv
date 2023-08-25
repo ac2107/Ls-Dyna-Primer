@@ -1,0 +1,17 @@
+Type,steel,Option 1,Option 2,Option 2
+Mat Type (Reference Only),mat_num,123,123,123
+Name,name,Basic 350MPa,Basic 450MPa,Basic 500MPa
+Density (RO),ro,7850,7850,7850
+Youngs Modulus (E),e,2.10E+11,2.10E+11,2.10E+11
+Poissions Ratio (PR),pr,0.3,0.3,0.3
+Yield Stress (SIGY),sigy,3.50E+08,4.50E+08,5.00E+08
+Tangent Modulus (ETAN),etan,1.00E+09,1.00E+09,1.00E+09
+Stress-Strain Curve (LCSS),lcss,0,0,0
+Plastic Failure Strain (FAIL),fail,0,0,0
+Major In Plane Strain Failure (EPSMAJ),epsmaj,0.15,0.15,0.15
+Strain Rate Parameter C (C),c,1300,1300,1300
+Strain Rate Parameter P (P),p,5,5,5
+Mat Add Erosion - Maximum effective strain at failure (EFFEPS),effeps,0,0,0
+Mat Add Erosion - Volumetric strain at failure (VOLEPS),voleps,0,0,0
+Mat Add Erosion - Number of failed integration points (NUMFIP),numfip,0,0,0
+Mat Add Erosion - Maximum principal strain at failure (MXEPS),mxeps,0,0,0

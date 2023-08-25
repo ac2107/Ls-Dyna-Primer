@@ -1,6 +1,7 @@
 // include all JavaScript to be used in Primer
 // Use("PrimerJS_functions.js");
 // Use("Ls_Dyna_functions.js");
+Use("functionPrimer.js");
 
 Use("defineBlastLoad.js");
 // Use("columnBlastFace.js");

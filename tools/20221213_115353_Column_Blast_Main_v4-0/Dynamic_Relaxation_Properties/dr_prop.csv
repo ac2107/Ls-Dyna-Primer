@@ -1,0 +1,4 @@
+Conv Check Timesteps,nrcyck,250
+Conv Tolerance,drtol,0.001
+Dynamic Relaxation Factor,drfctr,0.995
+Termination Time,drterm,0.2

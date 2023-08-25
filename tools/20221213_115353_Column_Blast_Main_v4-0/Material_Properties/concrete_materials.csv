@@ -1,0 +1,13 @@
+Type,concrete,Option 1,Option 2,Option 2
+Mat Type (Reference Only),mat_num,72 REL3,72 REL3,72 REL3
+Name,name,Con 30MPa,Con 35MPa,Con 40MPa
+Density (RO),ro,2400,2400,2400
+Poissions Ratio (PR),pr,0.15,0.15,0.15
+Tensile Strength (FT),ft,5.00E+06,5.00E+06,5.00E+06
+Compressive Strength (A0) - Script will set a negative value,a0,3.00E+07,3.50E+07,4.00E+07
+Strain Rate Curve (LRATE),lrate,-1,-1,-1
+3x maximum aggregate diameter (LOCWID),locwid,0,0,0
+Mat Add Erosion - Maximum effective strain at failure (EFFEPS),effeps,0,0,0
+Mat Add Erosion - Volumetric strain at failure (VOLEPS),voleps,0.05,0.05,0.05
+Mat Add Erosion - Number of failed integration points (NUMFIP),numfip,0,0,0
+Mat Add Erosion - Maximum principal strain at failure (MXEPS),mxeps,0,0,0

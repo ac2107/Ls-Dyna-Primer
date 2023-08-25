@@ -1,0 +1,11 @@
+Type,rebar steel,Option 1,Option 2,Option 2
+Mat Type (Reference Only),mat_num,24,24,24
+Name,name,Basic 350MPa,Basic 450MPa,Basic 500MPa
+Density (RO),ro,7850,7850,7850
+Youngs Modulus (E),e,2.10E+11,2.10E+11,2.10E+11
+Poissions Ratio (PR),pr,0.3,0.3,0.3
+Yield Stress (SIGY),sigy,3.50E+08,4.50E+08,5.00E+08
+Tangent Modulus (ETAN),etan,1.00E+09,1.00E+09,1.00E+09
+Plastic Failure Strain (FAIL),fail,0.1,0.1,0.1
+Strain Rate Parameter C (C),c,1300,1300,1300
+Strain Rate Parameter P (P),p,5,5,5

@@ -1,0 +1,26 @@
+MacroName("Merge All")
+MacroDescription("Merge All Nodes")
+
+MacroVariable("TOL", "Tolerance", "0.0001")
+
+###########################################
+In Window("Tools/Keywords")
+    .Button("Tools")
+    .Button("NODE")
+End In
+
+Window("Node").Button("Merge")
+Window("Remove").Button("Select")
+
+In Window("Remove").Menu("SELECT OBJECTS")
+    .Select1("NODE...")
+    .Button("All")
+End In
+
+In Window("Remove")
+    .Button("Finish")
+    .Textbox("Merge tolerance") = "$TOL"
+    .Button("Apply")
+End In
+
+###########################################
