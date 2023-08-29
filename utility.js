@@ -442,6 +442,19 @@ function smoothStepCurveGeneric(pts, nmax) {
 	return curve;
   }
 
+/**
+ * 
+ * @param {*} pts 
+ */
+function switchStepCurve(pts){
+
+
+
+
+
+}
+
+
 
 
 /**

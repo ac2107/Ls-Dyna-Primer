@@ -102,55 +102,40 @@
 
 /**
  * Create control cards for explicit dynamic analysis (for all preload, blast and post-blast steps)
- * Two preload steps are assumed
- *      Step 1: Pre-stress PT stage
- *      Step 2: Preload, by gravity load curve
- *      Step 3: Blast load applied, LBE or Viper
- *      Step 4: Post-blast, for ramping up the load to failure
+ * 
  * 
  * @param {Model} m Model 
- * @param {Object} timeSteps {dt_pre1: 1.0, dt_pre2: 1.0, dt_blast: 0.2, dt_post:1.0} 
- * @param {Object} loadAmps {f_pre: 1.0, f_post: 2.0} can be either dispalcement or force
+ * @param {Number} endtim {dt_pre1: 1.0, dt_pre2: 1.0, dt_blast: 0.2, dt_post:1.0} 
  * @param {Number} dt2ms Step time for mass scaling in the post-blast step
  * @returns Curve objects
  */
-function AnalysisControlExplicitDynamic(m, timeSteps, loadAmps, dt2ms){
+function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
 
     Message('... Explicit dynamic analysis');
 
     // - curves
 
-    // -- STATIC_LOAD_CURVE
-    let crv = smoothStepCurve(  m,
-                                timeSteps.preloadTime, 
-                                timeSteps.preloadTime + timeSteps.blastTime, 
-                                timeSteps.preloadTime + timeSteps.blastTime + timeSteps.postBlastTime, 
-                                loadAmps.preLoad, 
-                                loadAmps.postBlastLoad, 
-                                100, 
-                                false);
+    // --- STATIC_LOAD_CURVE, to be completed later when static loads are defined
                                 
     let STATIC_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
     STATIC_LOAD_CURVE.heading = "STATIC_LOAD_CURVE";
-    for (let c of crv) {STATIC_LOAD_CURVE.AddPoint(c[0], c[1])}
 
-    // --- Add automatic mass scaling after blast stage
+    
+    // --- Add automatic mass scaling, uniformly applied throughout
     let dt2ms_ini = -1e-6;
     let POST_BLAST_MASS_SCALING_CURVE = new Curve(Curve.CURVE, m, 1000002,) 
     POST_BLAST_MASS_SCALING_CURVE.heading = "POST_BLAST_MASS_SCALING_CURVE";
     POST_BLAST_MASS_SCALING_CURVE.AddPoint(0, dt2ms_ini);
-    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime, dt2ms_ini);
-    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime+1e-5, dt2ms);
-    POST_BLAST_MASS_SCALING_CURVE.AddPoint(tStep.preloadTime + tStep.blastTime + tStep.postBlastTime, dt2ms);
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(endtim, dt2ms_ini);
 
     // - control 
-    let endtim = timeSteps.preloadTime + timeSteps.blastTime + timeSteps.postBlastTime;
     m.control.termination.endtim = endtim;
-
+    
     if (dt2ms > 0) ErrorMessage('... dt2ms must be negative')
     m.control.timestep.exists = true;
     // m.control.timestep.dt2ms = dt2ms;
     m.control.timestep.dt2mslc = POST_BLAST_MASS_SCALING_CURVE.lcid;
+
 
     // - database
     var N_d3plot = 50.0;
