@@ -409,7 +409,41 @@ function smoothStepCurve(m, t1, t2, t3, a1, a2, nmax, bool = false) {
 
 	return crv;
   }
+
+/**
+ * Generate a smooth curve between a set of points.
+ * @param {Array} pts An array of points, where each point is a list of two numbers `[t, a]`.
+ * @param {Number} nmax The number of points to generate between each pair of points in `pts`.
+ * @returns 
+ */
+function smoothStepCurveGeneric(pts, nmax) {
+	
+	let curve = [];
   
+	for (let i = 0; i < pts.length - 1; i++) {
+	  const t0 = pts[i][0];
+	  const a0 = pts[i][1];
+	  const t1 = pts[i + 1][0];
+	  const a1 = pts[i + 1][1];
+  
+	  if (a0 !== a1) {
+		for (let t = t0; t <= t1; t += (t1 - t0) / nmax) {
+		  const a = a0 + (a1 - a0) * ((t - t0) / (t1 - t0)) * ((t - t0) / (t1 - t0)) * ((t - t0) / (t1 - t0));
+		  curve.push([t, a]);
+		}
+	  } else {
+		curve.push([t0, a0]);
+	  }
+	}
+  
+	// Ensure that the last point of the curve is the same as the input.
+	curve.push([pts[pts.length - 1][0], pts[pts.length - 1][1]]);
+  
+	return curve;
+  }
+
+
+
 /**
  * Computes the unit vector perpendicular from the line segment (n1, n2) to n3.
  *
