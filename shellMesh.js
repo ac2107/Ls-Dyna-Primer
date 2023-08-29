@@ -220,7 +220,7 @@ function quadMeshRectangle(m, pid, Lx, Ly, size_x, size_y, x0 = 0, y0 = 0) {
 	  }
 	}
   
-	return { nodes, shells };
+	return shells;
   }
 
 /**
