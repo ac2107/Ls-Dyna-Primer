@@ -121,7 +121,7 @@ function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
         let beams = [];
         for (var pt of points){
 
-            Message(pt);
+            // Message(pt);
             
             var node0 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z[0]);
             var node1 = new Node(m, Node.NextFreeLabel(m), pt[0], pt[1], z[1]);

@@ -14,7 +14,7 @@ function nodeTranslate(m, dist, flag){
         var nodes = Node.GetFlagged(m, flag);
     }
 
-    Message(nodes.length);
+    // Message(nodes.length);
 
     for (var node of nodes){
 
@@ -50,7 +50,7 @@ function nodeRotate(m, CoR, RA, flag){
     // Convert angles from degrees to radians
     let radians = RA.map(angle => angle * Math.PI / 180);
 
-    Message(radians);
+    // Message(radians);
 
 
     for (var node of nodes){
