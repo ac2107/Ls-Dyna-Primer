@@ -176,6 +176,83 @@ function lineReinfSegMesh(m, pid, points, spacing, bsize, option){
 }
 
 
+function lineReinfCircleMesh(m, pid, x0, y0, R, N, z0, z1, bsize){
+
+        // Calculate the angular separation in radians
+    const dTheta = 2 * Math.PI / N;
+
+    let nodes = [];
+
+    // Create nodes around the circle on the XY plane with Z-coordinate z0
+    for (let i = 0; i < N; i++) {
+        const theta = i * dTheta;
+        const x = x0 + R * Math.cos(theta);
+        const y = y0 + R * Math.sin(theta);
+        nodes.push(new Node(m, Node.NextFreeLabel(m), x, y, z0));  // Added Z coordinate z0
+    }
+
+    // Create a copy of nodes at Z-coordinate z1
+    const copiedNodes = nodes.map(node => {
+        return new Node(m, Node.NextFreeLabel(m), node.x, node.y, z1);
+    });
+
+    // For each pair of nodes, call the lineMeshByNodes function
+    for (let i = 0; i < N; i++) {
+        lineMeshByNodes(m, pid, bsize, nodes[i].nid, copiedNodes[i].nid);
+    }
+
+}
+
+
+function lineReinfCircleHoopMesh(m, pid, x0, y0, R, spc, z0, z1, bsize){
+    
+    // Helper function to create nodes for a circle:
+    function createCircleNodes(m, x0, y0, R, z) {
+        const N = Math.round(2 * Math.PI * R / bsize); // Calculate number of nodes based on bsize
+        const dTheta = 2 * Math.PI / N;
+        const nodes = [];
+
+        for (let i = 0; i < N; i++) {
+            const theta = i * dTheta;
+            const x = x0 + R * Math.cos(theta);
+            const y = y0 + R * Math.sin(theta);
+            nodes.push(new Node(m, Node.NextFreeLabel(m), x, y, z));
+        }
+
+        return nodes;
+    }
+
+    // Meshing a circle with Beam elements:
+    function meshCircle(m, pid, nodes, bsize) {
+        for (let i = 0; i < nodes.length; i++) {
+            const n1 = nodes[i].nid;
+            const n2 = nodes[(i + 1) % nodes.length].nid;  // The modulus operation ensures a loop back to the first node
+            
+            // Calculate orientation vector between the two nodes
+            const node1 = Node.GetFromID(m, n1);
+            const node2 = Node.GetFromID(m, n2);
+            
+            const dx = node2.x - node1.x;
+            const dy = node2.y - node1.y;
+            const dz = node2.z - node1.z;
+            const magnitude = Math.sqrt(dx*dx + dy*dy + dz*dz);
+            
+            const beam = new Beam(m, Beam.NextFreeLabel(m), pid, n1, n2, 0); // n3 set to 0
+            beam.orientation = 1;  // Setting orientation to true
+            beam.vx = dx / magnitude;
+            beam.vy = dy / magnitude;
+            beam.vz = dz / magnitude;
+        }
+    }
+
+    // Create and mesh circles in the Z-direction at the defined spacing
+    for (let z = z0; z <= z1; z += spc) {
+        const circleNodes = createCircleNodes(m, x0, y0, R, z);
+        meshCircle(m, pid, circleNodes, bsize);
+    }
+}
+
+
 /**
  * Creates a series of equally spaced lines within a rectangle in the X direction in the XY plane
  *

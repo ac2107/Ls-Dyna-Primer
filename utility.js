@@ -1,5 +1,5 @@
 //
-// Any scripts do not belong to specific group
+// Generic functions not related to Oasys Primer JS API
 //
 
 
