@@ -117,8 +117,8 @@ function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
 
     // --- STATIC_LOAD_CURVE, to be completed later when static loads are defined
                                 
-    let STATIC_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
-    STATIC_LOAD_CURVE.heading = "STATIC_LOAD_CURVE";
+    let BASE_LOAD_CURVE = new Curve(Curve.CURVE, m, 1000001);
+    BASE_LOAD_CURVE.heading = "BASE_LOAD_CURVE";
 
     
     // --- Add automatic mass scaling, uniformly applied throughout
@@ -197,7 +197,7 @@ function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
     m.control.output.exists = true;
     m.control.output.nrefup = 1;
 
-    return {STATIC_LOAD_CURVE, 
+    return {BASE_LOAD_CURVE, 
             POST_BLAST_MASS_SCALING_CURVE}
 
 }

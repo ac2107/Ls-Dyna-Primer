@@ -119,13 +119,30 @@ function MAT_020_RIGID(m, mid, R0, E, PR, title){
 }
 
 function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
-
 	var material = new Material(m, mid, "*MAT_072R3"); // *MAT_CONCRETE_DAMAGE_REL3
 	material.title = title;
 	material.SetPropertyByName("RO", 2400);
 	material.SetPropertyByName("PR", 0.15);
+	
+	var f_ctm = 0.0
+	if (FT == 0.0) {
+ 
+		let fck = Math.abs(A0)/1E6; // MPa for calculation
 
-	if (FT == 0.0) 	material.SetPropertyByName("FT", 5E6) // 5MPa tensile strength as default
+		if (fck <= 50) {
+			
+			f_ctm =  0.3*Math.pow(fck, (2.0/3.0))
+
+		} else {
+			
+			 f_ctm = 2.12*Math.log(1+(fck+8)/10)
+		
+		}
+
+		// Message(["f_ctm = ", f_ctm]);
+
+		material.SetPropertyByName("FT", f_ctm*1E6)} // Calculate FT as per EN1993-1-1
+	
 	else material.SetPropertyByName("FT", FT)
 	
 	if (A0 < 0) material.SetPropertyByName("A0", A0) 
@@ -154,6 +171,45 @@ function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
 
 	return material
 }
+
+function MAT_072R3_LCRATE(m, lcid){
+
+	let data = [
+					[-30000, 8.803382184],
+					[-300, 8.803382184],
+					[-100, 7.526785892],
+					[-30, 5.038678484],
+					[-10, 3.493624535],
+					[-3, 1],
+					[-1, 1],
+					[-0.1, 1],
+					[-0.01, 1],
+					[-0.001, 1],
+					[-1E-04, 1],
+					[-1E-05, 1],
+					[0, 1],
+					[3E-05, 1],
+					[1E-04, 1],
+					[0.001, 1],
+					[0.01, 1],
+					[0.1, 1],
+					[1, 1],
+					[3, 1],
+					[10, 1.4364345],
+					[30, 1.482087155],
+					[100, 1.533786054],
+					[300, 1.582532729],
+					[30000, 1.582532729]
+	];
+
+	let curve = new Curve(Curve.CURVE, m, lcid);
+	for (var arr of data) curve.AddPoint(arr[0], arr[1]);
+	curve.heading = "MODIFIED_MAT72R3_LCRATE_CURVE";
+
+	return curve
+
+}
+
 
 function MAT_004_STEEL_THERMAL(m, mid, T1, T2, T3, E, PR, ALPHA, SIGY, ETAN, title){
 

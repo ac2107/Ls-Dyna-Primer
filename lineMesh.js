@@ -99,7 +99,7 @@ function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
 
         beams = beam.bids;
 
-        WarningMessage('lineReinfGroupMesh() in POINT model')
+        // WarningMessage('lineReinfGroupMesh() in POINT model')
 
         return {nodes, beams};
     }
@@ -129,7 +129,7 @@ function lineReinfMesh(m, pid, N, p0, p1, z, bsize){
 
         } 
 
-        WarningMessage('lineReinfGroupMesh() in LINE model')
+        // WarningMessage('lineReinfGroupMesh() in LINE model')
 
         return {points, nodes, beams};
     
