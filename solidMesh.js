@@ -60,3 +60,21 @@ function extrudeShellsToSolids(m, pid, shells, Lz, dz) {
 
   return solids;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

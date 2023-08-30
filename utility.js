@@ -551,3 +551,25 @@ function rotateVector(v, axis, theta) {
     return v_rot;
 }
 
+function vec_norm(v)
+{
+	var mag = Math.sqrt(Math.pow(v[0],2) + Math.pow(v[1],2) + Math.pow(v[2],2));
+	var vnorm = new Array ;
+	vnorm[0] = v[0]/mag;
+	vnorm[1] = v[1]/mag;
+	vnorm[2] = v[2]/mag;
+	return vnorm;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -252,7 +252,55 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
 
 }
 
+/**
+ * 
+ * @param {Model} m Model
+ * @param {Array} centre Circular cross-section centre [x, y, z]
+ * @param {Number} radius Circular cross-section raids 
+ * @param {Array} vnorm Cross-section normal unit vector [x, y, z] 
+ * @param {Number} id  Rigid part or accelerometer or coordinate system number
+ * @param {*} itype Flag for local system type
+ * @param {*} title Cross-section title
+ * @returns 
+ */
+function CrossSectionCircular(m, centre, radius, vnorm, id, itype, title){
 
+  
+  // Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
+  // and has a normal vector originating at (XCT, YCT, ZCT) and pointing towards 
+  // (XCH, YCH, ZCH). In this case the variables XHEV, YHEV, ZHEV, LENL, and LENM,
+  // which are defined on the 2nd card will be ignored. 
+
+  var xct, yct, zct, xch, ych, zch;
+
+  var dL = 0.1;
+
+  xct = centre[0];
+  yct = centre[1];
+  zct = centre[2];
+
+  xch = centre[0] + dL*vnorm[0]
+  ych = centre[1] + dL*vnorm[1]
+  zch = centre[2] + dL*vnorm[2]
+
+  var cdsx = new CrossSection(	m,  CrossSection.PLANE, 0, 
+                                    xct, yct, zct, 
+                                    xch, ych, zch, 
+                                    0, 0, 0, 
+                                    0, 0, 
+                                    0, 0, 0, title
+                                    
+                                    
+  );
+
+  cdsx.radius = radius;
+  cdsx.id = id;
+  cdsx.itype = itype; 
+  
+
+  return cdsx
+
+}
 
 
 

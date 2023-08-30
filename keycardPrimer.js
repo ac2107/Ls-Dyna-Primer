@@ -40,3 +40,14 @@ var constrainedBeamInSolid = {
         Message("...CONSTRAINED_BEAM_IN_SOLID card created");
     }
 }
+
+
+
+
+
+
+
+
+
+
+
