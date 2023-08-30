@@ -19,27 +19,27 @@ else if( Windows() ) var slash = "\\";
 var js_dir = Get_JS_Dir(arguments[0]);
 Message("JavaScript Dir: "+js_dir);
 
+
 // Get Macro Directory
-// var mac_dir = js_dir+"Macros"+slash;
-var mac_dir = "C:\\Users\\Anqi.Chen\\Documents\\GitHub\\Ls-Dyna-Primer\\Macros\\"
-Message("Macro Dir: "+mac_dir);
-
-// Option to show field headers in the key field
-// PlayMacro(mac_dir+"headers_001.prm")
-
-//========================= WRTIE PATH =========================================
-var write_dir = null;
 // @ts-ignore
-// var write_dir = 
-// "E:\\Projects\\000_Changi_airport\\Dyna\\Floor_beams\\T5_floor\\PB1200dx1300w_1a_PB1\\";
-if (write_dir === null){
-	write_dir = js_dir
-}
-Message("Write Dir: " + write_dir);
+var mac_dir = Macro_Dir(arguments[0])
+Message("Macro Dir: "+mac_dir);
 
 //========================= USE MODULES ========================================
 // all Primer js scripts are in "C:\Users\Anqi.Chen\OneDrive - Arup\Shared with Everyone\Scripts\Primer_js"
 Use("_useModules.js");
+
+//========================= WRTIE PATH =========================================
+var write_dir = null;
+// @ts-ignore
+var write_dir = 
+"E:\\Projects\\000_Changi_airport\\Dyna\\Floor_beams\\T5_floor\\"+
+"PB1200dx1300w_1a_PB1\\PB1200dx1300w_1a_PB1_m00\\";
+
+if (write_dir === null){
+	write_dir = js_dir
+}
+Message("Write Dir: " + write_dir);
 
 //========================= COMMENTS ===========================================
 var comment_text = "read model in k file\n";
@@ -48,15 +48,11 @@ comment_text = comment_text + "-" + "\n";
 comment_text = comment_text + "-" + "\n";
 
 //========================= MODEL LOADING ======================================
-Message("... read molde in k file");
+Message("... read model in k file");
 
 /*
 NOTE:
 
-    - Original model: \\LDNDTCZC9047FMJ\d$\260xxx\260970-Gatwick\Platform7_esc_south\Dyna_platform7_esc_south_top_0.05m
-    - Pre. modification:
-		[1] deleted exisitng segments and load curves
-		[2] deleted Null shells in the roof of the NR link bridge 
 
 
 */
@@ -188,4 +184,10 @@ function Get_JS_Dir(start_path) {
 	var tmp3 = tmp1.join(slash) + slash;
 
 	return tmp3;
+}
+
+function Macro_Dir(start_path){
+	const parts = start_path.split('\\');
+    const userName = parts[2];
+    return `C:\\Users\\${userName}\\Documents\\GitHub\\Ls-Dyna-Primer\\Macros\\`;
 }
