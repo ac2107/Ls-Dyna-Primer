@@ -210,7 +210,7 @@ function MAT_072R3_LCRATE(m, lcid){
 	
 	curve.lcint = 200000;
 
-	curve.Edit();
+	// curve.Edit();
 
 	function insertPoints(data, N) {
 		const newData = [data[0]];
