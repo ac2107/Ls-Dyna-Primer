@@ -202,9 +202,35 @@ function MAT_072R3_LCRATE(m, lcid){
 					[30000, 1.582532729]
 	];
 
+	let newData = insertPoints(data, 10);
+
 	let curve = new Curve(Curve.CURVE, m, lcid);
-	for (var arr of data) curve.AddPoint(arr[0], arr[1]);
+	for (var arr of newData) curve.AddPoint(arr[0], arr[1]);
 	curve.heading = "MODIFIED_MAT72R3_LCRATE_CURVE";
+	
+	curve.lcint = 200000;
+
+	curve.Edit();
+
+	function insertPoints(data, N) {
+		const newData = [data[0]];
+		
+		for (let i = 1; i < data.length; i++) {
+			const [xPrev, yPrev] = data[i - 1];
+			const [x, y] = data[i];
+			const xStep = (x - xPrev) / (N + 1);
+			const yStep = (y - yPrev) / (N + 1);
+			
+			for (let j = 1; j <= N; j++) {
+				newData.push([xPrev + j * xStep, yPrev + j * yStep]);
+			}
+			
+			newData.push([x, y]);
+		}
+		
+		return newData;
+	}
+
 
 	return curve
 

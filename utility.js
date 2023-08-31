@@ -412,11 +412,13 @@ function smoothStepCurve(m, t1, t2, t3, a1, a2, nmax, bool = false) {
 
 /**
  * Generate a smooth curve between a set of points.
+ * @param {Model} m 
  * @param {Array} pts An array of points, where each point is a list of two numbers `[t, a]`.
  * @param {Number} nmax The number of points to generate between each pair of points in `pts`.
+ * @param {Boolean} bool 
  * @returns 
  */
-function smoothStepCurveGeneric(pts, nmax) {
+function smoothStepCurveGeneric(m, pts, nmax, bool = false) {
 	
 	let curve = [];
   
@@ -442,15 +444,47 @@ function smoothStepCurveGeneric(pts, nmax) {
 	return curve;
   }
 
+
 /**
  * 
+ * @param {*} m 
  * @param {*} pts 
+ * @param {*} bool 
  */
-function switchStepCurve(pts){
+function switchStepCurve(m, pts, bool = false){
 
+	var crv;
 
+    let curve = [pts[0]];
+    
+    for (let i = 1; i < pts.length; i++) {
+        const [x, y] = pts[i];
+        
+        if (x === 0) {
+            continue;
+        }
+        
+        if (curve.length > 0) {
+            const [xPrev, yPrev] = curve[curve.length - 1];
+            curve.push([0.99999 * x, yPrev]);
+        }
+        
+        curve.push([x, y]);
+    }
 
+	crv = curve;
 
+	if (bool == true){
+
+	let LOAD_CURVE = new Curve(Curve.CURVE, m, Curve.NextFreeLabel(m));
+	LOAD_CURVE.heading = "LOAD_CURVE";
+	for (let c of curve) {LOAD_CURVE.AddPoint(c[0], c[1])}
+
+	crv = LOAD_CURVE
+	
+	}
+
+    return crv;
 
 }
 
