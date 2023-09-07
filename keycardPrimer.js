@@ -20,7 +20,7 @@ var constrainedBeamInSolid = {
 
     createKeycard: function () {
 
-        Message("...create CONSTRAINED_BEAM_IN_SOLID card");
+        Message("...create *CONSTRAINED_BEAM_IN_SOLID card");
 
         var f = new File(js_dir+"ibtmp.key", File.WRITE);
         f.Write("*KEYWORD\n");
@@ -41,8 +41,28 @@ var constrainedBeamInSolid = {
     }
 }
 
+/**
+ * 
+ * @param {Model} m Model
+ * @param {Number} lcid Load curve ID
+ * @param {Number} lciddr An optional load curve ID, for dynamic relaxation phase
+ */
+function loadThermalLoadCurve(m, lcid, lciddr = 0) {
+    
+    Message("...create *LOAD_THERMAL_LOAD_CURVE card");
 
+    var f = new File(js_dir+"ibtmp.key", File.WRITE);
+    f.Write("*KEYWORD\n");
+    f.Write("*LOAD_THERMAL_LOAD_CURVE\n");
+    f.Write(lcid + "," + lciddr + "\n")
+    f.Write("*END\n");
+    f.Close();
 
+    m.Import(js_dir+"ibtmp.key"); // merge temp file back into main model (m)
+
+    File.Delete(js_dir+"ibtmp.key") // delete temp file
+
+}
 
 
 

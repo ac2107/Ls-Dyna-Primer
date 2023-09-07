@@ -260,10 +260,11 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
  * @param {Array} vnorm Cross-section normal unit vector [x, y, z] 
  * @param {Number} id  Rigid part or accelerometer or coordinate system number
  * @param {*} itype Flag for local system type
- * @param {*} title Cross-section title
+ * @param {Number} psid Part set number, default to 0
+ * @param {String} title Cross-section title
  * @returns 
  */
-function CrossSectionCircular(m, centre, radius, vnorm, id, itype, title){
+function CrossSectionCircular(m, centre, radius, vnorm, id, itype, psid = 0, title){
 
   
   // Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
@@ -297,6 +298,7 @@ function CrossSectionCircular(m, centre, radius, vnorm, id, itype, title){
   cdsx.id = id;
   cdsx.itype = itype; 
   
+  if (psid > 0) cdsx.psid = psid;
 
   return cdsx
 
