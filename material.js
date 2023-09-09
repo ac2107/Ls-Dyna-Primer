@@ -175,7 +175,8 @@ function MAT_072R3_CONCRETE(m, mid, FT, A0, title){
 function MAT_072R3_LCRATE(m, lcid){
 
 	let data = [
-					[-30000, 8.803382184],
+					// [-30000, 8.803382184],
+					[-301, 8.803382184],
 					[-300, 8.803382184],
 					[-100, 7.526785892],
 					[-30, 5.038678484],
@@ -199,16 +200,18 @@ function MAT_072R3_LCRATE(m, lcid){
 					[30, 1.482087155],
 					[100, 1.533786054],
 					[300, 1.582532729],
-					[30000, 1.582532729]
+					[301, 1.582532729],
+					// [30000, 1.582532729]
 	];
 
-	let newData = insertPoints(data, 10);
+	// let newData = insertPoints(data, 10);
+	let newData = data;
 
 	let curve = new Curve(Curve.CURVE, m, lcid);
 	for (var arr of newData) curve.AddPoint(arr[0], arr[1]);
 	curve.heading = "MODIFIED_MAT72R3_LCRATE_CURVE";
 	
-	curve.lcint = 200000;
+	curve.lcint = 2000;
 
 	// curve.Edit();
 

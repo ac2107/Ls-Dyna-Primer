@@ -111,7 +111,7 @@ function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
     p.SetFlag(pflag);
     m.PropagateFlag(pflag);
   
-    // Fet all flagged nodes & return the flag
+    // Get all flagged nodes & return the flag
     nodes = Node.GetFlagged(m, pflag);
     ReturnFlag(pflag);
 
@@ -153,6 +153,7 @@ function NodalRigidBodyByBox(m, pid, pid_nrb, cx, cy, cz, dx, dy, dz, title){
 
   // Return the central node and the nodal rigid body objects
   return {cnode, nrb}; 
+  // return nrb;
 }
 
 /**
