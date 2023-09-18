@@ -334,7 +334,10 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
 }
 
 /**
- * 
+ * Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
+ * and has a normal vector originating at (XCT, YCT, ZCT) and pointing towards 
+ * (XCH, YCH, ZCH). In this case the variables XHEV, YHEV, ZHEV, LENL, and LENM,
+ * which are defined on the 2nd card will be ignored. 
  * @param {Model} m Model
  * @param {Array} centre Circular cross-section centre [x, y, z]
  * @param {Number} radius Circular cross-section raids 
@@ -347,7 +350,6 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
  */
 function CrossSectionCircular(m, centre, radius, vnorm, id, itype, psid = 0, title){
 
-  
   // Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
   // and has a normal vector originating at (XCT, YCT, ZCT) and pointing towards 
   // (XCH, YCH, ZCH). In this case the variables XHEV, YHEV, ZHEV, LENL, and LENM,
@@ -386,6 +388,106 @@ function CrossSectionCircular(m, centre, radius, vnorm, id, itype, psid = 0, tit
 }
 
 
+/**
+ * Rectangular cut plane centred at (XCT, YCT, ZCT)
+ * @param {Model} m Model
+ * @param {Array} centre Circular cross-section centre [x, y, z]
+ * @param {Number} lenl Length of the cutting plane, LENL
+ * @param {Number} lenm Length of the cutting plane, LENM
+ * @param {Array} vnorm Cross-section normal unit vector [x, y, z] 
+ * @param {Number} id  Rigid part or accelerometer or coordinate system number
+ * @param {*} itype Flag for local system type
+ * @param {Number} psid Part set number, default to 0
+ * @param {String} title Cross-section title
+ */
+function CrossSectionRectangular(m, centre, lenl, lenm, vnorm, id, itype, psid = 0, title){
+
+  let xct, yct, zct, xch, ych, zch, xhev, yhev, zhev;
+
+    // 1. Given center point and normal vector
+    const [x, y, z] = centre;
+    const [v1, v2, v3] = vnorm;
+    const nvz = [0, 0, 1];
+    
+    // 2. Calculate nv_l
+    let nv_l = [
+      vnorm[1] * nvz[2] - vnorm[2] * nvz[1],
+      vnorm[2] * nvz[0] - vnorm[0] * nvz[2],
+      vnorm[0] * nvz[1] - vnorm[1] * nvz[0]
+    ];
+    // Normalize nv_l to make it a unit vector
+    const magnitudeNvL = Math.sqrt(nv_l[0] ** 2 + nv_l[1] ** 2 + nv_l[2] ** 2);
+    nv_l = nv_l.map(component => component / magnitudeNvL);
+
+    // 3. Calculate nv_m
+    let nv_m = [
+        vnorm[1] * nv_l[2] - vnorm[2] * nv_l[1],
+        vnorm[2] * nv_l[0] - vnorm[0] * nv_l[2],
+        vnorm[0] * nv_l[1] - vnorm[1] * nv_l[0]
+    ];
+    // Normalize nv_m to make it a unit vector
+    const magnitudeNvM = Math.sqrt(nv_m[0] ** 2 + nv_m[1] ** 2 + nv_m[2] ** 2);
+    nv_m = nv_m.map(component => component / magnitudeNvM);
+    
+    // 4. Calculate PO
+    const PO = [
+        x - 0.5 * lenl * nv_l[0] - 0.5 * lenm * nv_m[0],
+        y - 0.5 * lenl * nv_l[1] - 0.5 * lenm * nv_m[1],
+        z - 0.5 * lenl * nv_l[2] - 0.5 * lenm * nv_m[2]
+    ];
+    
+    // 5. Calculate PL
+    const PL = [
+        PO[0] + lenl * nv_l[0],
+        PO[1] + lenl * nv_l[1],
+        PO[2] + lenl * nv_l[2]
+    ];
+    
+    // 6. Calculate PM
+    const PM = [
+        PO[0] + lenm * nv_m[0],
+        PO[1] + lenm * nv_m[1],
+        PO[2] + lenm * nv_m[2]
+    ];
+    
+    // 7. Calculate PN
+    const PN = [
+      PO[0] + 0.5 * (lenl + lenm) * vnorm[0],
+      PO[1] + 0.5 * (lenl + lenm) * vnorm[1],
+      PO[2] + 0.5 * (lenl + lenm) * vnorm[2]
+    ];
+
+  // Corner point the outward normal vector N
+  xct = PO[0];
+  yct = PO[1];
+  zct = PO[2];
+
+  // Head point of the outward normal vector N
+  
+  xch = PN[0];
+  ych = PN[1];
+  zch = PN[2];
+
+  // Head point of edge vector L
+
+  xhev = PL[0];
+  yhev = PL[1];
+  zhev = PL[2];
+
+  // DATABASE_CROSS_SECTION
+	var cdsx = new CrossSection(	m, CrossSection.PLANE, 0, 
+									xct, yct, zct, 
+									xch, ych, zch, 
+									xhev, yhev, zhev, 
+									lenl, lenm, 
+									0, 0, 0, 
+									title,
+    )
+
+
+  return cdsx
+  
+}
 
 
 
