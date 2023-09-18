@@ -33,7 +33,8 @@ function deletePart(m, pid, bool) {
     return 0
 }
 
-function getNodesByBox(m, pid, sid, cx, cy, cz, dx, dy, dz, title){
+
+function getNodesByBoxSet(m, pid, sid, cx, cy, cz, dx, dy, dz, title){
   
   var nodes; 
 
@@ -71,6 +72,85 @@ function getNodesByBox(m, pid, sid, cx, cy, cz, dx, dy, dz, title){
   // Return the central node and the nodal rigid body objects
   return box_nset; 
 }
+
+/**
+ * 
+ * @param {*} m 
+ * @param {*} pid 
+ * @param {*} x0 
+ * @param {*} y0 
+ * @param {*} z0 
+ * @param {*} x1 
+ * @param {*} y1 
+ * @param {*} z1 
+ */
+function getNodesByBoxCorner(m, pid, x0, y0, z0, x1, y1, z1, tol = 1e-5){
+
+  var nodes; 
+
+  if (pid == 0){
+    
+    // Get all nodes
+    nodes = Node.GetAll(m);
+
+  } else {
+
+    // Flag all nodes in part 
+    var pflag = AllocateFlag();
+    var p = Part.GetFromID(m, pid);
+    p.SetFlag(pflag);
+    m.PropagateFlag(pflag);
+
+    // Fet all flagged nodes & return the flag
+    nodes = Node.GetFlagged(m, pflag);
+    ReturnFlag(pflag);
+
+  }
+
+  // Determine adjusted box bounds with tolerance
+  const xMin = Math.min(x0, x1) - tol;
+  const xMax = Math.max(x0, x1) + tol;
+  const yMin = Math.min(y0, y1) - tol;
+  const yMax = Math.max(y0, y1) + tol;
+  const zMin = Math.min(z0, z1) - tol;
+  const zMax = Math.max(z0, z1) + tol;
+
+
+  // Filter nodes to get those that lie within the box
+  return nodes.filter(node => 
+      node.x >= xMin && node.x <= xMax &&
+      node.y >= yMin && node.y <= yMax &&
+      node.z >= zMin && node.z <= zMax
+  );
+
+}
+
+/**
+ * 
+ * @param {*} m model (object)
+ * @param {*} nodes list of node id numbers or list of node objects
+ * @param {*} sid set id (number)
+ * @param {*} title set title (string)
+ * @returns a node set object
+ */
+function createSetNode(m, nodes, sid, title='NODE SET'){
+
+	const ns = new Set(m, sid, Set.NODE, title);
+	
+  // case 1 - input "nodes" is an list of node ids
+	if (typeof nodes == 'object' && typeof nodes[0] == 'number'){
+		for (var id of nodes) {ns.Add(id)}
+	}
+	
+  // case 2 - input "nodes" is an list of node lement objects
+	else if (typeof nodes == 'object' && typeof nodes[0] == 'object') {
+		for (var n of nodes) {ns.Add(n.nid)}
+	}
+
+	return ns
+}
+
+
 
 /**
 Create nodal rigid body using box and a centre point (a centre node will be created by this function)
