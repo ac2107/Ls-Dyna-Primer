@@ -350,11 +350,6 @@ function NodalRigidBodyByBoxLocal(m, pid, pid_nrb, n, uv, dx, dy, dz, title){
  */
 function CrossSectionCircular(m, centre, radius, vnorm, id, itype, psid = 0, title){
 
-  // Circular cut plane centred at (XCT, YCT, ZCT) with radius = RADIUS
-  // and has a normal vector originating at (XCT, YCT, ZCT) and pointing towards 
-  // (XCH, YCH, ZCH). In this case the variables XHEV, YHEV, ZHEV, LENL, and LENM,
-  // which are defined on the 2nd card will be ignored. 
-
   var xct, yct, zct, xch, ych, zch;
 
   var dL = 0.1;
@@ -389,9 +384,9 @@ function CrossSectionCircular(m, centre, radius, vnorm, id, itype, psid = 0, tit
 
 
 /**
- * Rectangular cut plane centred at (XCT, YCT, ZCT)
+ * Rectangular cut plane 
  * @param {Model} m Model
- * @param {Array} centre Circular cross-section centre [x, y, z]
+ * @param {Array} centre Cross-section centre [x, y, z]
  * @param {Number} lenl Length of the cutting plane, LENL
  * @param {Number} lenm Length of the cutting plane, LENM
  * @param {Array} vnorm Cross-section normal unit vector [x, y, z] 
@@ -482,11 +477,16 @@ function CrossSectionRectangular(m, centre, lenl, lenm, vnorm, id, itype, psid =
 									lenl, lenm, 
 									0, 0, 0, 
 									title,
-    )
+  )
 
+  
+  cdsx.id = id;
+  cdsx.itype = itype; 
+  
+  if (psid > 0) cdsx.psid = psid;
 
   return cdsx
-  
+
 }
 
 
