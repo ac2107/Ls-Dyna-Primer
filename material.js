@@ -271,5 +271,232 @@ function MAT_004_STEEL_THERMAL(m, mid, T1, T2, T3, E, PR, ALPHA, SIGY, ETAN, tit
 	material.SetPropertyByName("ETAN3", ETAN);
 }
 
+/**
+ * 
+ * @param {Model} m Model id
+ * @param {Part} p_Shell Shell part object
+ * @param {Object} mids Object {concrete: 1, X_reinf: 2, Y_reinf: 3}
+ * @param {Number} thk Shell thickness
+ * @param {Number} spc Reinforcement spacing
+ * @param {Number} Ds  Reinforcement diameter
+ * @param {Number} cover Concrete cover
+ */
+function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
+
+
+    /*
+    Use MAT172 MAT_CONCRETE_EC2 for SHELL elements only, i.e. to model RC slabs and walls
+
+    - [1] Create Material model using MAT172, i.e. concrete, x_reinf and y_reinf
+    - [2] Create composite section by modifying the PART card
+    - [3] Cocnrete and steel rebars are defined in 13 layers
+
+    Input:
+        m:      model m (object)
+        pshell: shell part of RC wall or slab (object)
+        mids:   material ids for RC slab part, 
+                concrete, xreinf and yreinf, (object)
+                must be defined as {concrete:1, X_reinf:2, Y_reinf:3};
+        thk:    slab thickness
+        spc:    rebar spacing, identical in x and y direction
+        Ds:     rebar diametre, identical in x and y direction
+        cover:  concrete cover, identical for compression and tension face
+        
+    Return:
+        none
+    */
+
+    //      [1] Material model
+
+    //      rebar steel strain hardening curve
+    var load_curve = new Curve(Curve.CURVE, m, Curve.NextFreeLabel(m));
+    load_curve.heading = "STEEL REBAR STRAIN HARDENING CURVE"
+    load_curve.AddPoint(0.0, 1.0);
+    load_curve.AddPoint(0.0475, 1.08);
+    load_curve.AddPoint(0.1, 1.08);
+
+    //		concrete
+    var mat_concrete = new Material(m, mids.concrete, "*MAT_172"); // *MAT_CONCRETE_EC2
+    mat_concrete.title = "C25/30_concrete (composite shell)";
+    mat_concrete.SetPropertyByName("RO", 2400);
+    mat_concrete.SetPropertyByName("FC", 38.5e6);
+    mat_concrete.SetPropertyByName("FT", 3.51e6);
+    mat_concrete.SetPropertyByName("TYPEC", 9);
+    mat_concrete.SetPropertyByName("UNITC", 1e-6);
+    mat_concrete.SetPropertyByName("ECUTEN", 0.001);
+    mat_concrete.SetPropertyByName("FCC", 38.5e6);
+    mat_concrete.SetPropertyByName("LCHAR", 0.2);
+    mat_concrete.SetPropertyByName("AGGSZ", 0.01);
+    mat_concrete.SetPropertyByName("UNITL", 1000.0);
+    mat_concrete.SetPropertyByName("YMREINF", 2.0e11);
+    mat_concrete.SetPropertyByName("PRREINF", 0.3);
+    mat_concrete.SetPropertyByName("SUREINF", 5e8);
+    mat_concrete.SetPropertyByName("TYPER", 5.0);
+    mat_concrete.SetPropertyByName("FRACRX", 0.0);
+    mat_concrete.SetPropertyByName("FRACRY", 0.0);
+    mat_concrete.SetPropertyByName("LCRSU", load_curve.lcid);
+    mat_concrete.SetPropertyByName("DEGRAD", 1.0);
+    mat_concrete.SetPropertyByName("ISHCHK", 1);
+    mat_concrete.SetPropertyByName("TYPESEC", 1.0);
+    mat_concrete.SetPropertyByName("P_OR_F", 1.8);
+    mat_concrete.SetPropertyByName("EFFD", thk);
+    mat_concrete.SetPropertyByName("GAMSC", 1.20);
+
+    //		x_reinf
+    var mat_x_reinf = new Material(m, mids.X_reinf, "*MAT_172"); // *MAT_CONCRETE_EC2
+    mat_x_reinf.title = "X_reinf";
+    mat_x_reinf.SetPropertyByName("RO", 2400);
+    mat_x_reinf.SetPropertyByName("FC", 38.5e6);
+    mat_x_reinf.SetPropertyByName("FT", 3.51e6);
+    mat_x_reinf.SetPropertyByName("TYPEC", 9);
+    mat_x_reinf.SetPropertyByName("UNITC", 1e-6);
+    mat_x_reinf.SetPropertyByName("ECUTEN", 0.001);
+    mat_x_reinf.SetPropertyByName("FCC", 38.5e6);
+    mat_x_reinf.SetPropertyByName("LCHAR", 0.2);
+    mat_x_reinf.SetPropertyByName("AGGSZ", 0.01);
+    mat_x_reinf.SetPropertyByName("UNITL", 1000.0);
+    mat_x_reinf.SetPropertyByName("YMREINF", 2.0e11);
+    mat_x_reinf.SetPropertyByName("PRREINF", 0.3);
+    mat_x_reinf.SetPropertyByName("SUREINF", 5e8);
+    mat_x_reinf.SetPropertyByName("TYPER", 5.0);
+    mat_x_reinf.SetPropertyByName("FRACRX", 1.0);
+    mat_x_reinf.SetPropertyByName("FRACRY", 0.0);
+    mat_x_reinf.SetPropertyByName("LCRSU", load_curve.lcid);
+    mat_x_reinf.SetPropertyByName("DEGRAD", 1.0);
+    mat_x_reinf.SetPropertyByName("ISHCHK", 1);
+    mat_x_reinf.SetPropertyByName("GAMCE9", 1.2);
+
+    //		y_reinf
+    var mat_y_reinf = new Material(m, mids.Y_reinf, "*MAT_172"); // *MAT_CONCRETE_EC2
+    mat_y_reinf.title = "Y_reinf";
+    mat_y_reinf.SetPropertyByName("RO", 2400);
+    mat_y_reinf.SetPropertyByName("FC", 38.5e6);
+    mat_y_reinf.SetPropertyByName("FT", 3.51e6);
+    mat_y_reinf.SetPropertyByName("TYPEC", 9);
+    mat_y_reinf.SetPropertyByName("UNITC", 1e-6);
+    mat_y_reinf.SetPropertyByName("ECUTEN", 0.001);
+    mat_y_reinf.SetPropertyByName("FCC", 38.5e6);
+    mat_y_reinf.SetPropertyByName("LCHAR", 0.2);
+    mat_y_reinf.SetPropertyByName("AGGSZ", 0.01);
+    mat_y_reinf.SetPropertyByName("UNITL", 1000.0);
+    mat_y_reinf.SetPropertyByName("YMREINF", 2.0e11);
+    mat_y_reinf.SetPropertyByName("PRREINF", 0.3);
+    mat_y_reinf.SetPropertyByName("SUREINF", 5e8);
+    mat_y_reinf.SetPropertyByName("TYPER", 5.0);
+    mat_y_reinf.SetPropertyByName("FRACRX", 0.0);
+    mat_y_reinf.SetPropertyByName("FRACRY", 1.0);
+    mat_y_reinf.SetPropertyByName("LCRSU", load_curve.lcid);
+    mat_y_reinf.SetPropertyByName("DEGRAD", 1.0);
+    mat_y_reinf.SetPropertyByName("ISHCHK", 1);
+    mat_y_reinf.SetPropertyByName("GAMCE9", 1.2);
+
+    //      [2] Section and Part
+    //      set composite shell for the RC shell 
+    p_Shell.composite = true; // turn on compoiste shell option
+    p_Shell.elform = 2; // fully integrated shell
+
+    // Define steel reinforcement and concerete layers in the composite shell section
+    // (1) 13 layers are defined for the composite shell
+    // (2) Parameters used for layer definition:
+    // 	thk 	= slab (compsoite) total thickness [m]
+    // 	spc 	= steel reinforcement spacing [m]
+    // 	Ds 		= steel reinforcement diametre [m]
+    // 	cover 	= concrete cover depth [m]
+    // (3)	2-way mesh 
+    // LAYER NO.	|	MATERIAL	| 
+    // 1			|	concrete	|
+    // 2			|	steel		|
+    // 3			|	concrete	|
+    // 4			|	steel		|
+    // 5			|	concrete	|
+    // 6			|	concrete	|
+    // 7			|	concrete	|
+    // 8			|	concrete	|
+    // 9			|	concrete	|
+    // 10			|	steel		|
+    // 11			|	concrete	|
+    // 12			|	steel		|
+    // 13			|	concrete	|
+
+    // Calculation
+    // https://arup-my.sharepoint.com/personal/anqi_chen_arup_com/_layouts/OneNote.aspx?id=%2Fpersonal%2Fanqi_chen_arup_com%2FDocuments%2FAnqi%20Chen&wd=target%28Ls-Dyna.one%7C52AF4C5C-7A6F-4B35-824E-5F3491E2C48E%2FConcrete%20shell%20definition%20-%20MAT172%7C2DA34271-0D1B-45BF-90DF-1728C37578D8%2F%29
+    // onenote:https://arup-my.sharepoint.com/personal/anqi_chen_arup_com/Documents/Anqi%20Chen/Ls-Dyna.one#Concrete%20shell%20definition%20-%20MAT172&section-id={52AF4C5C-7A6F-4B35-824E-5F3491E2C48E}&page-id={2DA34271-0D1B-45BF-90DF-1728C37578D8}&end
+    // (A - rebar total area/m, D - rebar depth) for each of 4 layers
+    var A1, D1, A2, D2, A3, D3, A4, D4; 
+
+    A1 = Math.PI*Ds*Ds/4.0/spc;
+    A2 = A1;
+    A3 = A1;
+    A4 = A1;
+
+    D1 = cover+0.5*Ds;
+    D2 = D1+(Ds/2+Ds/2);
+    D3 = D2;
+    D4 = D1;
+
+    // 13 layers: t = thickness of each layer (THICK), d = depth of each layer
+    var t1, d1, t2, d2, t3, d3, t4, d4, t5, d5, t6, d6, t7, d7, t8, d8;
+    var t9, d9, t10, d10, t11, d11, t12, d12, t13, d13;
+
+    // steel rebar layers
+    t2 = A1, d2 = D1;
+    t4 = A2, d4 = D2;
+    t10 = A3, d10 = thk-D3;
+    t12 = A4, d12 = thk-D4;
+
+    // concrete layers
+    t1 = d2-t2*0.5, 					d1 = t1*0.5;
+    t3 = (d4-d2)-0.5*(t2+t4), 			d3 = d2+0.5*(t3+t2);
+
+    t5 = ((d10-d4)-0.5*(t4+t10))/5, 	d5 = d4+0.5*(t4+t5);  
+    t6 = ((d10-d4)-0.5*(t4+t10))/5, 	d6 = d5+0.5*(t5+t6); 
+    t7 = ((d10-d4)-0.5*(t4+t10))/5, 	d7 = d6+0.5*(t6+t7); 
+    t8 = ((d10-d4)-0.5*(t4+t10))/5, 	d8 = d7+0.5*(t7+t8); 
+    t9 = ((d10-d4)-0.5*(t4+t10))/5, 	d9 = d8+0.5*(t8+t9); 
+
+    t11 =(d12-d10)-0.5*(t10+t12),		d11 = d10+0.5*(t10+t11);  
+    t13 = (thk-d12)-t12/2,				d13 = d12+0.5*t12+t13/2;
+
+    Message("...Compopsite shell")
+    Message("A1 = " + A1 +"\n" + "D1 = " + D1);
+    Message("A2 = " + A2 +"\n" + "D2 = " + D2);
+    Message("A3 = " + A3 +"\n" + "D3 = " + D3);
+    Message("A4 = " + A4 +"\n" + "D4 = " + D4);
+    Message("- each 13 layer -")
+    Message("t1 = " + t1 + ", " +"d1 = " + d1);
+    Message("t2 = " + t2 + ", " +"d2 = " + d2);
+    Message("t3 = " + t3 + ", " +"d3 = " + d3);
+    Message("t4 = " + t4 + ", " +"d4 = " + d4);
+    Message("t5 = " + t5 + ", " +"d5 = " + d5);
+    Message("t6 = " + t6 + ", " +"d6 = " + d6);
+    Message("t7 = " + t7 + ", " +"d7 = " + d7);
+    Message("t8 = " + t8 + ", " +"d8 = " + d8);
+    Message("t9 = " + t9 + ", " +"d9 = " + d9);
+    Message("t10 = " + t10 + ", " +"d10 = " + d10);
+    Message("t11 = " + t11 + ", " +"d11 = " + d11);
+    Message("t12 = " + t12 + ", " +"d12 = " + d12);
+    Message("t13 = " + t13 + ", " +"d13 = " + d13);
+    Message("...Compopsite shell")
+
+    // set composite shell data
+    p_Shell.SetCompositeData(0, mids.concrete, t1, 0, 0); 		// 	layer 1 	- concrete 	- MAT 1
+    p_Shell.SetCompositeData(1, mids.X_reinf, t2, 0, 0); 		// 	layer 2 	- steel		- MAT 2
+    p_Shell.SetCompositeData(2, mids.concrete, t3, 0, 0); 		// 	layer 3 	- concrete 	- MAT 1
+    p_Shell.SetCompositeData(3, mids.Y_reinf, t4, 0, 0); 		// 	layer 4 	- steel 	- MAT 3
+    p_Shell.SetCompositeData(4, mids.concrete, t5, 0, 0); 		// 	layer 5 	- concrete	- MAT 1
+    p_Shell.SetCompositeData(5, mids.concrete, t6, 0, 0); 		// 	layer 6 	- concrete	- MAT 1
+    p_Shell.SetCompositeData(6, mids.concrete, t7, 0, 0); 		// 	layer 7		- concrete	- MAT 1
+    p_Shell.SetCompositeData(7, mids.concrete, t8, 0, 0); 		// 	layer 8		- concrete	- MAT 1
+    p_Shell.SetCompositeData(8, mids.concrete, t9, 0, 0); 		// 	layer 9		- concrete	- MAT 1
+    p_Shell.SetCompositeData(9, mids.Y_reinf, t10, 0, 0); 	    // 	layer 10	- steel		- MAT 3
+    p_Shell.SetCompositeData(10, mids.concrete, t11, 0, 0); 	// 	layer 11	- concrete	- MAT 1
+    p_Shell.SetCompositeData(11, mids.X_reinf, t12, 0, 0); 		// 	layer 12	- steel		- MAT 2
+    p_Shell.SetCompositeData(12, mids.concrete, t13, 0, 0); 	// 	layer 13	- concrete	- MAT 1
+
+    return {mat_concrete, mat_x_reinf, mat_y_reinf}
+
+}
+
+
 
 

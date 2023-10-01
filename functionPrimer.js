@@ -151,6 +151,67 @@ function createSetNode(m, nodes, sid, title='NODE SET'){
 }
 
 
+/**
+ * 
+ * Get node from the model, return node number
+ * 
+ * @param {Model} m Model 
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Number} z 
+ * @param {*} pid 
+ */
+function getNodeAt(m, x, y, z, tol = 1e-4, pid = 0){
+
+  let nid_out = null;   // Initialize n_out to null
+  let found = false;    // Initialize a found flag
+
+  if (pid == false){
+    Message("...Get node from all nodes");
+
+    var data = {x: x, y: y, z: z, tolerance: tol};
+    Node.ForEach(m, find, data);
+    
+    function find(n, extra){
+      // if (found) {
+      
+      //   Message("... Found node nid = " + nid_out);
+
+      //   return;
+      
+      // }  // If found, stop checking
+
+      var tolerance = extra.tolerance;
+
+      const [nodeX, nodeY, nodeZ] = [n.x, n.y, n.z];
+      const [targetX, targetY, targetZ] = [extra.x, extra.y, extra.z];
+
+      // Message(`Checking node ${n.nid} at (${n.x}, ${n.y}, ${n.z})`);  // Log the node being checked
+
+      const isClose = (a, b) => Math.abs(a - b) < tolerance;
+
+      if (isClose(nodeX, targetX) && isClose(nodeY, targetY) && isClose(nodeZ, targetZ)){
+        nid_out = n.nid;
+        found = true; // Set the found flag to true
+      }
+    }
+
+  } else {
+
+    Message("...Get node from nodes of part pid = " + pid);
+  
+  }
+
+  return nid_out;
+
+  
+}
+
+
+
+
+
+
 
 /**
 Create nodal rigid body using box and a centre point (a centre node will be created by this function)

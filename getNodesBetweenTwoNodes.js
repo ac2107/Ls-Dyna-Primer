@@ -1,3 +1,10 @@
+/**
+ * 
+ * @param {Model} m Model
+ * @param {Number} n1 Node id
+ * @param {Number} n2 node id
+ * @returns 
+ */
 function getNodesBetweenTwoNodes(m, n1, n2) {
 	// get all nodes on the linear line defined by Node n1 and n2, excluding 3rd node of any beam elements
 	// https://stackoverflow.com/questions/7050186/find-if-point-lays-on-line-segment
