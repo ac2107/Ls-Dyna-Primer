@@ -272,44 +272,32 @@ function MAT_004_STEEL_THERMAL(m, mid, T1, T2, T3, E, PR, ALPHA, SIGY, ETAN, tit
 }
 
 /**
- * 
- * @param {Model} m Model id
- * @param {Part} p_Shell Shell part object
- * @param {Object} mids Object {concrete: 1, X_reinf: 2, Y_reinf: 3}
- * @param {Number} thk Shell thickness
- * @param {Number} spc Reinforcement spacing
- * @param {Number} Ds  Reinforcement diameter
- * @param {Number} cover Concrete cover
- */
-function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
-
-
-    /*
-    Use MAT172 MAT_CONCRETE_EC2 for SHELL elements only, i.e. to model RC slabs and walls
-
+     Use MAT172 MAT_CONCRETE_EC2 for SHELL elements only, i.e. to model RC slabs and walls
     - [1] Create Material model using MAT172, i.e. concrete, x_reinf and y_reinf
     - [2] Create composite section by modifying the PART card
     - [3] Cocnrete and steel rebars are defined in 13 layers
-
-    Input:
-        m:      model m (object)
-        pshell: shell part of RC wall or slab (object)
-        mids:   material ids for RC slab part, 
-                concrete, xreinf and yreinf, (object)
-                must be defined as {concrete:1, X_reinf:2, Y_reinf:3};
-        thk:    slab thickness
-        spc:    rebar spacing, identical in x and y direction
-        Ds:     rebar diametre, identical in x and y direction
-        cover:  concrete cover, identical for compression and tension face
-        
-    Return:
-        none
-    */
+    - [4] TYPEC = 9 be default, Concrete aggregate type of stress-strain-temperature relationship, EC2 1-1:2004 (general and buildings)
+    - [5] Shear chck by BS8110 as default, reinf ratio = 2%, and load factor = 1, no failure modelled 
+ * @param {Model} m Model m (object)
+ * @param {Part} pShell Shell part of RC wall or slab (object)
+ * @param {Object} mids Material ids for RC slab part; Object {concrete: 1, X_reinf: 2, Y_reinf: 3}
+ * @param {Number} thk Section thickness
+ * @param {Number} spc Reinforcement spacing, identical in x and y direction
+ * @param {Number} Ds  Reinforcement diameter, identical in x and y direction
+ * @param {Number} cover Concrete cover, identical for compression and tension face
+ * @param {Number} ISHCHK 
+ * @param {Number} TYPESEC
+ * @param {Number} SCAP1
+ * @param {Number} SCAP2
+ */
+function MAT_172_CONCRETE_EC2_SHELL(m, pShell, mids, FC, FT, thk, spc, Ds, cover, 
+                                    ISHCHK = 1, TYPESEC = 1.0, SCAP1 = 2, SCAP2 = 1)
+{
 
     //      [1] Material model
 
     //      rebar steel strain hardening curve
-    var load_curve = new Curve(Curve.CURVE, m, Curve.NextFreeLabel(m));
+    var load_curve = new Curve(Curve.CURVE, m, 2000001);
     load_curve.heading = "STEEL REBAR STRAIN HARDENING CURVE"
     load_curve.AddPoint(0.0, 1.0);
     load_curve.AddPoint(0.0475, 1.08);
@@ -317,41 +305,42 @@ function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
 
     //		concrete
     var mat_concrete = new Material(m, mids.concrete, "*MAT_172"); // *MAT_CONCRETE_EC2
-    mat_concrete.title = "C25/30_concrete (composite shell)";
-    mat_concrete.SetPropertyByName("RO", 2400);
-    mat_concrete.SetPropertyByName("FC", 38.5e6);
-    mat_concrete.SetPropertyByName("FT", 3.51e6);
-    mat_concrete.SetPropertyByName("TYPEC", 9);
-    mat_concrete.SetPropertyByName("UNITC", 1e-6);
-    mat_concrete.SetPropertyByName("ECUTEN", 0.001);
-    mat_concrete.SetPropertyByName("FCC", 38.5e6);
-    mat_concrete.SetPropertyByName("LCHAR", 0.2);
-    mat_concrete.SetPropertyByName("AGGSZ", 0.01);
+    mat_concrete.title = "CONCRETE (composite shell)";
+    mat_concrete.SetPropertyByName("RO", 2400);                 // Concrete density    
+    mat_concrete.SetPropertyByName("FC", FC);                   // Characteristic compressive strength (fck in EC2 1-1) 
+    mat_concrete.SetPropertyByName("FT", FT);                   // Tensile stress to cause cracking
+    mat_concrete.SetPropertyByName("TYPEC", 9);                 // Concrete aggregate type of stress-strain-temperature relationships
+    mat_concrete.SetPropertyByName("UNITC", 1e-6);               
+    mat_concrete.SetPropertyByName("ECUTEN", 0.001);            // Strain to fully open a crack
+    mat_concrete.SetPropertyByName("FCC", FC);                  // If TYPEC = 9, actual compressive strength
+    mat_concrete.SetPropertyByName("LCHAR", 0.2);               // Characteristic length at a=which ESOFT applies; also used as crack spacing in aggregate-interlock calculation
+    mat_concrete.SetPropertyByName("AGGSZ", 0.02);              // Aggregate size
     mat_concrete.SetPropertyByName("UNITL", 1000.0);
-    mat_concrete.SetPropertyByName("YMREINF", 2.0e11);
-    mat_concrete.SetPropertyByName("PRREINF", 0.3);
-    mat_concrete.SetPropertyByName("SUREINF", 5e8);
-    mat_concrete.SetPropertyByName("TYPER", 5.0);
-    mat_concrete.SetPropertyByName("FRACRX", 0.0);
-    mat_concrete.SetPropertyByName("FRACRY", 0.0);
-    mat_concrete.SetPropertyByName("LCRSU", load_curve.lcid);
-    mat_concrete.SetPropertyByName("DEGRAD", 1.0);
-    mat_concrete.SetPropertyByName("ISHCHK", 1);
-    mat_concrete.SetPropertyByName("TYPESEC", 1.0);
-    mat_concrete.SetPropertyByName("P_OR_F", 1.8);
-    mat_concrete.SetPropertyByName("EFFD", thk);
-    mat_concrete.SetPropertyByName("GAMSC", 1.20);
+    mat_concrete.SetPropertyByName("YMREINF", 2.0e11);          // Young's modulus of reinforcement
+    mat_concrete.SetPropertyByName("PRREINF", 0.3);             // Poisson's ratio of reinforcement
+    mat_concrete.SetPropertyByName("SUREINF", 5e8);             // Ultimate stress of reinforcement
+    mat_concrete.SetPropertyByName("TYPER", 5.0);               // Type of reinforcement for stress-strain-temperature relations, 5 = Non-thermally sensitive using lad curve
+    mat_concrete.SetPropertyByName("FRACRX", 0.0);              // Fraction of reinforcement (x-axis)
+    mat_concrete.SetPropertyByName("FRACRY", 0.0);              // Fraction of reinforcement (Y-axis)
+    mat_concrete.SetPropertyByName("LCRSU", load_curve.lcid);   // Load curve for TYPER = 5 giving non-dimensional factor on SUREINF as a function of plastic strain
+    mat_concrete.SetPropertyByName("DEGRAD", 1.0);              // IF non-zero, the compressive strength of concrete parallel to an open crack will be reduced
+    
+    mat_concrete.SetPropertyByName("ISHCHK", ISHCHK);           // Set to 1 to enable shear cehck
+    mat_concrete.SetPropertyByName("TYPESEC", TYPESEC);         // Type of shear capacity check: 1 - BS 8110, 2 - ACI, 4 - User defined
+    mat_concrete.SetPropertyByName("P_OR_F", SCAP1);            // If BS8110 shear check, percent reinforcement - for example if 0.5%, input0.5. If ACI shear check, ratio (cylinder strength/FC) - defaults to 1. If user-defined shear check, maximum through thickness shear stress capacity
+    mat_concrete.SetPropertyByName("EFFD", thk-2*cover);        // Effective section depth (length units), used in shear capacity check. This is usually the section depth excluding the cover concrete. 
+    mat_concrete.SetPropertyByName("GAMSC", SCAP2);             // Load factor used in BS8110 shear capacity check, Reinforcement yield strain if TYPESEC = 4 user defined
 
     //		x_reinf
     var mat_x_reinf = new Material(m, mids.X_reinf, "*MAT_172"); // *MAT_CONCRETE_EC2
     mat_x_reinf.title = "X_reinf";
     mat_x_reinf.SetPropertyByName("RO", 2400);
-    mat_x_reinf.SetPropertyByName("FC", 38.5e6);
-    mat_x_reinf.SetPropertyByName("FT", 3.51e6);
+    mat_x_reinf.SetPropertyByName("FC", FC);
+    mat_x_reinf.SetPropertyByName("FT", FT);
     mat_x_reinf.SetPropertyByName("TYPEC", 9);
     mat_x_reinf.SetPropertyByName("UNITC", 1e-6);
     mat_x_reinf.SetPropertyByName("ECUTEN", 0.001);
-    mat_x_reinf.SetPropertyByName("FCC", 38.5e6);
+    mat_x_reinf.SetPropertyByName("FCC", FC);
     mat_x_reinf.SetPropertyByName("LCHAR", 0.2);
     mat_x_reinf.SetPropertyByName("AGGSZ", 0.01);
     mat_x_reinf.SetPropertyByName("UNITL", 1000.0);
@@ -363,19 +352,19 @@ function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
     mat_x_reinf.SetPropertyByName("FRACRY", 0.0);
     mat_x_reinf.SetPropertyByName("LCRSU", load_curve.lcid);
     mat_x_reinf.SetPropertyByName("DEGRAD", 1.0);
-    mat_x_reinf.SetPropertyByName("ISHCHK", 1);
-    mat_x_reinf.SetPropertyByName("GAMCE9", 1.2);
+    mat_x_reinf.SetPropertyByName("ISHCHK", ISHCHK);
+    mat_x_reinf.SetPropertyByName("GAMCE9", 1.0);
 
     //		y_reinf
     var mat_y_reinf = new Material(m, mids.Y_reinf, "*MAT_172"); // *MAT_CONCRETE_EC2
     mat_y_reinf.title = "Y_reinf";
     mat_y_reinf.SetPropertyByName("RO", 2400);
-    mat_y_reinf.SetPropertyByName("FC", 38.5e6);
-    mat_y_reinf.SetPropertyByName("FT", 3.51e6);
+    mat_y_reinf.SetPropertyByName("FC", FC);
+    mat_y_reinf.SetPropertyByName("FT", FT);
     mat_y_reinf.SetPropertyByName("TYPEC", 9);
     mat_y_reinf.SetPropertyByName("UNITC", 1e-6);
     mat_y_reinf.SetPropertyByName("ECUTEN", 0.001);
-    mat_y_reinf.SetPropertyByName("FCC", 38.5e6);
+    mat_y_reinf.SetPropertyByName("FCC", FC);
     mat_y_reinf.SetPropertyByName("LCHAR", 0.2);
     mat_y_reinf.SetPropertyByName("AGGSZ", 0.01);
     mat_y_reinf.SetPropertyByName("UNITL", 1000.0);
@@ -388,12 +377,12 @@ function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
     mat_y_reinf.SetPropertyByName("LCRSU", load_curve.lcid);
     mat_y_reinf.SetPropertyByName("DEGRAD", 1.0);
     mat_y_reinf.SetPropertyByName("ISHCHK", 1);
-    mat_y_reinf.SetPropertyByName("GAMCE9", 1.2);
+    mat_y_reinf.SetPropertyByName("GAMCE9", 1.0);
 
     //      [2] Section and Part
     //      set composite shell for the RC shell 
-    p_Shell.composite = true; // turn on compoiste shell option
-    p_Shell.elform = 2; // fully integrated shell
+    pShell.composite = true; // turn on compoiste shell option
+    pShell.elform = 2; // fully integrated shell
 
     // Define steel reinforcement and concerete layers in the composite shell section
     // (1) 13 layers are defined for the composite shell
@@ -479,19 +468,19 @@ function MAT_172_CONCRETE_EC2_SHELL(m, p_Shell, mids, thk, spc, Ds, cover){
     Message("...Compopsite shell")
 
     // set composite shell data
-    p_Shell.SetCompositeData(0, mids.concrete, t1, 0, 0); 		// 	layer 1 	- concrete 	- MAT 1
-    p_Shell.SetCompositeData(1, mids.X_reinf, t2, 0, 0); 		// 	layer 2 	- steel		- MAT 2
-    p_Shell.SetCompositeData(2, mids.concrete, t3, 0, 0); 		// 	layer 3 	- concrete 	- MAT 1
-    p_Shell.SetCompositeData(3, mids.Y_reinf, t4, 0, 0); 		// 	layer 4 	- steel 	- MAT 3
-    p_Shell.SetCompositeData(4, mids.concrete, t5, 0, 0); 		// 	layer 5 	- concrete	- MAT 1
-    p_Shell.SetCompositeData(5, mids.concrete, t6, 0, 0); 		// 	layer 6 	- concrete	- MAT 1
-    p_Shell.SetCompositeData(6, mids.concrete, t7, 0, 0); 		// 	layer 7		- concrete	- MAT 1
-    p_Shell.SetCompositeData(7, mids.concrete, t8, 0, 0); 		// 	layer 8		- concrete	- MAT 1
-    p_Shell.SetCompositeData(8, mids.concrete, t9, 0, 0); 		// 	layer 9		- concrete	- MAT 1
-    p_Shell.SetCompositeData(9, mids.Y_reinf, t10, 0, 0); 	    // 	layer 10	- steel		- MAT 3
-    p_Shell.SetCompositeData(10, mids.concrete, t11, 0, 0); 	// 	layer 11	- concrete	- MAT 1
-    p_Shell.SetCompositeData(11, mids.X_reinf, t12, 0, 0); 		// 	layer 12	- steel		- MAT 2
-    p_Shell.SetCompositeData(12, mids.concrete, t13, 0, 0); 	// 	layer 13	- concrete	- MAT 1
+    pShell.SetCompositeData(0, mids.concrete, t1, 0, 0); 		// 	layer 1 	- concrete 	- MAT 1
+    pShell.SetCompositeData(1, mids.X_reinf, t2, 0, 0); 		// 	layer 2 	- steel		- MAT 2
+    pShell.SetCompositeData(2, mids.concrete, t3, 0, 0); 		// 	layer 3 	- concrete 	- MAT 1
+    pShell.SetCompositeData(3, mids.Y_reinf, t4, 0, 0); 		// 	layer 4 	- steel 	- MAT 3
+    pShell.SetCompositeData(4, mids.concrete, t5, 0, 0); 		// 	layer 5 	- concrete	- MAT 1
+    pShell.SetCompositeData(5, mids.concrete, t6, 0, 0); 		// 	layer 6 	- concrete	- MAT 1
+    pShell.SetCompositeData(6, mids.concrete, t7, 0, 0); 		// 	layer 7		- concrete	- MAT 1
+    pShell.SetCompositeData(7, mids.concrete, t8, 0, 0); 		// 	layer 8		- concrete	- MAT 1
+    pShell.SetCompositeData(8, mids.concrete, t9, 0, 0); 		// 	layer 9		- concrete	- MAT 1
+    pShell.SetCompositeData(9, mids.Y_reinf, t10, 0, 0); 	    // 	layer 10	- steel		- MAT 3
+    pShell.SetCompositeData(10, mids.concrete, t11, 0, 0); 	// 	layer 11	- concrete	- MAT 1
+    pShell.SetCompositeData(11, mids.X_reinf, t12, 0, 0); 		// 	layer 12	- steel		- MAT 2
+    pShell.SetCompositeData(12, mids.concrete, t13, 0, 0); 	// 	layer 13	- concrete	- MAT 1
 
     return {mat_concrete, mat_x_reinf, mat_y_reinf}
 

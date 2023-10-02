@@ -105,11 +105,11 @@
  * 
  * 
  * @param {Model} m Model 
- * @param {Number} endtim {dt_pre1: 1.0, dt_pre2: 1.0, dt_blast: 0.2, dt_post:1.0} 
+ * @param {Number} endtim total analysis time {dt_pre1: 1.0, dt_pre2: 1.0, dt_blast: 0.2, dt_post:1.0} 
  * @param {Number} dt2ms Step time for mass scaling in the post-blast step
  * @returns Curve objects
  */
-function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
+function AnalysisControlExplicitDynamic(m, endTime, dt2ms){
 
     Message('... Explicit dynamic analysis');
 
@@ -126,10 +126,10 @@ function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
     let POST_BLAST_MASS_SCALING_CURVE = new Curve(Curve.CURVE, m, 1000002,) 
     POST_BLAST_MASS_SCALING_CURVE.heading = "POST_BLAST_MASS_SCALING_CURVE";
     POST_BLAST_MASS_SCALING_CURVE.AddPoint(0, dt2ms_ini);
-    POST_BLAST_MASS_SCALING_CURVE.AddPoint(endtim, dt2ms_ini);
+    POST_BLAST_MASS_SCALING_CURVE.AddPoint(endTime, dt2ms_ini);
 
     // - control 
-    m.control.termination.endtim = endtim;
+    m.control.termination.endtim = endTime;
     
     if (dt2ms > 0) ErrorMessage('... dt2ms must be negative')
     m.control.timestep.exists = true;
@@ -140,51 +140,51 @@ function AnalysisControlExplicitDynamic(m, endtim, dt2ms){
     // - database
     var N_d3plot = 50.0;
     m.database.binary.d3plot.exists = true;
-    m.database.binary.d3plot.dt = endtim/N_d3plot;
+    m.database.binary.d3plot.dt = endTime/N_d3plot;
     
     var N_d3thdt = 2000.0;
     m.database.binary.d3thdt.exists = true;
-    m.database.binary.d3thdt.dt = endtim/N_d3thdt;
+    m.database.binary.d3thdt.dt = endTime/N_d3thdt;
 
     m.database.extent_binary.exists = true;
-    m.database.extent_binary.dt = endtim/N_d3plot;
+    m.database.extent_binary.dt = endTime/N_d3plot;
     m.database.extent_binary.beamip = 5;
 
     m.database.bndout.exists = true;
-    m.database.bndout.dt = endtim/N_d3thdt;
+    m.database.bndout.dt = endTime/N_d3thdt;
     m.database.bndout.binary = 3;
 
     m.database.glstat.exists = true;
-    m.database.glstat.dt = endtim/N_d3thdt;
+    m.database.glstat.dt = endTime/N_d3thdt;
     m.database.glstat.binary = 3;
     m.database.glstat.mass_properties = 1;
 
     m.database.matsum.exists = true;
-    m.database.matsum.dt = endtim/N_d3thdt;
+    m.database.matsum.dt = endTime/N_d3thdt;
     m.database.matsum.binary = 3;
 
     m.database.nodfor.exists = true;
-    m.database.nodfor.dt = endtim/N_d3thdt;
+    m.database.nodfor.dt = endTime/N_d3thdt;
     m.database.nodfor.binary = 3;
     
     m.database.nodout.exists = true;
-    m.database.nodout.dt = endtim/N_d3thdt;
+    m.database.nodout.dt = endTime/N_d3thdt;
     m.database.nodout.binary = 3;
 
     m.database.rbdout.exists = true;
-    m.database.rbdout.dt = endtim/N_d3thdt;
+    m.database.rbdout.dt = endTime/N_d3thdt;
     m.database.rbdout.binary = 3;
     
     m.database.rcforc.exists = true;
-    m.database.rcforc.dt = endtim/N_d3thdt;
+    m.database.rcforc.dt = endTime/N_d3thdt;
     m.database.rcforc.binary = 3;
 
     m.database.secforc.exists = true;
-    m.database.secforc.dt = endtim/N_d3thdt;
+    m.database.secforc.dt = endTime/N_d3thdt;
     m.database.secforc.binary = 3;
 
     m.database.spcforc.exists = true;
-    m.database.spcforc.dt = endtim/N_d3thdt;
+    m.database.spcforc.dt = endTime/N_d3thdt;
     m.database.spcforc.binary = 3;
 
     // --- suppress cluster dumping files 
