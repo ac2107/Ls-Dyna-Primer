@@ -551,6 +551,74 @@ function CrossSectionRectangular(m, centre, lenl, lenm, vnorm, id, itype, psid =
 }
 
 
+function CrossSectionXY(m, x1, y1, csN, csLENL, z, title){
 
+  /*
+  Create x-section database for shell elements/parts on the XY plane only
+
+  The cross section is primarily defined by two points on the XY plane (L direction),
+  and the seciton cutting the XY plane at its mid point in the M direction.
+
+  Input:
+      m: model
+      x1: x coordiante of point 1
+      y1: y coordiante of point 1
+      csN: "unit" vector in the direction N
+      csLENL: length LENL in direction L
+      z:  z coordinate of the XY plane which the shell part is on
+      title: title of the cross-section
+
+
+  Return:
+      none
+
+  */
+
+  Message("...creating cross_section")
+
+  // length of the cross-plane in z-direction (M)
+var csLENM = 1.0; 
+  
+  // unit vector in M direction (i.e. Z-axis)
+  const csM = [0, 0, 1];
+
+var xct, yct, zct, xch, ych, zch, xhev, yhev, zhev, lenl, lenm;
+
+  // point (XCT, YCT, ZCT)
+  xct = x1, 
+  yct = y1, 
+  zct = z-0.5*csLENM; 
+
+  // unit vector in L direction csL
+  const csL = x_product(csM, csN);
+  // Message([csL[0], csL[1], csL[2]]);
+
+  // point (XCH, YCH, ZCH)
+  xch = xct + csN[0];
+  ych = yct + csN[1];
+  zch = zct + csN[2];
+
+  // point (XHEV, YHEV, ZHEV)
+  xhev = xct + csL[0];
+  yhev = yct + csL[1];
+  zhev = zct + csL[2]; 
+
+  // edge lendth 
+  lenl = csLENL;
+  lenm = csLENM;
+
+var cdsx = new CrossSection(	m, CrossSection.PLANE, 0, 
+                xct, yct, zct, 
+                xch, ych, zch, 
+                xhev, yhev, zhev, 
+                lenl, lenm, 
+                0, 0, 0, 
+                title,
+  )
+
+
+  return cdsx;
+
+}
 
 

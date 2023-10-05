@@ -3,10 +3,10 @@ function extrudeShellsToSolids(m, pid, shells, Lz, dz) {
   const solids = [];
 
   // Determine the number of layers based on the given extrusion length and layer thickness.
-  let numLayers = Math.round(Lz / dz);
+  let numLayers = Math.round(Math.abs(Lz) / dz);
 
   // Adjust dz to ensure total extrusion length is respected.
-  dz = Lz / numLayers;
+  dz = Math.abs(Lz) / numLayers;
 
   // Create a list of the current layer's shell nodes. Initially, this will be the same as the input shells.
   let currentLayerShells = shells.map(shell => {
@@ -25,9 +25,10 @@ function extrudeShellsToSolids(m, pid, shells, Lz, dz) {
       for (let shell of currentLayerShells) {
           for (let nid of [shell.n1, shell.n2, shell.n3, shell.n4]) {
               if (!extrudedNodeIdMap[nid]) {
-                  const originalNode = Node.GetFromID(m, nid);
-                  const newNode = new Node(m, Node.NextFreeLabel(m), originalNode.x, originalNode.y, originalNode.z + dz);
-                  extrudedNodeIdMap[nid] = newNode.nid;
+                    const originalNode = Node.GetFromID(m, nid);
+                    const zIncrement = Lz > 0 ? dz : -dz; // Positive or negative depending on Lz
+                    const newNode = new Node(m, Node.NextFreeLabel(m), originalNode.x, originalNode.y, originalNode.z + zIncrement);
+                    extrudedNodeIdMap[nid] = newNode.nid;
               }
           }
       }
@@ -45,7 +46,13 @@ function extrudeShellsToSolids(m, pid, shells, Lz, dz) {
           const n7 = extrudedNodeIdMap[n3];
           const n8 = extrudedNodeIdMap[n4];
 
-          const solid = new Solid(m, Solid.NextFreeLabel(m), pid, n1, n2, n3, n4, n5, n6, n7, n8);
+          let solid;
+          if (Lz > 0) {
+            solid = new Solid(m, Solid.NextFreeLabel(m), pid, n1, n2, n3, n4, n5, n6, n7, n8);
+          } else {
+            solid = new Solid(m, Solid.NextFreeLabel(m), pid, n5, n6, n7, n8, n1, n2, n3, n4);
+          }
+
           solids.push(solid);
 
           // Update the currentLayerShells for the next iteration.

@@ -478,13 +478,87 @@ function MAT_172_CONCRETE_EC2_SHELL(m, pShell, mids, FC, FT, thk, spc, Ds, cover
     pShell.SetCompositeData(7, mids.concrete, t8, 0, 0); 		// 	layer 8		- concrete	- MAT 1
     pShell.SetCompositeData(8, mids.concrete, t9, 0, 0); 		// 	layer 9		- concrete	- MAT 1
     pShell.SetCompositeData(9, mids.Y_reinf, t10, 0, 0); 	    // 	layer 10	- steel		- MAT 3
-    pShell.SetCompositeData(10, mids.concrete, t11, 0, 0); 	// 	layer 11	- concrete	- MAT 1
+    pShell.SetCompositeData(10, mids.concrete, t11, 0, 0); 	    // 	layer 11	- concrete	- MAT 1
     pShell.SetCompositeData(11, mids.X_reinf, t12, 0, 0); 		// 	layer 12	- steel		- MAT 2
-    pShell.SetCompositeData(12, mids.concrete, t13, 0, 0); 	// 	layer 13	- concrete	- MAT 1
+    pShell.SetCompositeData(12, mids.concrete, t13, 0, 0); 	    // 	layer 13	- concrete	- MAT 1
 
     return {mat_concrete, mat_x_reinf, mat_y_reinf}
 
 }
+
+/**
+ * MAT066 Linear ELastic Discrete Beam. 
+ * Node 2 is assumed to be fully fixed as a ground node. 
+ * 
+ * Definition of "variables": 
+ * const variables = { tkx: 5e9, // x = r
+ *                     tky: 5e9, // y = s
+ *                     tkz: 5e9, // z = t
+ *                     rkx: 5e9, 
+ *                     rky: 5e9, 
+ *                     rkz: 5e9,
+ *                     scoor: 1, }
+ * @param {Model} m Model  
+ * @param {Number} n1 Nide id of node 1 of the discrete beam element  
+ * @param {Number} n2 Node id of the node 2 of the discrete beam element
+ * @param {Object} variables Elastic stiffness in six degree of freedoms {tkr: 1e9, tks: 1e9, tkt: 1e9, rkr: 1e9, rks: 1e9, rkt: 1e9} 
+ * @param {String} title Title of the discrete element / spring
+ */
+function MAT_066_ELASTIC_DISCRETE_BEAM_(m, n1, n2, variables, title){
+
+    // create discrete beam section
+    var sec_db = new Section(m, Section.NextFreeLabel(m), Section.BEAM, title);
+	sec_db.elform = 6;
+	sec_db.vol = 1.0;
+	sec_db.iner = 1.0; 
+	sec_db.scoor = variables.scoor; 
+
+    // create local coordinate system CID
+    sec_db.cid = 0;  //use global coordinate for now
+
+    // create discrete beam material
+	var mat_db = new Material(m, Material.NextFreeLabel(m), "*MAT_066");
+	mat_db.SetPropertyByName("RO", 1.0);
+	mat_db.SetPropertyByName("TKR", variables.tkx);
+	mat_db.SetPropertyByName("TKS", variables.tky);
+	mat_db.SetPropertyByName("TKT", variables.tkz);		
+	mat_db.SetPropertyByName("RKR", variables.rkx);  
+	mat_db.SetPropertyByName("RKS", variables.rky);	
+	mat_db.SetPropertyByName("RKT", variables.rkz);
+
+    var p_db = new Part(m, Part.NextFreeLabel(m), sec_db.secid, mat_db.mid, title);
+
+    // create discrete beam element
+	let discreteBeam = new Beam(m, Beam.LastFreeLabel(m), p_db.pid, 
+                        n1, n2, 0
+    );
+
+    // assumed node 2 is built-in be default (i.e. fully-fixed or ground node)
+    var spc_btop = new Spc(m, n2, 0, 1, 1, 1, 1, 1, 1, Spc.NODE, n2);
+
+    // to be developed: local coordinate system for alignment of the spring
+
+    return {discreteBeam}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

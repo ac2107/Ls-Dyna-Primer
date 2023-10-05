@@ -595,7 +595,15 @@ function vec_norm(v)
 	return vnorm;
 }
 
-
+function x_product(vcross1, vcross2)
+{
+	var vc = new Array;
+	vc[0] = vcross1[1]*vcross2[2] - vcross1[2]*vcross2[1];
+	vc[1] = vcross1[2]*vcross2[0] - vcross1[0]*vcross2[2];
+	vc[2] = vcross1[0]*vcross2[1] - vcross1[1]*vcross2[0];
+	vc.mag = Math.sqrt(Math.pow(vc[0],2) + Math.pow(vc[1],2) + Math.pow(vc[2],2));
+	return vc;
+}
 
 
 
